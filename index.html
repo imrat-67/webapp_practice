@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Game</title>
+        <link rel = "stylesheet" type = "text/css" href = "style.css">
+        <script src = "script.js" difer></script>
+    </head>
+    <body>
+        <div id = "welcome">
+            <p>WELCOME to the GAME <br>
+                GUESS THE NUMBER
+            </p>
+        </div>
+
+        <button id = "bt1" class ="bt" onclick="start()" > start </button>
+  
+        <button id = "bt2" class = "bt" onclick="stop()"> stop </button>
+
+
+        <div class = "number">
+            <p id = "random"></p>
+        </div>
+
+        <div class = "input">
+            <input id = "in"> 
+        </div>
+
+        <p id = "tx1" class = "text"> If your guess is within ±5 of the random number, you win </p>
+        <p id = "tx2" class = "text"> Guess the number between 0 and 100.</p>
+
+        <div id = "result">
+            <span id = "r1"></span>
+            <span id = "r2"></span>
+        </div>
+    </body>
+</html>
