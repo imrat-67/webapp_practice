@@ -1,0 +1,17 @@
+body {
+    background-color: #f8f9fa;
+}
+
+h3 {
+    color: #343a40;
+}
+
+button {
+    margin-bottom: 10px;
+}
+
+input {
+    margin-bottom: 10px;
+    width: 100% !important;
+    height: 500px !important;
+}
