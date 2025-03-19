@@ -17,51 +17,32 @@ const platforms = [
 
 async function fetchSolveCount(platform) {
     try {
-        
-        console.log(platform.name);
-        if (platform.name === "Codeforces"){
-            console.log("found");
-            const response = await fetch(platform.api);
+        if (platform.name === "CSES") {
+            console.log("hi");
+            const response = await fetch('fetch_cses.php');
             const data = await response.json();
-                let solvedProblems = new Set();
-                data.result.forEach(submission => {
-                    if (submission.verdict === "OK") {
-                        solvedProblems.add(submission.problem.name + submission.problem.rating + submission.problem.tags);
-                }
-            });
-
-            return solvedProblems.size;
-        } 
-
-        if (platform.name === "LeetCode"){
-            const response = await fetch(platform.api);
-            const data = await response.json();
-        return data.totalSolved;
+            console.log(data);
+            return data.solve;
         }
 
-        if (platform.name === "AtCoder"){
+        if (platform.name === "Codeforces") {
+            const response = await fetch(platform.api);
+            const data = await response.json();
+            let solvedProblems = new Set();
+            data.result.forEach(submission => {
+                if (submission.verdict === "OK") {
+                    solvedProblems.add(submission.problem.name + submission.problem.rating + submission.problem.tags);
+                }
+            });
+            return solvedProblems.size;
+        }
+
+        if (platform.name === "AtCoder") {
             const response = await fetch(platform.api);
             const data = await response.json();
             return data.count;
         }
 
-        if (platform.name === "Codechef") return data.fully_solved.count;
-        if (platform.name === "Spoj") return data.solved;
-        if (platform.name === "LightOJ"){
-            let count;
-            await fetch(platform.url)
-            .then(response => response.text())  
-            .then(html => {
-                const parser = new DOMParser();
-                const doc = parser.parseFromString(html, "text/html");
-                console.log(doc);
-                const solvedCountElement = doc.querySelector(".page-counts .like-count span");
-                let x = solvedCountElement.textContent.trim();
-                count = x;
-            })
-            return count;
-        }
-        
         return "Unknown";
     } catch (error) {
         return "Error";
