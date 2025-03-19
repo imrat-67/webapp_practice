@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSES Solve Count</title>
+</head>
+<body>
+    <h2>CSES Solve Count Checker</h2>
+    <button onclick="getSolveCount()">Get Solved Count</button>
+    <p id="result">Click the button to fetch data...</p>
+
+    <script>
+        async function getSolveCount() {
+            const userURL = "https://cses.fi/problemset/user/130177/";
+            const proxy = "https://corsproxy.io/?"; // Working CORS proxy
+
+            try {
+                // Fetch the HTML content using the proxy
+                const response = await fetch(proxy + encodeURIComponent(userURL));
+                const text = await response.text();
+
+                // Parse the HTML content
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(text, "text/html");
+
+                console.log(text);
+
+                // Extract solved problem count from the <h2> element
+                const solvedCountElement = doc.querySelector("h2");
+                if (solvedCountElement) {
+                    const solvedCount = solvedCountElement.innerText.match(/\d+/)?.[0] || "Not Found";
+                    document.getElementById("result").innerText = `Total Solved: ${solvedCount}`;
+                } else {
+                    document.getElementById("result").innerText = "Solved count not found in the page.";
+                }
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById("result").innerText = "Failed to fetch data. Please try again.";
+            }
+        }
+    </script>
+</body>
+</html>
