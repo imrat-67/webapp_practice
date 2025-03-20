@@ -6,7 +6,7 @@ function saveData() {
         return;
     }
 
-    fetch("server_input.php", {
+    fetch("http://webapp67.free.nf/server_input.php", {
         method: "POST",
         headers: { "Content-Type": "application/x-www-form-urlencoded" },
         body: "text=" + encodeURIComponent(text)
@@ -21,7 +21,7 @@ function saveData() {
 
 // Fetch data from the database and display
 function fetchData() {
-    fetch("server_output.php")
+    fetch("http://webapp67.free.nf/server_output.php")
     .then(response => response.text())
     .then(data => {
         document.getElementById("outputBox").innerHTML = data;
