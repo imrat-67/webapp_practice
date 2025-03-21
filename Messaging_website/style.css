@@ -1,0 +1,29 @@
+#chat-box {
+    height: 350px; /* Fixed height for the chat box */
+    overflow-y: auto; /* Enable vertical scrolling */
+    display: flex;
+    flex-direction: column; /* Normal column direction */
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.message {
+    margin-bottom: 10px;
+    padding: 8px;
+    border-radius: 5px;
+    background-color: #e1f5fe;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.message.user {
+    background-color: #d1ecf1;
+    align-self: flex-end; /* Align user messages to the right */
+}
+
+.message.system {
+    background-color: #f8d7da;
+    align-self: flex-start; /* Align system messages to the left */
+}
