@@ -19,14 +19,16 @@ $total_invited = 0;
 $details = [];
 
 foreach ($tables as $key => $label) {
-  $count = $conn->query("SELECT COUNT(*) AS total, SUM(invited) AS invited FROM $key")->fetch_assoc();
+  $result = $conn->query("SELECT SUM(family_members) AS total_guests, SUM(CASE WHEN invited = 1 THEN family_members ELSE 0 END) AS invited FROM $key");
+  $row = $result->fetch_assoc();
+  
   $details[] = [
     "label" => $label,
-    "total" => $count["total"],
-    "invited" => $count["invited"] ?? 0
+    "total" => $row["total_guests"] ?? 0,
+    "invited" => $row["invited"] ?? 0
   ];
-  $total_guests += $count["total"];
-  $total_invited += $count["invited"] ?? 0;
+  $total_guests += $row["total_guests"] ?? 0;
+  $total_invited += $row["invited"] ?? 0;
 }
 ?>
 <!DOCTYPE html>
@@ -38,9 +40,9 @@ foreach ($tables as $key => $label) {
 </head>
 <body class="bg-light">
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark px-3">
-    <a class="navbar-brand" href="#">Wedding Manager</a>
-    <ul class="navbar-nav me-auto"></ul>
-    <a href="dashboard.php?table=fathers_family" class="btn btn-outline-light">Dashboard</a>
+    <a class="navbar-brand" href="dashboard.php?table=fathers_family">Wedding Manager</a>
+    <a href="dashboard.php?table=fathers_family" class="btn btn-outline-light ms-auto">Dashboard</a>
+    <a href="logout.php" class="btn btn-outline-light ms-2">Logout</a>
   </nav>
 
   <div class="container my-5">
@@ -49,8 +51,8 @@ foreach ($tables as $key => $label) {
       <thead class="table-dark">
         <tr>
           <th>Category</th>
-          <th>Total Guests</th>
-          <th>Invited</th>
+          <th>Total Guests (Including Family)</th>
+          <th>Total Invited</th>
         </tr>
       </thead>
       <tbody>
