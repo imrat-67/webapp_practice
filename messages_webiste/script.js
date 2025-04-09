@@ -71,19 +71,23 @@ function fetchData() {
 
 // Clear Messages with Password
 function clearMessages() {
-    let password = document.getElementById("clearPassword").value;
-    if (password !== "657862") {
-        alert("Incorrect password!");
+
+    // Get the deviceID of the user whose last message should be deleted
+    const deviceID = localStorage.getItem("deviceID");
+    if (!deviceID) {
+        alert("Device ID not found!");
         return;
     }
 
+    // Send a request to delete the last message of the user
     fetch("server_clear.php", {
-        method: "POST"
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "deviceID=" + encodeURIComponent(deviceID)
     })
     .then(response => response.text())
     .then(data => {
         alert(data);
-        document.getElementById("clearPassword").value = "";
         fetchData(); // Refresh chat box
     })
     .catch(error => console.error("Error:", error));
