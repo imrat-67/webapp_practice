@@ -6,17 +6,17 @@
   <style>
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: #f2f2f2;
+      background: #f0f0f0;
       padding: 20px;
       text-align: center;
     }
 
     textarea {
       width: 90%;
-      height: 100px;
+      height: 120px;
       font-size: 18px;
-      padding: 10px;
       margin-bottom: 20px;
+      padding: 10px;
       resize: none;
     }
 
@@ -25,14 +25,14 @@
       background: #fff;
       padding: 20px;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
       max-width: 1000px;
     }
 
     .row {
       display: flex;
       justify-content: center;
-      margin-bottom: 10px;
+      margin: 5px 0;
       flex-wrap: wrap;
     }
 
@@ -40,17 +40,17 @@
       background: #e0e0e0;
       border: none;
       border-radius: 5px;
-      margin: 4px;
-      padding: 14px 18px;
+      margin: 3px;
+      padding: 12px 16px;
       font-size: 16px;
-      cursor: pointer;
       min-width: 45px;
       text-align: center;
+      cursor: pointer;
       transition: background 0.2s;
     }
 
     .key:hover {
-      background: #d0d0d0;
+      background: #ccc;
     }
 
     .key.wide {
@@ -58,140 +58,147 @@
     }
 
     .key.space {
-      min-width: 200px;
+      min-width: 300px;
     }
 
-    .active-caps {
+    .key.shift, .key.caps.active {
       background: #a0d8ef !important;
     }
 
     @media (max-width: 600px) {
       .key {
         font-size: 14px;
-        padding: 12px 14px;
+        padding: 10px 12px;
       }
 
       .key.space {
-        min-width: 150px;
+        min-width: 200px;
       }
     }
   </style>
 </head>
 <body>
 
-  <h2>Virtual Keyboard</h2>
+  <h2>Full Virtual Keyboard</h2>
   <textarea id="output" placeholder="Type here..."></textarea>
 
-  <div class="keyboard">
-    <!-- Numbers and Symbols -->
-    <div class="row">
-      <button class="key" data-key="1">1 !</button>
-      <button class="key" data-key="2">2 @</button>
-      <button class="key" data-key="3">3 #</button>
-      <button class="key" data-key="4">4 $</button>
-      <button class="key" data-key="5">5 %</button>
-      <button class="key" data-key="6">6 ^</button>
-      <button class="key" data-key="7">7 &</button>
-      <button class="key" data-key="8">8 *</button>
-      <button class="key" data-key="9">9 (</button>
-      <button class="key" data-key="0">0 )</button>
-      <button class="key" onclick="backspace()">⌫</button>
-    </div>
-
-    <!-- QWERTY Row -->
-    <div class="row">
-      <button class="key letter">Q</button>
-      <button class="key letter">W</button>
-      <button class="key letter">E</button>
-      <button class="key letter">R</button>
-      <button class="key letter">T</button>
-      <button class="key letter">Y</button>
-      <button class="key letter">U</button>
-      <button class="key letter">I</button>
-      <button class="key letter">O</button>
-      <button class="key letter">P</button>
-    </div>
-
-    <!-- ASDF Row -->
-    <div class="row">
-      <button class="key letter">A</button>
-      <button class="key letter">S</button>
-      <button class="key letter">D</button>
-      <button class="key letter">F</button>
-      <button class="key letter">G</button>
-      <button class="key letter">H</button>
-      <button class="key letter">J</button>
-      <button class="key letter">K</button>
-      <button class="key letter">L</button>
-    </div>
-
-    <!-- Caps + ZXCV Row -->
-    <div class="row">
-      <button class="key wide" id="caps">Caps Lock</button>
-      <button class="key letter">Z</button>
-      <button class="key letter">X</button>
-      <button class="key letter">C</button>
-      <button class="key letter">V</button>
-      <button class="key letter">B</button>
-      <button class="key letter">N</button>
-      <button class="key letter">M</button>
-      <button class="key" onclick="addKey(',')">,</button>
-      <button class="key" onclick="addKey('.')">.</button>
-    </div>
-
-    <!-- Bottom Row -->
-    <div class="row">
-      <button class="key wide" onclick="addKey('\n')">Enter</button>
-      <button class="key space" onclick="addKey(' ')">Space</button>
-    </div>
-  </div>
+  <div class="keyboard" id="keyboard"></div>
 
   <script>
-    const output = document.getElementById('output');
-    const capsLock = document.getElementById('caps');
+    const output = document.getElementById("output");
+    const keyboard = document.getElementById("keyboard");
+
     let caps = false;
+    let shift = false;
 
-    document.querySelectorAll('.letter').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const char = btn.textContent.trim();
-        addKey(caps ? char.toUpperCase() : char.toLowerCase());
+    const keys = [
+      [
+        ['`', '~'], ['1', '!'], ['2', '@'], ['3', '#'], ['4', '$'], ['5', '%'],
+        ['6', '^'], ['7', '&'], ['8', '*'], ['9', '('], ['0', ')'], ['-', '_'], ['=', '+'], ['Backspace']
+      ],
+      [
+        ['Tab'], ['q'], ['w'], ['e'], ['r'], ['t'], ['y'], ['u'], ['i'], ['o'], ['p'],
+        ['[', '{'], [']', '}'], ['\\', '|']
+      ],
+      [
+        ['CapsLock'], ['a'], ['s'], ['d'], ['f'], ['g'], ['h'], ['j'], ['k'], ['l'],
+        [';', ':'], ['\'', '"'], ['Enter']
+      ],
+      [
+        ['Shift'], ['z'], ['x'], ['c'], ['v'], ['b'], ['n'], ['m'],
+        [',', '<'], ['.', '>'], ['/', '?'], ['Shift']
+      ],
+      [
+        ['Space']
+      ]
+    ];
+
+    function createKeyboard() {
+      keys.forEach(row => {
+        const rowDiv = document.createElement('div');
+        rowDiv.classList.add('row');
+
+        row.forEach(key => {
+          const keyBtn = document.createElement('button');
+          keyBtn.classList.add('key');
+          let displayText = key[0];
+
+          if (key.length === 2) {
+            displayText += ' ' + key[1];
+          }
+
+          keyBtn.innerText = displayText;
+
+          if (key[0] === 'Backspace') {
+            keyBtn.classList.add('wide');
+            keyBtn.onclick = () => {
+              output.value = output.value.slice(0, -1);
+              output.focus();
+            };
+          } else if (key[0] === 'Tab') {
+            keyBtn.onclick = () => {
+              output.value += '\t';
+              output.focus();
+            };
+          } else if (key[0] === 'CapsLock') {
+            keyBtn.classList.add('caps');
+            keyBtn.onclick = () => {
+              caps = !caps;
+              keyBtn.classList.toggle('active');
+              output.focus();
+            };
+          } else if (key[0] === 'Enter') {
+            keyBtn.classList.add('wide');
+            keyBtn.onclick = () => {
+              output.value += '\n';
+              output.focus();
+            };
+          } else if (key[0] === 'Shift') {
+            keyBtn.classList.add('shift', 'wide');
+            keyBtn.onclick = () => {
+              shift = !shift;
+              document.querySelectorAll('.key.shift').forEach(btn => {
+                btn.classList.toggle('active', shift);
+              });
+              output.focus();
+            };
+          } else if (key[0] === 'Space') {
+            keyBtn.classList.add('space');
+            keyBtn.onclick = () => {
+              output.value += ' ';
+              output.focus();
+            };
+          } else {
+            keyBtn.onclick = () => {
+              let char = key[0];
+              if (caps ^ shift) {
+                char = key[0].toUpperCase();
+              }
+              if (shift && key.length === 2) {
+                char = key[1];
+              }
+
+              output.value += char;
+              output.focus();
+
+              // reset shift after one press
+              if (shift) {
+                shift = false;
+                document.querySelectorAll('.key.shift').forEach(btn => {
+                  btn.classList.remove('active');
+                });
+              }
+            };
+          }
+
+          rowDiv.appendChild(keyBtn);
+        });
+
+        keyboard.appendChild(rowDiv);
       });
-    });
-
-    document.querySelectorAll('[data-key]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const key = btn.getAttribute('data-key');
-        const symbols = {
-          '1': ['1', '!'],
-          '2': ['2', '@'],
-          '3': ['3', '#'],
-          '4': ['4', '$'],
-          '5': ['5', '%'],
-          '6': ['6', '^'],
-          '7': ['7', '&'],
-          '8': ['8', '*'],
-          '9': ['9', '('],
-          '0': ['0', ')']
-        };
-        const toAdd = caps ? symbols[key][1] : symbols[key][0];
-        addKey(toAdd);
-      });
-    });
-
-    capsLock.addEventListener('click', () => {
-      caps = !caps;
-      capsLock.classList.toggle('active-caps');
-    });
-
-    function addKey(char) {
-      output.value += char;
-      output.focus();
     }
 
-    function backspace() {
-      output.value = output.value.slice(0, -1);
-      output.focus();
-    }
+    createKeyboard();
   </script>
 
 </body>
