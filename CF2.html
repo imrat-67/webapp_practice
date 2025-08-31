@@ -1,0 +1,614 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codeforces Unsolved Problems Finder</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1e3a8a 0%, #3730a3 50%, #581c87 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(15px);
+            border-radius: 24px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+            padding: 40px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3.2rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #1e3a8a, #581c87);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.3rem;
+            color: #64748b;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .input-section {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 40px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .handles-section {
+            margin-bottom: 25px;
+        }
+
+        .handles-section label {
+            display: block;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .handles-input-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .handle-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .handle-input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .add-handle-btn {
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .add-handle-btn:hover {
+            background: #059669;
+            transform: translateY(-1px);
+        }
+
+        .remove-handle-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .remove-handle-btn:hover {
+            background: #dc2626;
+        }
+
+        .rating-section {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 20px;
+            align-items: end;
+        }
+
+        .rating-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .rating-group label {
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .rating-select {
+            padding: 15px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+
+        .rating-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .find-btn {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            border: none;
+            padding: 15px 35px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+
+        .find-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.4);
+        }
+
+        .find-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+            color: #3b82f6;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+
+        .error {
+            background: #fef2f2;
+            border: 2px solid #fecaca;
+            color: #dc2626;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 25px;
+            font-weight: 600;
+        }
+
+        .results-section {
+            margin-top: 40px;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid #e2e8f0;
+        }
+
+        .results-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1f2937;
+        }
+
+        .results-count {
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+        }
+
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 25px;
+        }
+
+        .problem-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+            border: 2px solid #f1f5f9;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .problem-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+        }
+
+        .problem-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.12);
+            border-color: #3b82f6;
+        }
+
+        .problem-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .problem-id {
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: #1f2937;
+        }
+
+        .problem-rating {
+            background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+            color: white;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+        }
+
+        .problem-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #374151;
+            margin-bottom: 12px;
+            line-height: 1.4;
+        }
+
+        .problem-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            text-decoration: none;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .problem-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        }
+
+        .problem-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e5e7eb;
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+
+        .contest-info {
+            font-weight: 600;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 80px 20px;
+            color: #6b7280;
+            font-size: 1.3rem;
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 25px;
+            }
+            
+            .header h1 {
+                font-size: 2.5rem;
+            }
+            
+            .rating-section {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .problems-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .problem-card {
+                padding: 20px;
+            }
+            
+            .results-header {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+
+            .handles-input-container {
+                flex-direction: column;
+            }
+        }
+
+        .loading-spinner {
+            border: 4px solid #f3f4f6;
+            border-top: 4px solid #3b82f6;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Unsolved Problems Finder</h1>
+            <p>Find Codeforces problems that none of your team members have solved yet</p>
+        </div>
+
+        <div class="input-section">
+            <div class="handles-section">
+                <label>Codeforces Handles</label>
+                <div id="handlesContainer">
+                    <div class="handles-input-container">
+                        <input type="text" class="handle-input" placeholder="Enter handle (e.g., tourist)">
+                        <button type="button" class="add-handle-btn" onclick="addHandleInput()">+ Add</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="rating-section">
+                <div class="rating-group">
+                    <label for="rating">Problem Rating</label>
+                    <select id="rating" class="rating-select">
+                        <option value="800">800</option>
+                        <option value="900">900</option>
+                        <option value="1000">1000</option>
+                        <option value="1100">1100</option>
+                        <option value="1200">1200</option>
+                        <option value="1300">1300</option>
+                        <option value="1400">1400</option>
+                        <option value="1500">1500</option>
+                        <option value="1600">1600</option>
+                        <option value="1700">1700</option>
+                        <option value="1800">1800</option>
+                        <option value="1900">1900</option>
+                        <option value="2000">2000</option>
+                        <option value="2100">2100</option>
+                        <option value="2200">2200</option>
+                        <option value="2300">2300</option>
+                        <option value="2400">2400</option>
+                        <option value="2500">2500</option>
+                    </select>
+                </div>
+                <button class="find-btn" onclick="findUnsolvedProblems()" id="findBtn">
+                    🔍 Find Problems
+                </button>
+            </div>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <div>Analyzing problems and user submissions...</div>
+        </div>
+
+        <div id="error" class="error" style="display: none;"></div>
+
+        <div id="results" class="results-section" style="display: none;">
+            <div class="results-header">
+                <div class="results-title">Unsolved Problems</div>
+                <div class="results-count" id="resultsCount">Found: 0</div>
+            </div>
+            
+            <div id="problemsContainer" class="problems-grid">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function addHandleInput() {
+            const container = document.getElementById('handlesContainer');
+            const div = document.createElement('div');
+            div.className = 'handles-input-container';
+            div.innerHTML = `
+                <input type="text" class="handle-input" placeholder="Enter handle">
+                <button type="button" class="remove-handle-btn" onclick="removeHandleInput(this)">Remove</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeHandleInput(button) {
+            const container = button.parentElement;
+            container.remove();
+        }
+
+        async function findUnsolvedProblems() {
+            const handleInputs = document.querySelectorAll('.handle-input');
+            const handles = Array.from(handleInputs)
+                .map(input => input.value.trim())
+                .filter(handle => handle !== '');
+            
+            const rating = document.getElementById('rating').value;
+            
+            if (handles.length === 0) {
+                showError('Please enter at least one Codeforces handle');
+                return;
+            }
+
+            showLoading(true);
+            hideError();
+            hideResults();
+
+            try {
+                // Fetch all problems with the specified rating
+                const problemsResponse = await fetch('https://codeforces.com/api/problemset.problems');
+                const problemsData = await problemsResponse.json();
+                
+                if (problemsData.status !== 'OK') {
+                    throw new Error('Failed to fetch problems from Codeforces');
+                }
+
+                // Filter problems by rating
+                const targetProblems = problemsData.result.problems
+                    .filter(problem => problem.rating == rating)
+                    .sort((a, b) => b.contestId - a.contestId); // Sort by contest ID descending (newer first)
+
+                // Fetch solved problems for each handle
+                const solvedProblems = new Set();
+                
+                for (const handle of handles) {
+                    try {
+                        const userResponse = await fetch(`https://codeforces.com/api/user.status?handle=${handle}`);
+                        const userData = await userResponse.json();
+                        
+                        if (userData.status === 'OK') {
+                            userData.result
+                                .filter(submission => submission.verdict === 'OK')
+                                .forEach(submission => {
+                                    const problemKey = `${submission.problem.contestId}-${submission.problem.index}`;
+                                    solvedProblems.add(problemKey);
+                                });
+                        }
+                    } catch (error) {
+                        console.warn(`Failed to fetch data for handle: ${handle}`, error);
+                    }
+                }
+
+                // Find unsolved problems
+                const unsolvedProblems = targetProblems.filter(problem => {
+                    const problemKey = `${problem.contestId}-${problem.index}`;
+                    return !solvedProblems.has(problemKey);
+                });
+
+                displayResults(unsolvedProblems, handles, rating);
+
+            } catch (error) {
+                console.error('Error:', error);
+                showError(`Error: ${error.message}`);
+            } finally {
+                showLoading(false);
+            }
+        }
+
+        function displayResults(problems, handles, rating) {
+            const resultsDiv = document.getElementById('results');
+            const resultsCount = document.getElementById('resultsCount');
+            const problemsContainer = document.getElementById('problemsContainer');
+
+            resultsCount.textContent = `Found: ${problems.length}`;
+            problemsContainer.innerHTML = '';
+
+            if (problems.length === 0) {
+                problemsContainer.innerHTML = `
+                    <div class="no-results">
+                        <div class="no-results-icon">🎉</div>
+                        <div>Great job! All problems with rating ${rating} have been solved by your team!</div>
+                    </div>
+                `;
+            } else {
+                problems.forEach(problem => {
+                    const problemCard = document.createElement('div');
+                    problemCard.className = 'problem-card';
+                    
+                    const contestType = problem.contestId >= 100000 ? 'Gym' : 'Contest';
+                    const problemUrl = `https://codeforces.com/problemset/problem/${problem.contestId}/${problem.index}`;
+                    
+                    problemCard.innerHTML = `
+                        <div class="problem-header">
+                            <div class="problem-id">${problem.contestId}${problem.index}</div>
+                            <div class="problem-rating">${problem.rating}</div>
+                        </div>
+                        <div class="problem-title">${problem.name}</div>
+                        <a href="${problemUrl}" target="_blank" class="problem-link">
+                            🔗 Solve Problem
+                        </a>
+                        <div class="problem-meta">
+                            <div class="contest-info">${contestType} ${problem.contestId}</div>
+                            <div class="problem-tags">${problem.tags ? problem.tags.slice(0, 2).join(', ') : 'No tags'}</div>
+                        </div>
+                    `;
+                    
+                    problemsContainer.appendChild(problemCard);
+                });
+            }
+
+            resultsDiv.style.display = 'block';
+        }
+
+        function showLoading(show) {
+            document.getElementById('loading').style.display = show ? 'block' : 'none';
+            document.getElementById('findBtn').disabled = show;
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        function hideError() {
+            document.getElementById('error').style.display = 'none';
+        }
+
+        function hideResults() {
+            document.getElementById('results').style.display = 'none';
+        }
+
+        // Handle Enter key in input fields
+        document.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                findUnsolvedProblems();
+            }
+        });
+
+        // Add initial extra handle input
+        addHandleInput();
+    </script>
+</body>
+</html>

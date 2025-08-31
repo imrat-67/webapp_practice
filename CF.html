@@ -376,44 +376,46 @@
         }
 
         function getRatingRange(rating) {
-            if (rating === 0) return 'Unrated';
-            if (rating <= 800) return '≤800';
-            if (rating <= 900) return '801-900';
-            if (rating <= 1000) return '901-1000';
-            if (rating <= 1100) return '1001-1100';
-            if (rating <= 1200) return '1101-1200';
-            if (rating <= 1300) return '1201-1300';
-            if (rating <= 1400) return '1301-1400';
-            if (rating <= 1500) return '1401-1500';
-            if (rating <= 1600) return '1501-1600';
-            if (rating <= 1700) return '1601-1700';
-            if (rating <= 1800) return '1701-1800';
-            if (rating <= 1900) return '1801-1900';
-            if (rating <= 2000) return '1901-2000';
-            if (rating <= 2100) return '2001-2100';
-            return '2100+';
+            if (!rating || rating === 0) return 'Unrated';
+            // Only show buckets for exact multiples of 100 (800, 900, ..., 3500)
+            if (rating < 800 || rating > 3500 || rating % 100 !== 0) return 'Other';
+            return rating.toString();
         }
 
         function getRatingClass(ratingRange) {
+            // Map exact rating to class
             const ratingMap = {
-                'Unrated': 'rating-800',
-                '≤800': 'rating-800',
-                '801-900': 'rating-900',
-                '901-1000': 'rating-1000',
-                '1001-1100': 'rating-1100',
-                '1101-1200': 'rating-1200',
-                '1201-1300': 'rating-1300',
-                '1301-1400': 'rating-1400',
-                '1401-1500': 'rating-1500',
-                '1501-1600': 'rating-1600',
-                '1601-1700': 'rating-1700',
-                '1701-1800': 'rating-1800',
-                '1801-1900': 'rating-1900',
-                '1901-2000': 'rating-2000',
-                '2001-2100': 'rating-2100',
-                '2100+': 'rating-higher'
+                '800': 'rating-800',
+                '900': 'rating-900',
+                '1000': 'rating-1000',
+                '1100': 'rating-1100',
+                '1200': 'rating-1200',
+                '1300': 'rating-1300',
+                '1400': 'rating-1400',
+                '1500': 'rating-1500',
+                '1600': 'rating-1600',
+                '1700': 'rating-1700',
+                '1800': 'rating-1800',
+                '1900': 'rating-1900',
+                '2000': 'rating-2000',
+                '2100': 'rating-2100',
+                '2200': 'rating-higher',
+                '2300': 'rating-higher',
+                '2400': 'rating-higher',
+                '2500': 'rating-higher',
+                '2600': 'rating-higher',
+                '2700': 'rating-higher',
+                '2800': 'rating-higher',
+                '2900': 'rating-higher',
+                '3000': 'rating-higher',
+                '3100': 'rating-higher',
+                '3200': 'rating-higher',
+                '3300': 'rating-higher',
+                '3400': 'rating-higher',
+                '3500': 'rating-higher',
+                'Other': 'rating-higher'
             };
-            return ratingMap[ratingRange] || 'rating-800';
+            return ratingMap[ratingRange] || 'rating-higher';
         }
 
         function displayResults(ratingCounts, totalProblems, handle, date) {
@@ -443,29 +445,26 @@
                     </tr>
                 `;
             } else {
-                // Sort rating ranges for better display
-                const sortedRatingRanges = Object.keys(ratingCounts).sort((a, b) => {
-                    const order = ['Unrated', '≤800', '801-900', '901-1000', '1001-1100', 
-                                   '1101-1200', '1201-1300', '1301-1400', '1401-1500', 
-                                   '1501-1600', '1601-1700', '1701-1800', '1801-1900', 
-                                   '1901-2000', '2001-2100', '2100+'];
-                    return order.indexOf(a) - order.indexOf(b);
-                });
-
-                sortedRatingRanges.forEach(ratingRange => {
-                    const count = ratingCounts[ratingRange];
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
-                        <td>
-                            <span class="rating-badge ${getRatingClass(ratingRange)}">
-                                ${ratingRange}
-                            </span>
-                        </td>
-                        <td>
-                            <span class="count-badge">${count}</span>
-                        </td>
-                    `;
-                    statsTable.appendChild(row);
+                // Only show buckets for Unrated and multiples of 100 from 800 to 3500
+                const validBuckets = ['Unrated'];
+                for (let r = 800; r <= 3500; r += 100) validBuckets.push(r.toString());
+                validBuckets.push('Other');
+                validBuckets.forEach(ratingRange => {
+                    if (ratingCounts[ratingRange]) {
+                        const count = ratingCounts[ratingRange];
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>
+                                <span class="rating-badge ${getRatingClass(ratingRange)}">
+                                    ${ratingRange === 'Other' ? 'Other Ratings' : ratingRange}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="count-badge">${count}</span>
+                            </td>
+                        `;
+                        statsTable.appendChild(row);
+                    }
                 });
             }
 
