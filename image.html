@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Viewer</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .upload-section {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .upload-btn {
+            background: #667eea;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .upload-btn:hover {
+            background: #764ba2;
+            transform: scale(1.05);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        .gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .image-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+            transition: transform 0.3s;
+            position: relative;
+        }
+
+        .image-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .image-card img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            display: block;
+        }
+
+        .delete-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff4757;
+            color: white;
+            border: none;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .delete-btn:hover {
+            background: #ff3838;
+            transform: scale(1.1);
+        }
+
+        .empty-message {
+            text-align: center;
+            color: white;
+            font-size: 1.3rem;
+            margin-top: 50px;
+        }
+
+        .fullscreen-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .fullscreen-overlay.active {
+            display: flex;
+        }
+
+        .fullscreen-overlay img {
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .close-fullscreen {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            color: white;
+            font-size: 3rem;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📸 My Image Gallery</h1>
+            <p>Upload and view your images locally</p>
+        </header>
+
+        <div class="upload-section">
+            <input type="file" id="fileInput" accept="image/*" multiple>
+            <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                + Upload Images
+            </button>
+        </div>
+
+        <div class="gallery" id="gallery"></div>
+        <div class="empty-message" id="emptyMessage">No images yet. Upload some to get started!</div>
+    </div>
+
+    <div class="fullscreen-overlay" id="fullscreenOverlay">
+        <button class="close-fullscreen" onclick="closeFullscreen()">×</button>
+        <img id="fullscreenImage" src="" alt="">
+    </div>
+
+    <script>
+        const gallery = document.getElementById('gallery');
+        const emptyMessage = document.getElementById('emptyMessage');
+        const fileInput = document.getElementById('fileInput');
+        const fullscreenOverlay = document.getElementById('fullscreenOverlay');
+        const fullscreenImage = document.getElementById('fullscreenImage');
+
+        // Load images from memory on page load
+        let images = JSON.parse(localStorage.getItem('images')) || [];
+        displayImages();
+
+        // Handle file upload
+        fileInput.addEventListener('change', function(e) {
+            const files = e.target.files;
+            
+            for (let file of files) {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    
+                    reader.onload = function(event) {
+                        const imageData = {
+                            id: Date.now() + Math.random(),
+                            data: event.target.result,
+                            name: file.name
+                        };
+                        
+                        images.push(imageData);
+                        saveImages();
+                        displayImages();
+                    };
+                    
+                    reader.readAsDataURL(file);
+                }
+            }
+            
+            fileInput.value = '';
+        });
+
+        function saveImages() {
+            localStorage.setItem('images', JSON.stringify(images));
+        }
+
+        function displayImages() {
+            gallery.innerHTML = '';
+            
+            if (images.length === 0) {
+                emptyMessage.style.display = 'block';
+                return;
+            }
+            
+            emptyMessage.style.display = 'none';
+            
+            images.forEach(image => {
+                const card = document.createElement('div');
+                card.className = 'image-card';
+                
+                card.innerHTML = `
+                    <img src="${image.data}" alt="${image.name}" onclick="openFullscreen('${image.data}')">
+                    <button class="delete-btn" onclick="deleteImage(${image.id})">×</button>
+                `;
+                
+                gallery.appendChild(card);
+            });
+        }
+
+        function deleteImage(id) {
+            if (confirm('Are you sure you want to delete this image?')) {
+                images = images.filter(img => img.id !== id);
+                saveImages();
+                displayImages();
+            }
+        }
+
+        function openFullscreen(src) {
+            fullscreenImage.src = src;
+            fullscreenOverlay.classList.add('active');
+        }
+
+        function closeFullscreen() {
+            fullscreenOverlay.classList.remove('active');
+        }
+
+        // Close fullscreen on overlay click
+        fullscreenOverlay.addEventListener('click', function(e) {
+            if (e.target === fullscreenOverlay) {
+                closeFullscreen();
+            }
+        });
+
+        // Close fullscreen with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeFullscreen();
+            }
+        });
+    </script>
+</body>
+</html>
