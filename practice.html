@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>30 Python Problems · Competitive Programming Prep</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Georgia', 'Times New Roman', serif;
+      background: #0f0f23;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+
+    /* smooth scroll & sticky support */
+    .sticky-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(10px);
+      background: linear-gradient(135deg, #1a1a3e 0%, #0f0f23 100%);
+      border-bottom: 1px solid #2d2d5e;
+    }
+
+    /* scrollbar (optional) */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e1e2e;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #4a4a8a;
+      border-radius: 8px;
+    }
+
+    .section-tabs {
+      padding: 16px 16px 0;
+      overflow-x: auto;
+      scrollbar-width: thin;
+    }
+    .tabs-container {
+      display: flex;
+      gap: 8px;
+      min-width: max-content;
+      margin: 0 auto;
+      max-width: 860px;
+    }
+    .tab-btn {
+      padding: 7px 14px;
+      border-radius: 99px;
+      border: 1px solid #2d2d5e;
+      background: transparent;
+      color: #94a3b8;
+      font-size: 12px;
+      cursor: pointer;
+      font-family: inherit;
+      white-space: nowrap;
+      transition: all 0.2s;
+      font-weight: 400;
+    }
+    .tab-btn.active {
+      background: #818cf8;
+      border-color: #818cf8;
+      color: #fff;
+      font-weight: 700;
+    }
+    .problems-grid {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 16px 16px 48px;
+    }
+    .card {
+      border-radius: 12px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.1s;
+    }
+    .card:hover {
+      box-shadow: 0 6px 20px rgba(129, 140, 248, 0.15);
+      transform: translateY(-1px);
+    }
+    .card-header {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      gap: 12px;
+    }
+    .checkbox-custom {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      cursor: pointer;
+      background: transparent;
+      border: 2px solid #3d3d6e;
+    }
+    .checkbox-custom.checked {
+      background: #16a34a;
+      border-color: #16a34a;
+    }
+    .problem-id {
+      font-family: monospace;
+      font-size: 12px;
+      color: #4a4a8a;
+      font-weight: 700;
+      min-width: 24px;
+    }
+    .problem-title {
+      flex: 1;
+      font-weight: 700;
+      font-size: 15px;
+      color: #e2e8f0;
+    }
+    .problem-title.solved {
+      text-decoration: line-through;
+      color: #86efac;
+    }
+    .concept-tag-hidden {
+      font-size: 11px;
+      color: #818cf8;
+      background: #1e1e4a;
+      padding: 2px 8px;
+      border-radius: 99px;
+      display: none;
+      font-family: monospace;
+    }
+    .difficulty-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 99px;
+      flex-shrink: 0;
+    }
+    .section-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+    .chevron {
+      color: #4a4a8a;
+      font-size: 12px;
+      transition: transform 0.2s;
+      flex-shrink: 0;
+    }
+    .expanded-body {
+      padding: 0 16px 16px;
+      border-top: 1px solid #1e1e4a;
+    }
+    .expanded-inner {
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .concept-badge {
+      font-size: 11px;
+      color: #818cf8;
+      font-family: monospace;
+      background: #1e1e4a;
+      padding: 2px 10px;
+      border-radius: 99px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-meta {
+      font-size: 11px;
+      color: #4a4a8a;
+    }
+    .problem-block {
+      background: #0d0d20;
+      border-radius: 8px;
+      padding: 14px;
+      border-left: 3px solid #818cf8;
+    }
+    .example-block {
+      background: #0a1628;
+      border-radius: 8px;
+      padding: 14px;
+      border-left: 3px solid #38bdf8;
+    }
+    .hint-block {
+      background: #1a0f0a;
+      border-radius: 8px;
+      padding: 14px;
+      border-left: 3px solid #fb923c;
+    }
+    .block-label {
+      font-size: 11px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+    .problem-text {
+      margin: 0;
+      font-size: 14px;
+      color: #e2e8f0;
+      line-height: 1.7;
+    }
+    .example-pre {
+      margin: 0;
+      font-size: 13px;
+      color: #7dd3fc;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .hint-text {
+      margin: 0;
+      font-size: 13px;
+      color: #fed7aa;
+      font-family: monospace;
+      line-height: 1.6;
+    }
+    .footer-note {
+      text-align: center;
+      padding-bottom: 32px;
+      color: #3d3d6e;
+      font-size: 12px;
+    }
+    .progress-wrapper {
+      margin-top: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+    .progress-bar-bg {
+      background: #1e1e4a;
+      border-radius: 99px;
+      height: 8px;
+      width: 200px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: linear-gradient(90deg, #818cf8, #a78bfa);
+      width: 0%;
+      transition: width 0.4s ease;
+    }
+    .progress-counter {
+      color: #a78bfa;
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="sticky-header">
+  <div style="padding: 32px 24px 24px; text-align: center;">
+    <div style="font-size: 13px; letter-spacing: 4px; color: #818cf8; text-transform: uppercase; margin-bottom: 8px;">
+      Competitive Programming Prep
+    </div>
+    <h1 style="margin: 0; font-size: clamp(22px, 5vw, 36px); font-weight: 900; color: #f1f5f9; letter-spacing: -1px;">
+      30 Python Problems
+    </h1>
+    <p style="margin: 8px 0 0; color: #94a3b8; font-size: 14px;">
+      Pure Python · No Libraries · Beginner Competitive Programming
+    </p>
+    <div class="progress-wrapper">
+      <div class="progress-bar-bg">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <span class="progress-counter" id="progressCounter">0/30</span>
+    </div>
+  </div>
+</div>
+
+<!-- Section Tabs -->
+<div class="section-tabs">
+  <div class="tabs-container" id="tabsContainer"></div>
+</div>
+
+<!-- Problems container -->
+<div id="problemsContainer" class="problems-grid"></div>
+
+<div class="footer-note">
+  Click any card to expand · Check the box when solved
+</div>
+
+<script>
+  // ---------- PROBLEMS DATA (EXACT COPY FROM REACT) ----------
+  const problems = [
+    { id: 1, section: "Numbers & Math", title: "Sum of Digits", difficulty: "Easy", concept: "Loops + Arithmetic", problem: "Given an integer N, find the sum of all its digits.", example: "Input: 1234 → Output: 10  (1+2+3+4)", hint: "Convert to string and iterate, or use modulo (%) and floor division (//)." },
+    { id: 2, section: "Numbers & Math", title: "Palindrome Number", difficulty: "Easy", concept: "String / Arithmetic", problem: "Check if a number reads the same forwards and backwards.", example: "Input: 121 → Output: Yes\nInput: 123 → Output: No", hint: "Reverse the digits (string slice [::-1] or math) and compare." },
+    { id: 3, section: "Numbers & Math", title: "Prime Check", difficulty: "Easy", concept: "Loops + Conditionals", problem: "Given N, print 'Prime' if it is a prime number, otherwise 'Not Prime'.", example: "Input: 7 → Output: Prime\nInput: 9 → Output: Not Prime", hint: "Only check divisors up to √N (use N**0.5)." },
+    { id: 4, section: "Numbers & Math", title: "Factorial", difficulty: "Easy", concept: "Loops / Recursion", problem: "Compute N! (factorial of N). Solve it both iteratively and recursively.", example: "Input: 5 → Output: 120", hint: "Recursive: fact(n) = n * fact(n-1), base case fact(0) = 1." },
+    { id: 5, section: "Numbers & Math", title: "GCD & LCM", difficulty: "Easy", concept: "Euclidean Algorithm", problem: "Given two integers A and B, find their GCD and LCM without any library.", example: "Input: 12 18 → GCD: 6, LCM: 36", hint: "GCD(a,b) = GCD(b, a%b). LCM = (a*b) // GCD(a,b)." },
+    { id: 6, section: "Numbers & Math", title: "Count Even & Odd", difficulty: "Easy", concept: "Conditionals + Loops", problem: "Given N numbers, count how many are even and how many are odd.", example: "Input: 1 2 3 4 5 → Even: 2, Odd: 3", hint: "Use n % 2 == 0 to test evenness." },
+    { id: 7, section: "Strings", title: "Reverse a String", difficulty: "Easy", concept: "String Slicing", problem: "Reverse a given string without using any built-in reverse function.", example: "Input: 'hello' → Output: 'olleh'", hint: "Use a loop or slicing s[::-1]." },
+    { id: 8, section: "Strings", title: "Count Vowels & Consonants", difficulty: "Easy", concept: "String Iteration", problem: "Count the number of vowels and consonants in a given string (ignore spaces and digits).", example: "Input: 'Hello World' → Vowels: 3, Consonants: 7", hint: "Check each character with `if c in 'aeiouAEIOU'`." },
+    { id: 9, section: "Strings", title: "Anagram Check", difficulty: "Easy", concept: "Sorting / Dict", problem: "Given two strings, check if they are anagrams of each other.", example: "Input: 'listen' 'silent' → Output: Yes", hint: "Sort both strings and compare, or count character frequencies with a dict." },
+    { id: 10, section: "Strings", title: "Caesar Cipher", difficulty: "Medium", concept: "String + ord/chr", problem: "Encrypt a lowercase string using Caesar Cipher with a given shift K. Only shift alphabet characters.", example: "Input: 'abc' K=3 → Output: 'def'\nInput: 'xyz' K=3 → Output: 'abc'", hint: "Use ord() and chr(). Wrap around with % 26." },
+    { id: 11, section: "Strings", title: "Word Frequency", difficulty: "Medium", concept: "Dict + String Split", problem: "Given a sentence, count how many times each word appears. Print in any order.", example: "Input: 'the cat sat on the mat' → the:2, cat:1, sat:1, on:1, mat:1", hint: "Split the string, then use a dictionary to count." },
+    { id: 12, section: "Strings", title: "Longest Word", difficulty: "Easy", concept: "String + max logic", problem: "Find the longest word in a sentence. If tie, return the first one.", example: "Input: 'I love competitive programming' → Output: 'competitive'", hint: "Split and track max length word using a loop." },
+    { id: 13, section: "Lists", title: "Second Largest", difficulty: "Easy", concept: "List Traversal", problem: "Find the second largest distinct element in a list.", example: "Input: [3, 1, 4, 1, 5, 9, 2, 6] → Output: 6", hint: "Sort and pick, or do it in one pass with two variables (max1, max2)." },
+    { id: 14, section: "Lists", title: "Rotate a List", difficulty: "Easy", concept: "List Slicing", problem: "Rotate a list to the right by K positions.", example: "Input: [1,2,3,4,5] K=2 → Output: [4,5,1,2,3]", hint: "Use slicing: lst[-K:] + lst[:-K]." },
+    { id: 15, section: "Lists", title: "Remove Duplicates", difficulty: "Easy", concept: "Set / List", problem: "Remove duplicates from a list while preserving the original order.", example: "Input: [1,2,2,3,4,3,5] → Output: [1,2,3,4,5]", hint: "Use a set to track seen elements, build a new list." },
+    { id: 16, section: "Lists", title: "Flatten Nested List", difficulty: "Medium", concept: "Nested Loops", problem: "Given a list of lists, flatten it into a single list.", example: "Input: [[1,2],[3,4],[5]] → Output: [1,2,3,4,5]", hint: "Loop over the outer list, then over each inner list." },
+    { id: 17, section: "Lists", title: "Two Sum", difficulty: "Medium", concept: "Dict / Brute Force", problem: "Given a list of integers and a target T, find two indices such that the numbers at those indices add up to T.", example: "Input: [2,7,11,15] T=9 → Output: [0,1]", hint: "Brute force O(n²) or use a dict for O(n)." },
+    { id: 18, section: "Tuples & Sets", title: "Tuple Unpacking Swap", difficulty: "Easy", concept: "Tuples", problem: "Swap two variables using tuple unpacking (no temp variable).", example: "a=5, b=3 → After swap: a=3, b=5", hint: "a, b = b, a — that's it! Understand why this works." },
+    { id: 19, section: "Tuples & Sets", title: "Common Elements", difficulty: "Easy", concept: "Set Intersection", problem: "Given two lists, find all elements that appear in both (no duplicates in output).", example: "Input: [1,2,3,4] [3,4,5,6] → Output: {3,4}", hint: "Convert both to sets and use & or .intersection()." },
+    { id: 20, section: "Tuples & Sets", title: "Unique Elements Only", difficulty: "Easy", concept: "Set Symmetric Diff", problem: "Given two lists A and B, find elements that are in A or B but NOT in both.", example: "Input: [1,2,3] [2,3,4] → Output: {1,4}", hint: "Use set symmetric difference: A ^ B." },
+    { id: 21, section: "Dictionaries", title: "Phone Book", difficulty: "Easy", concept: "Dict CRUD", problem: "Build a simple phone book: support add, delete, and search by name. Run in a loop until user types 'exit'.", example: "add Alice 12345 → OK\nsearch Alice → 12345\ndelete Alice → OK", hint: "Use a dict. Handle KeyError for missing names." },
+    { id: 22, section: "Dictionaries", title: "Most Frequent Element", difficulty: "Easy", concept: "Dict Counting", problem: "Find the element that appears most frequently in a list. If tie, return any one.", example: "Input: [1,3,2,1,4,1,3] → Output: 1", hint: "Count with a dict, then find max by value." },
+    { id: 23, section: "Dictionaries", title: "Group Anagrams", difficulty: "Medium", concept: "Dict + Sorting", problem: "Given a list of words, group them by anagram families.", example: "Input: ['eat','tea','tan','ate','nat','bat']\nOutput: [['eat','tea','ate'],['tan','nat'],['bat']]", hint: "Use sorted(word) as a dict key." },
+    { id: 24, section: "Functions & Logic", title: "FizzBuzz", difficulty: "Easy", concept: "Conditionals + Modulo", problem: "Print numbers 1–N. For multiples of 3 print 'Fizz', multiples of 5 print 'Buzz', both print 'FizzBuzz'.", example: "N=15 → 1 2 Fizz 4 Buzz Fizz 7 8 Fizz Buzz 11 Fizz 13 14 FizzBuzz", hint: "Check divisibility by 15 first, then 3, then 5." },
+    { id: 25, section: "Functions & Logic", title: "Number to Words", difficulty: "Medium", concept: "Dict + Logic", problem: "Convert a number 1–99 into English words.", example: "Input: 42 → Output: forty two\nInput: 17 → Output: seventeen", hint: "Use two dicts: one for units/teens, one for tens." },
+    { id: 26, section: "Functions & Logic", title: "Pascal's Triangle", difficulty: "Medium", concept: "Nested Lists + Logic", problem: "Print the first N rows of Pascal's Triangle.", example: "N=4:\n1\n1 1\n1 2 1\n1 3 3 1", hint: "Each row: first & last are 1; middle elements = sum of two above." },
+    { id: 27, section: "Functions & Logic", title: "Armstrong Numbers", difficulty: "Easy", concept: "Math + Loops", problem: "Print all Armstrong numbers up to N. (An Armstrong number = sum of its digits each raised to the power of number of digits.)", example: "153 = 1³+5³+3³ = 153 ✓", hint: "Find digit count with len(str(n)), then compute digit-wise power sum." },
+    { id: 28, section: "Classic Algorithms", title: "Binary Search", difficulty: "Medium", concept: "Divide & Conquer", problem: "Given a SORTED list and a target T, find its index using binary search. Return -1 if not found.", example: "Input: [1,3,5,7,9,11] T=7 → Output: 3", hint: "Keep low and high pointers. mid = (low+high)//2." },
+    { id: 29, section: "Classic Algorithms", title: "Bubble Sort", difficulty: "Medium", concept: "Nested Loops + Swap", problem: "Sort a list using Bubble Sort (implement it yourself, don't use .sort()).", example: "Input: [5,3,1,4,2] → Output: [1,2,3,4,5]", hint: "Repeatedly swap adjacent elements if they are in wrong order. Add an 'optimized' flag to stop early." },
+    { id: 30, section: "Classic Algorithms", title: "Matrix Multiplication", difficulty: "Hard", concept: "Nested Loops + Lists", problem: "Given two 2D matrices A (m×n) and B (n×p), compute their product C (m×p) without any library.", example: "A=[[1,2],[3,4]] B=[[5,6],[7,8]] → C=[[19,22],[43,50]]", hint: "Three nested loops: i over rows of A, j over columns of B, k over shared dimension." }
+  ];
+
+  // ----- Helper mappings -----
+  const diffColor = {
+    Easy: { bg: "#d1fae5", text: "#065f46", border: "#6ee7b7" },
+    Medium: { bg: "#fef3c7", text: "#92400e", border: "#fcd34d" },
+    Hard: { bg: "#fee2e2", text: "#991b1b", border: "#fca5a5" }
+  };
+  const sectionIcon = {
+    "Numbers & Math": "🔢",
+    "Strings": "🔤",
+    "Lists": "📋",
+    "Tuples & Sets": "🔗",
+    "Dictionaries": "📖",
+    "Functions & Logic": "⚙️",
+    "Classic Algorithms": "🏆"
+  };
+
+  // ------ STATE ------
+  let activeSection = "All";
+  let expanded = {};      // key: problem id -> true/false
+  let solved = {};        // key: problem id -> true/false
+
+  // DOM elements
+  const tabsContainer = document.getElementById("tabsContainer");
+  const problemsContainer = document.getElementById("problemsContainer");
+  const progressFill = document.getElementById("progressFill");
+  const progressCounter = document.getElementById("progressCounter");
+
+  // ----- Helper: update progress bar & counter -----
+  function updateProgress() {
+    const total = problems.length;
+    const solvedCount = Object.values(solved).filter(v => v === true).length;
+    const percent = (solvedCount / total) * 100;
+    progressFill.style.width = `${percent}%`;
+    progressCounter.innerText = `${solvedCount}/${total}`;
+  }
+
+  // ----- Get distinct sections for tabs -----
+  function getAllSections() {
+    const sectionsSet = new Set(problems.map(p => p.section));
+    return Array.from(sectionsSet);
+  }
+
+  // ----- Render section tabs (dynamic, highlight active)-----
+  function renderTabs() {
+    const sections = getAllSections();
+    const allSections = ["All", ...sections];
+    tabsContainer.innerHTML = "";
+    allSections.forEach(sec => {
+      const btn = document.createElement("button");
+      btn.className = `tab-btn ${activeSection === sec ? "active" : ""}`;
+      const icon = sec === "All" ? "📚" : (sectionIcon[sec] || "📌");
+      btn.innerText = sec === "All" ? `${icon} All` : `${icon} ${sec}`;
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        activeSection = sec;
+        renderTabs();
+        renderProblems();
+      });
+      tabsContainer.appendChild(btn);
+    });
+  }
+
+  // ----- Render all problems based on activeSection, expanded & solved state -----
+  function renderProblems() {
+    problemsContainer.innerHTML = "";
+    const filtered = activeSection === "All" 
+      ? problems 
+      : problems.filter(p => p.section === activeSection);
+    
+    for (let prob of filtered) {
+      const isSolved = !!solved[prob.id];
+      const isExpanded = !!expanded[prob.id];
+      const diff = diffColor[prob.difficulty];
+      
+      // Card outer
+      const card = document.createElement("div");
+      card.className = "card";
+      card.style.background = isSolved ? "#0d1f0d" : "#13132e";
+      card.style.border = `1px solid ${isSolved ? "#16a34a" : "#2d2d5e"}`;
+      
+      // ----- Header -----
+      const header = document.createElement("div");
+      header.className = "card-header";
+      
+      // Checkbox
+      const checkDiv = document.createElement("div");
+      checkDiv.className = `checkbox-custom ${isSolved ? "checked" : ""}`;
+      if (isSolved) {
+        const checkMark = document.createElement("span");
+        checkMark.innerText = "✓";
+        checkMark.style.color = "#fff";
+        checkMark.style.fontSize = "13px";
+        checkDiv.appendChild(checkMark);
+      }
+      checkDiv.addEventListener("click", (e) => {
+        e.stopPropagation();
+        solved[prob.id] = !solved[prob.id];
+        updateProgress();
+        renderProblems();   // re-render to update card style & checkbox
+      });
+      
+      // ID
+      const idSpan = document.createElement("span");
+      idSpan.className = "problem-id";
+      idSpan.innerText = `#${prob.id}`;
+      
+      // Title
+      const titleSpan = document.createElement("span");
+      titleSpan.className = `problem-title ${isSolved ? "solved" : ""}`;
+      titleSpan.innerText = prob.title;
+      
+      // Hidden concept (as in original, display:none)
+      const hiddenConcept = document.createElement("span");
+      hiddenConcept.className = "concept-tag-hidden";
+      hiddenConcept.innerText = prob.concept;
+      
+      // Difficulty badge
+      const diffBadge = document.createElement("span");
+      diffBadge.className = "difficulty-badge";
+      diffBadge.style.background = diff.bg;
+      diffBadge.style.color = diff.text;
+      diffBadge.style.border = `1px solid ${diff.border}`;
+      diffBadge.innerText = prob.difficulty;
+      
+      // Section icon
+      const secIconSpan = document.createElement("span");
+      secIconSpan.className = "section-icon";
+      secIconSpan.innerText = sectionIcon[prob.section] || "📌";
+      
+      // Chevron
+      const chevronSpan = document.createElement("span");
+      chevronSpan.className = "chevron";
+      chevronSpan.style.transform = isExpanded ? "rotate(180deg)" : "rotate(0deg)";
+      chevronSpan.innerText = "▼";
+      
+      header.appendChild(checkDiv);
+      header.appendChild(idSpan);
+      header.appendChild(titleSpan);
+      header.appendChild(hiddenConcept);
+      header.appendChild(diffBadge);
+      header.appendChild(secIconSpan);
+      header.appendChild(chevronSpan);
+      
+      card.appendChild(header);
+      
+      // Expanded body
+      if (isExpanded) {
+        const bodyDiv = document.createElement("div");
+        bodyDiv.className = "expanded-body";
+        const inner = document.createElement("div");
+        inner.className = "expanded-inner";
+        
+        // concept + section meta row
+        const metaRow = document.createElement("div");
+        metaRow.style.display = "flex";
+        metaRow.style.alignItems = "center";
+        metaRow.style.gap = "8px";
+        const conceptChip = document.createElement("span");
+        conceptChip.className = "concept-badge";
+        conceptChip.innerHTML = `🧠 ${prob.concept}`;
+        const sectionMeta = document.createElement("span");
+        sectionMeta.className = "section-meta";
+        sectionMeta.innerText = prob.section;
+        metaRow.appendChild(conceptChip);
+        metaRow.appendChild(sectionMeta);
+        inner.appendChild(metaRow);
+        
+        // Problem block
+        const problemBlock = document.createElement("div");
+        problemBlock.className = "problem-block";
+        const probLabel = document.createElement("div");
+        probLabel.className = "block-label";
+        probLabel.style.color = "#818cf8";
+        probLabel.innerText = "PROBLEM";
+        const probText = document.createElement("p");
+        probText.className = "problem-text";
+        probText.innerText = prob.problem;
+        problemBlock.appendChild(probLabel);
+        problemBlock.appendChild(probText);
+        inner.appendChild(problemBlock);
+        
+        // Example block
+        const exampleBlock = document.createElement("div");
+        exampleBlock.className = "example-block";
+        const exLabel = document.createElement("div");
+        exLabel.className = "block-label";
+        exLabel.style.color = "#38bdf8";
+        exLabel.innerText = "EXAMPLE";
+        const exPre = document.createElement("pre");
+        exPre.className = "example-pre";
+        exPre.innerText = prob.example;
+        exampleBlock.appendChild(exLabel);
+        exampleBlock.appendChild(exPre);
+        inner.appendChild(exampleBlock);
+        
+        // Hint block
+        const hintBlock = document.createElement("div");
+        hintBlock.className = "hint-block";
+        const hintLabel = document.createElement("div");
+        hintLabel.className = "block-label";
+        hintLabel.style.color = "#fb923c";
+        hintLabel.innerText = "💡 HINT";
+        const hintText = document.createElement("p");
+        hintText.className = "hint-text";
+        hintText.innerText = prob.hint;
+        hintBlock.appendChild(hintLabel);
+        hintBlock.appendChild(hintText);
+        inner.appendChild(hintBlock);
+        
+        bodyDiv.appendChild(inner);
+        card.appendChild(bodyDiv);
+      }
+      
+      // ---- card click toggles expand ----
+      card.addEventListener("click", (e) => {
+        // prevent if target is checkbox or any interactive inside checkbox? Already stopPropagation on checkbox.
+        // But we also must ensure that clicking on any other part toggles expand.
+        if (e.target === checkDiv || checkDiv.contains(e.target)) return;
+        expanded[prob.id] = !expanded[prob.id];
+        renderProblems();
+      });
+      
+      problemsContainer.appendChild(card);
+    }
+  }
+  
+  // ---- initialize everything ----
+  function init() {
+    renderTabs();
+    renderProblems();
+    updateProgress();
+  }
+  
+  init();
+</script>
+</body>
+</html>
