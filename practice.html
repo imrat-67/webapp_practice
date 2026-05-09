@@ -1,40 +1,1076 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>30 Python Problems · Competitive Programming Prep</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python 100 — Before DSA</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=DM+Sans:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #09090e;
+    --surface: #0f0f17;
+    --card: #13131d;
+    --border: #1f1f30;
+    --border2: #2a2a40;
+    --accent: #e8ff59;
+    --accent2: #59ffc8;
+    --accent3: #ff5959;
+    --accent4: #59a8ff;
+    --text: #eeeef5;
+    --muted: #55556a;
+    --muted2: #7777a0;
+    --done-bg: #0a1a12;
+    --done-border: #0f3020;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+  }
 
-    body {
-      font-family: 'Georgia', 'Times New Roman', serif;
-      background: #0f0f23;
-      color: #e2e8f0;
-      min-height: 100vh;
-    }
+  /* ── grid bg ── */
+  body::before {
+    content:'';
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(232,255,89,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(232,255,89,.025) 1px, transparent 1px);
+    background-size:48px 48px;
+    pointer-events:none; z-index:0;
+  }
 
-    /* smooth scroll & sticky support */
-    .sticky-header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(10px);
-      background: linear-gradient(135deg, #1a1a3e 0%, #0f0f23 100%);
-      border-bottom: 1px solid #2d2d5e;
-    }
+  .wrapper { max-width:900px; margin:0 auto; padding:52px 20px 100px; position:relative; z-index:1; }
 
-    /* scrollbar (optional) */
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #1e1e2e;
+  /* ── HEADER ── */
+  .header { margin-bottom:44px; }
+  .header-pill {
+    display:inline-flex; align-items:center; gap:8px;
+    border:1px solid var(--border2);
+    padding:6px 14px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10px; letter-spacing:3px; color:var(--muted2);
+    text-transform:uppercase; margin-bottom:20px;
+  }
+  .header-pill span { color:var(--accent); }
+  h1 {
+    font-size: clamp(44px, 10vw, 88px);
+    font-weight:900; line-height:.9; letter-spacing:-4px;
+  }
+  h1 em { font-style:normal; color:var(--accent); }
+  .sub {
+    margin-top:16px; color:var(--muted2);
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px; line-height:1.7; max-width:480px;
+  }
+
+  /* ── STATS ── */
+  .stats {
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px; margin:32px 0;
+  }
+  @media(max-width:540px){ .stats { grid-template-columns:repeat(2,1fr); } }
+  .stat {
+    background:var(--card); border:1px solid var(--border);
+    padding:18px 16px; text-align:center;
+  }
+  .stat-n {
+    font-family:'IBM Plex Mono', monospace;
+    font-size:30px; font-weight:700; line-height:1;
+  }
+  .stat-l {
+    font-size:10px; color:var(--muted2); margin-top:5px;
+    letter-spacing:2px; text-transform:uppercase;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .bar-wrap {
+    height:3px; background:var(--border); margin-bottom:36px; position:relative; overflow:visible;
+  }
+  .bar-fill {
+    height:100%;
+    background:linear-gradient(90deg, var(--accent), var(--accent2));
+    transition:width .6s cubic-bezier(.4,0,.2,1);
+    width:0%; position:relative;
+  }
+  .bar-fill::after {
+    content:''; position:absolute; right:-5px; top:-4px;
+    width:11px; height:11px; border-radius:50%;
+    background:var(--accent2); box-shadow:0 0 10px var(--accent2);
+  }
+
+  /* ── FILTERS ── */
+  .filters { display:flex; gap:5px; flex-wrap:wrap; margin-bottom:34px; }
+  .fb {
+    font-family:'IBM Plex Mono', monospace;
+    font-size:9px; letter-spacing:1px; padding:5px 11px;
+    border:1px solid var(--border); background:transparent;
+    color:var(--muted2); cursor:pointer; transition:all .15s;
+    text-transform:uppercase; border-radius:2px;
+  }
+  .fb:hover { border-color:var(--accent); color:var(--accent); }
+  .fb.active { background:var(--accent); color:#000; border-color:var(--accent); font-weight:700; }
+
+  /* ── DONE BANNER ── */
+  .done-banner {
+    display:none; text-align:center; padding:26px;
+    border:1px solid var(--accent2);
+    background:rgba(89,255,200,.04); margin-bottom:30px;
+  }
+  .done-banner.show { display:block; }
+  .done-banner h2 { font-size:20px; color:var(--accent2); font-weight:900; }
+  .done-banner p { color:var(--muted2); font-size:12px; margin-top:5px; font-family:'IBM Plex Mono',monospace; }
+
+  /* ── SECTION ── */
+  .section { margin-bottom:40px; }
+  .sec-hd {
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:10px; padding-bottom:10px;
+    border-bottom:1px solid var(--border);
+  }
+  .sec-num {
+    font-family:'IBM Plex Mono',monospace; font-size:9px;
+    color:var(--muted); letter-spacing:2px;
+  }
+  .sec-name {
+    font-size:12px; font-weight:700; letter-spacing:2.5px;
+    text-transform:uppercase; color:var(--text);
+  }
+  .sec-cnt {
+    font-family:'IBM Plex Mono',monospace; font-size:9px;
+    color:var(--muted2); margin-left:auto;
+    border:1px solid var(--border); padding:2px 8px;
+  }
+
+  /* ── PROBLEM CARD ── */
+  .prob {
+    border:1px solid var(--border);
+    background:var(--card);
+    margin-bottom:6px;
+    cursor:pointer;
+    transition:border-color .15s, background .15s;
+    position:relative; overflow:hidden;
+  }
+  .prob::before {
+    content:''; position:absolute; left:0; top:0; bottom:0;
+    width:3px; background:var(--border); transition:background .15s;
+  }
+  .prob:hover { border-color:var(--border2); }
+  .prob:hover::before { background:var(--accent); }
+  .prob.done { background:var(--done-bg); border-color:var(--done-border); }
+  .prob.done::before { background:var(--accent2); }
+
+  /* card top row */
+  .prob-top {
+    display:flex; align-items:flex-start;
+    gap:12px; padding:13px 14px 12px;
+  }
+  .prob-num {
+    font-family:'IBM Plex Mono',monospace; font-size:10px;
+    color:var(--muted); min-width:34px; text-align:right; padding-top:2px;
+  }
+  .prob-check {
+    width:17px; height:17px; border:1.5px solid var(--border2);
+    display:flex; align-items:center; justify-content:center;
+    font-size:10px; color:transparent; transition:all .15s;
+    flex-shrink:0; margin-top:2px;
+  }
+  .prob.done .prob-check { background:var(--accent2); border-color:var(--accent2); color:#000; font-weight:700; }
+  .prob-main { flex:1; }
+  .prob-title {
+    font-size:14px; font-weight:700; line-height:1.3;
+    transition:color .15s;
+  }
+  .prob.done .prob-title { text-decoration:line-through; color:var(--muted); }
+  .chip {
+    font-family:'IBM Plex Mono',monospace; font-size:9px;
+    letter-spacing:.5px; padding:2px 7px; border-radius:2px;
+    text-transform:uppercase; white-space:nowrap;
+    align-self:flex-start; flex-shrink:0; margin-top:2px;
+  }
+  /* chip colors */
+  .c-io      { background:#0e1825; color:var(--accent4);  border:1px solid #1a3050; }
+  .c-math    { background:#1a1030; color:#c480ff;          border:1px solid #301a50; }
+  .c-logic   { background:#251810; color:#ff9f60;          border:1px solid #402a18; }
+  .c-loop    { background:#101e12; color:#70e890;          border:1px solid #1a4020; }
+  .c-func    { background:#121e10; color:#a0e870;          border:1px solid #203a18; }
+  .c-string  { background:#251010; color:#ff7070;          border:1px solid #401818; }
+  .c-list    { background:#101e10; color:#70e870;          border:1px solid #1a3a1a; }
+  .c-dict    { background:#1e1e10; color:#e8e870;          border:1px solid #303018; }
+  .c-set     { background:#101e1e; color:#70e8e8;          border:1px solid #1a3030; }
+  .c-contest { background:#1e1410; color:#e89070;          border:1px solid #382010; }
+  .c-pattern { background:#101018; color:#9090e8;          border:1px solid #1a1a30; }
+
+  /* expandable detail */
+  .prob-detail {
+    display:none;
+    padding:0 14px 14px 60px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+  }
+  .prob-detail.open { display:block; }
+  .det-row {
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px; margin-top:10px;
+  }
+  @media(max-width:520px){ .det-row { grid-template-columns:1fr; } }
+  .det-box {
+    background:var(--surface); border:1px solid var(--border);
+    padding:10px 12px;
+  }
+  .det-label {
+    font-size:8px; letter-spacing:2px; text-transform:uppercase;
+    color:var(--muted); margin-bottom:5px; display:flex; align-items:center; gap:5px;
+  }
+  .det-label::before {
+    content:''; display:inline-block; width:6px; height:6px;
+    border-radius:50%; background:currentColor;
+  }
+  .det-content { color:var(--text); line-height:1.65; font-size:11px; }
+  .det-stmt { margin-top:10px; padding:10px 12px; background:var(--surface); border:1px solid var(--border); }
+  .expand-hint {
+    font-family:'IBM Plex Mono',monospace; font-size:9px; color:var(--muted);
+    margin-left:auto; align-self:center; letter-spacing:1px; transition:color .15s;
+    flex-shrink:0;
+  }
+  .prob:hover .expand-hint { color:var(--muted2); }
+  .prob.open .expand-hint { color:var(--accent); }
+
+  /* reset */
+  .reset {
+    font-family:'IBM Plex Mono',monospace; font-size:10px; padding:9px 22px;
+    border:1px solid #2a1010; background:transparent; color:var(--accent3);
+    cursor:pointer; letter-spacing:1px; text-transform:uppercase;
+    transition:all .15s; display:block; margin:36px auto 0;
+  }
+  .reset:hover { background:#2a1010; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <div class="header">
+    <div class="header-pill">Before DSA · <span>Beginner</span> · 100 Problems</div>
+    <h1>Python<br><em>100</em></h1>
+    <p class="sub">// one problem at a time. click to expand.<br>// click the checkbox area to mark done.</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n" id="s-done" style="color:var(--accent2)">0</div><div class="stat-l">Solved</div></div>
+    <div class="stat"><div class="stat-n" id="s-left" style="color:var(--accent3)">100</div><div class="stat-l">Left</div></div>
+    <div class="stat"><div class="stat-n" id="s-pct" style="color:var(--accent)">0%</div><div class="stat-l">Done</div></div>
+    <div class="stat"><div class="stat-n" id="s-next" style="color:var(--accent4); font-size:16px;">—</div><div class="stat-l">Next Up</div></div>
+  </div>
+
+  <div class="bar-wrap"><div class="bar-fill" id="bar"></div></div>
+
+  <div class="done-banner" id="doneBanner">
+    <h2>🎉 All 100 Done — DSA awaits!</h2>
+    <p>// solid foundation built. time to tackle data structures & algorithms.</p>
+  </div>
+
+  <div class="filters">
+    <button class="fb active" data-f="all">All</button>
+    <button class="fb" data-f="todo">Todo</button>
+    <button class="fb" data-f="done">Done</button>
+    <button class="fb" data-f="pattern">Patterns</button>
+    <button class="fb" data-f="io">I/O</button>
+    <button class="fb" data-f="math">Math</button>
+    <button class="fb" data-f="logic">Logic</button>
+    <button class="fb" data-f="loop">Loops</button>
+    <button class="fb" data-f="func">Functions</button>
+    <button class="fb" data-f="string">Strings</button>
+    <button class="fb" data-f="list">Lists</button>
+    <button class="fb" data-f="dict">Dict</button>
+    <button class="fb" data-f="set">Sets</button>
+    <button class="fb" data-f="contest">Contest</button>
+  </div>
+
+  <div id="list"></div>
+  <button class="reset" onclick="resetAll()">↺ Reset All Progress</button>
+</div>
+
+<script>
+const DATA = [
+
+/* ════════════════════════════════════════════════
+   01 · INPUT / OUTPUT & VARIABLES  (5 problems)
+════════════════════════════════════════════════ */
+{ id:1, sec:"01 · Input / Output & Variables", tag:"io",
+  title:"Hello, World!",
+  stmt:"Print the message 'Hello, World!' to the screen.",
+  input:"None",
+  output:"Hello, World!" },
+
+{ id:2, sec:"01 · Input / Output & Variables", tag:"io",
+  title:"Read Your Name",
+  stmt:"Take a name as input. Print a greeting using that name.",
+  input:"Alice",
+  output:"Hello, Alice!" },
+
+{ id:3, sec:"01 · Input / Output & Variables", tag:"io",
+  title:"Sum of Two Numbers",
+  stmt:"Read two integers. Print their sum.",
+  input:"3\n7",
+  output:"10" },
+
+{ id:4, sec:"01 · Input / Output & Variables", tag:"io",
+  title:"Swap Two Variables",
+  stmt:"Read two numbers a and b. Swap their values. Print a then b after the swap.",
+  input:"5\n9",
+  output:"9\n5" },
+
+{ id:5, sec:"01 · Input / Output & Variables", tag:"io",
+  title:"Read Three Values in One Line",
+  stmt:"Read three integers from one space-separated line. Print them each on a new line.",
+  input:"4 7 2",
+  output:"4\n7\n2" },
+
+
+/* ════════════════════════════════════════════════
+   02 · MATH & OPERATORS  (7 problems)
+════════════════════════════════════════════════ */
+{ id:6, sec:"02 · Math & Operators", tag:"math",
+  title:"Basic Arithmetic",
+  stmt:"Read two integers a and b. Print their sum, difference, product, integer quotient (//), and remainder (%) — one per line.",
+  input:"10 3",
+  output:"13\n7\n30\n3\n1" },
+
+{ id:7, sec:"02 · Math & Operators", tag:"math",
+  title:"Even or Odd",
+  stmt:"Read a number. Print 'Even' if it is even, 'Odd' otherwise.",
+  input:"7",
+  output:"Odd" },
+
+{ id:8, sec:"02 · Math & Operators", tag:"math",
+  title:"Area of a Circle",
+  stmt:"Read radius r. Compute area = 3.14159 × r × r. Print rounded to 2 decimal places.",
+  input:"5",
+  output:"78.54" },
+
+{ id:9, sec:"02 · Math & Operators", tag:"math",
+  title:"Celsius to Fahrenheit",
+  stmt:"Read temperature in Celsius. Convert and print in Fahrenheit using F = (C × 9/5) + 32.",
+  input:"100",
+  output:"212.0" },
+
+{ id:10, sec:"02 · Math & Operators", tag:"math",
+  title:"Power and Square Root",
+  stmt:"Read a and b. Print a to the power b on one line, and the square root of a (use a**0.5) on the next.",
+  input:"4 3",
+  output:"64\n2.0" },
+
+{ id:11, sec:"02 · Math & Operators", tag:"math",
+  title:"Simple Interest",
+  stmt:"Read P (principal), R (rate %), T (years). Print Simple Interest = (P × R × T) / 100.",
+  input:"1000 5 2",
+  output:"100.0" },
+
+{ id:12, sec:"02 · Math & Operators", tag:"math",
+  title:"Absolute Value Without abs()",
+  stmt:"Read an integer. Print its absolute value without using abs().",
+  input:"-15",
+  output:"15" },
+
+
+/* ════════════════════════════════════════════════
+   03 · CONDITIONALS  (6 problems)
+════════════════════════════════════════════════ */
+{ id:13, sec:"03 · Conditionals (if / elif / else)", tag:"logic",
+  title:"Max of Two Numbers",
+  stmt:"Read two numbers. Print the larger one. Do not use max().",
+  input:"8 3",
+  output:"8" },
+
+{ id:14, sec:"03 · Conditionals (if / elif / else)", tag:"logic",
+  title:"Max of Three Numbers",
+  stmt:"Read three numbers. Print the largest using if-elif-else.",
+  input:"4 9 2",
+  output:"9" },
+
+{ id:15, sec:"03 · Conditionals (if / elif / else)", tag:"logic",
+  title:"Grade Calculator",
+  stmt:"Read marks (0–100). Print the grade: A (≥90), B (≥80), C (≥70), D (≥60), F (below 60).",
+  input:"85",
+  output:"B" },
+
+{ id:16, sec:"03 · Conditionals (if / elif / else)", tag:"logic",
+  title:"Leap Year Check",
+  stmt:"Read a year. Print 'Leap Year' if it is a leap year, else 'Not a Leap Year'. Rule: divisible by 4, but not 100, unless also divisible by 400.",
+  input:"2000",
+  output:"Leap Year" },
+
+{ id:17, sec:"03 · Conditionals (if / elif / else)", tag:"logic",
+  title:"Positive, Negative, or Zero",
+  stmt:"Read a number. Print 'Positive', 'Negative', or 'Zero'.",
+  input:"-3",
+  output:"Negative" },
+
+{ id:18, sec:"03 · Conditionals (if / elif / else)", tag:"logic",
+  title:"Divisible by 3 and 5",
+  stmt:"Read an integer n. Print 'Yes' if it is divisible by both 3 and 5 at the same time. Print 'No' otherwise.",
+  input:"15",
+  output:"Yes" },
+
+
+/* ════════════════════════════════════════════════
+   04 · LOOPS  (12 problems)
+════════════════════════════════════════════════ */
+{ id:19, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Print 1 to N",
+  stmt:"Read N. Print all numbers from 1 to N, one per line.",
+  input:"5",
+  output:"1\n2\n3\n4\n5" },
+
+{ id:20, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Sum of 1 to N",
+  stmt:"Read N. Print the sum 1 + 2 + 3 + … + N.",
+  input:"10",
+  output:"55" },
+
+{ id:21, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Multiplication Table",
+  stmt:"Read n. Print the multiplication table of n from 1 to 10 in the format: 'n × i = result'.",
+  input:"5",
+  output:"5 × 1 = 5\n5 × 2 = 10\n...\n5 × 10 = 50" },
+
+{ id:22, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Factorial",
+  stmt:"Read N. Print N! (N factorial) using a for loop. N! = 1×2×3×…×N. Define 0! = 1.",
+  input:"6",
+  output:"720" },
+
+{ id:23, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Fibonacci Sequence",
+  stmt:"Read n. Print the first n Fibonacci numbers separated by spaces. Sequence: 0 1 1 2 3 5 8 …",
+  input:"7",
+  output:"0 1 1 2 3 5 8" },
+
+{ id:24, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"FizzBuzz (1 to 100)",
+  stmt:"Print numbers 1 to 100. For multiples of 3 print Fizz, multiples of 5 print Buzz, multiples of both print FizzBuzz.",
+  input:"(none)",
+  output:"1\n2\nFizz\n4\nBuzz\nFizz\n...\n100" },
+
+{ id:25, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Count Digits in N",
+  stmt:"Read N. Count and print how many digits it has using a while loop. Do not use str().",
+  input:"4567",
+  output:"4" },
+
+{ id:26, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Reverse a Number",
+  stmt:"Read an integer N. Print its digits reversed. Handle negative numbers too.",
+  input:"1234",
+  output:"4321" },
+
+{ id:27, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Sum of Digits",
+  stmt:"Read N. Print the sum of all its digits.",
+  input:"1234",
+  output:"10" },
+
+{ id:28, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Prime Check",
+  stmt:"Read N. Print 'Prime' if it is a prime number, else 'Not Prime'. Check divisors only up to √N.",
+  input:"17",
+  output:"Prime" },
+
+{ id:29, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"All Primes up to N",
+  stmt:"Read N. Print all prime numbers from 2 to N, space-separated.",
+  input:"20",
+  output:"2 3 5 7 11 13 17 19" },
+
+{ id:30, sec:"04 · Loops (for / while)", tag:"loop",
+  title:"Count Even and Odd",
+  stmt:"Read N, then N integers. Print how many are even and how many are odd.",
+  input:"6\n1 2 3 4 5 6",
+  output:"Even: 3\nOdd: 3" },
+
+
+/* ════════════════════════════════════════════════
+   05 · STAR & NUMBER PATTERNS  (10 problems)
+════════════════════════════════════════════════ */
+{ id:31, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Right-Angle Star Triangle",
+  stmt:"Read n. Print a right-angled triangle of stars growing from 1 star on row 1 to n stars on row n.",
+  input:"4",
+  output:"*\n**\n***\n****" },
+
+{ id:32, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Inverted Star Triangle",
+  stmt:"Read n. Print an inverted triangle — n stars on first row, down to 1 star on last.",
+  input:"4",
+  output:"****\n***\n**\n*" },
+
+{ id:33, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Full Star Pyramid",
+  stmt:"Read n. Print a centered pyramid of stars. Row i has (2i-1) stars and (n-i) leading spaces.",
+  input:"4",
+  output:"   *\n  ***\n *****\n*******" },
+
+{ id:34, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Diamond of Stars",
+  stmt:"Read n. Print a full diamond shape — a growing pyramid followed by a shrinking one.",
+  input:"3",
+  output:"  *\n ***\n*****\n ***\n  *" },
+
+{ id:35, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Hollow Rectangle",
+  stmt:"Read width w and height h. Print a hollow rectangle of stars — only the border is stars, inside is spaces.",
+  input:"5 3",
+  output:"*****\n*   *\n*****" },
+
+{ id:36, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Number Triangle (1 2 3…)",
+  stmt:"Read n. Print a number triangle: row 1 prints '1', row 2 prints '1 2', row 3 prints '1 2 3', etc.",
+  input:"4",
+  output:"1\n1 2\n1 2 3\n1 2 3 4" },
+
+{ id:37, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Floyd's Triangle",
+  stmt:"Read n. Print Floyd's triangle: fill rows with consecutive integers starting from 1.",
+  input:"4",
+  output:"1\n2 3\n4 5 6\n7 8 9 10" },
+
+{ id:38, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Same-Digit Rows",
+  stmt:"Read n. Row 1: print '1', Row 2: print '2 2', Row 3: print '3 3 3', etc.",
+  input:"4",
+  output:"1\n2 2\n3 3 3\n4 4 4 4" },
+
+{ id:39, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Pascal's Triangle",
+  stmt:"Read n. Print Pascal's triangle up to n rows. Each number = sum of two numbers above it.",
+  input:"5",
+  output:"1\n1 1\n1 2 1\n1 3 3 1\n1 4 6 4 1" },
+
+{ id:40, sec:"05 · Star & Number Patterns", tag:"pattern",
+  title:"Checkerboard Pattern",
+  stmt:"Read n. Print an n×n checkerboard using '*' and ' ' (space). Start with '*' at top-left.",
+  input:"4",
+  output:"* * * *\n * * *\n* * * *\n * * *" },
+
+
+/* ════════════════════════════════════════════════
+   06 · FUNCTIONS  (7 problems)
+════════════════════════════════════════════════ */
+{ id:41, sec:"06 · Functions", tag:"func",
+  title:"GCD Function",
+  stmt:"Write a function gcd(a, b) using the Euclidean algorithm. Read two numbers and print their GCD.",
+  input:"48 18",
+  output:"6" },
+
+{ id:42, sec:"06 · Functions", tag:"func",
+  title:"LCM Function",
+  stmt:"Write lcm(a, b) = (a * b) // gcd(a, b). Print the LCM of two numbers.",
+  input:"4 6",
+  output:"12" },
+
+{ id:43, sec:"06 · Functions", tag:"func",
+  title:"Is Prime Function",
+  stmt:"Write is_prime(n) returning True/False. Use it to print all primes from 2 to 50, space-separated.",
+  input:"(none)",
+  output:"2 3 5 7 11 13 17 19 23 29 31 37 41 43 47" },
+
+{ id:44, sec:"06 · Functions", tag:"func",
+  title:"Is Palindrome Number",
+  stmt:"Write is_palindrome(n) that returns True if n reads the same backwards. Read n and print True or False.",
+  input:"121",
+  output:"True" },
+
+{ id:45, sec:"06 · Functions", tag:"func",
+  title:"Power Without ** Operator",
+  stmt:"Write my_pow(base, exp) using a loop — no ** or pow(). Read base and exp, print the result.",
+  input:"3 4",
+  output:"81" },
+
+{ id:46, sec:"06 · Functions", tag:"func",
+  title:"Sum of List (Function)",
+  stmt:"Write my_sum(lst) that returns the sum of a list without using sum(). Read N numbers and print their sum.",
+  input:"5\n1 2 3 4 5",
+  output:"15" },
+
+{ id:47, sec:"06 · Functions", tag:"func",
+  title:"Count Digit in Number",
+  stmt:"Write count_digit(n, d) that counts how many times digit d appears in n. Read n and d, print the count.",
+  input:"12321 1",
+  output:"2" },
+
+
+/* ════════════════════════════════════════════════
+   07 · STRINGS  (10 problems)
+════════════════════════════════════════════════ */
+{ id:48, sec:"07 · Strings", tag:"string",
+  title:"Reverse a String",
+  stmt:"Read a string. Print it reversed.",
+  input:"hello",
+  output:"olleh" },
+
+{ id:49, sec:"07 · Strings", tag:"string",
+  title:"Palindrome String Check",
+  stmt:"Read a string. Ignore spaces and case. Print 'Palindrome' or 'Not Palindrome'.",
+  input:"racecar",
+  output:"Palindrome" },
+
+{ id:50, sec:"07 · Strings", tag:"string",
+  title:"Count Vowels and Consonants",
+  stmt:"Read a string. Count vowels (a,e,i,o,u) and consonants. Print both counts.",
+  input:"Hello World",
+  output:"Vowels: 3\nConsonants: 7" },
+
+{ id:51, sec:"07 · Strings", tag:"string",
+  title:"Count Words",
+  stmt:"Read a sentence. Print the number of words.",
+  input:"the quick brown fox",
+  output:"4" },
+
+{ id:52, sec:"07 · Strings", tag:"string",
+  title:"Reverse Each Word",
+  stmt:"Read a sentence. Reverse each word individually but keep word order the same.",
+  input:"Hello World",
+  output:"olleH dlroW" },
+
+{ id:53, sec:"07 · Strings", tag:"string",
+  title:"Remove Duplicate Characters",
+  stmt:"Read a string. Remove duplicate characters, keeping only the first occurrence of each.",
+  input:"programming",
+  output:"progamin" },
+
+{ id:54, sec:"07 · Strings", tag:"string",
+  title:"Caesar Cipher",
+  stmt:"Read a string and an integer k. Shift each letter by k positions forward (wrap around). Keep non-letter characters unchanged.",
+  input:"Hello 3",
+  output:"Khoor" },
+
+{ id:55, sec:"07 · Strings", tag:"string",
+  title:"Anagram Check",
+  stmt:"Read two strings. Print 'Anagram' if they contain the same characters (ignoring case and spaces), else 'Not Anagram'.",
+  input:"listen\nsilent",
+  output:"Anagram" },
+
+{ id:56, sec:"07 · Strings", tag:"string",
+  title:"Most Frequent Character",
+  stmt:"Read a string. Print the character that appears the most times (ignore spaces). If tie, print the one that appears first.",
+  input:"banana",
+  output:"a" },
+
+{ id:57, sec:"07 · Strings", tag:"string",
+  title:"Run-Length Encoding",
+  stmt:"Read a string. Compress it using run-length encoding: consecutive identical characters become character + count.",
+  input:"aaabbc",
+  output:"a3b2c1" },
+
+
+/* ════════════════════════════════════════════════
+   08 · LISTS  (13 problems)
+════════════════════════════════════════════════ */
+{ id:58, sec:"08 · Lists", tag:"list",
+  title:"Sum and Average",
+  stmt:"Read N, then N integers. Print their sum and average (2 decimal places).",
+  input:"4\n10 20 30 40",
+  output:"Sum: 100\nAverage: 25.00" },
+
+{ id:59, sec:"08 · Lists", tag:"list",
+  title:"Min and Max Without Built-ins",
+  stmt:"Read N numbers. Find and print the minimum and maximum using only loops — no min() or max().",
+  input:"5\n3 1 4 1 5",
+  output:"Min: 1\nMax: 5" },
+
+{ id:60, sec:"08 · Lists", tag:"list",
+  title:"Reverse a List In-Place",
+  stmt:"Read N numbers into a list. Reverse it in-place using two pointers — no .reverse() or slicing.",
+  input:"5\n1 2 3 4 5",
+  output:"5 4 3 2 1" },
+
+{ id:61, sec:"08 · Lists", tag:"list",
+  title:"Remove Duplicates (Keep Order)",
+  stmt:"Read N numbers. Print the list with duplicates removed, preserving the original order.",
+  input:"6\n1 3 1 2 3 4",
+  output:"1 3 2 4" },
+
+{ id:62, sec:"08 · Lists", tag:"list",
+  title:"List of Squares",
+  stmt:"Read N. Use a list comprehension to build [1², 2², 3², …, N²]. Print the list.",
+  input:"5",
+  output:"[1, 4, 9, 16, 25]" },
+
+{ id:63, sec:"08 · Lists", tag:"list",
+  title:"Second Largest Element",
+  stmt:"Read N numbers. Find the second largest value using a single loop — no sorting.",
+  input:"5\n3 1 4 1 5",
+  output:"4" },
+
+{ id:64, sec:"08 · Lists", tag:"list",
+  title:"Rotate List by K",
+  stmt:"Read N numbers then K. Rotate the list K positions to the right and print.",
+  input:"5 2\n1 2 3 4 5",
+  output:"4 5 1 2 3" },
+
+{ id:65, sec:"08 · Lists", tag:"list",
+  title:"Count Frequency of Each Element",
+  stmt:"Read N numbers. Print each unique element and how many times it appears, in order of first appearance.",
+  input:"6\n1 2 1 3 2 1",
+  output:"1: 3\n2: 2\n3: 1" },
+
+{ id:66, sec:"08 · Lists", tag:"list",
+  title:"Two Sum",
+  stmt:"Read N numbers then a target K. Find and print two indices (0-based) where the values add up to K. Print -1 if no solution.",
+  input:"4 9\n2 7 11 15",
+  output:"0 1" },
+
+{ id:67, sec:"08 · Lists", tag:"list",
+  title:"Merge Two Sorted Lists",
+  stmt:"Read list A (sorted) and list B (sorted). Merge them into one sorted list without using sort().",
+  input:"1 3 5\n2 4 6",
+  output:"1 2 3 4 5 6" },
+
+{ id:68, sec:"08 · Lists", tag:"list",
+  title:"Move Zeros to End",
+  stmt:"Read N numbers. Move all zeros to the end while keeping the relative order of non-zero elements.",
+  input:"6\n0 1 0 3 12 0",
+  output:"1 3 12 0 0 0" },
+
+{ id:69, sec:"08 · Lists", tag:"list",
+  title:"Missing Number (1 to N)",
+  stmt:"Given a list of N-1 distinct integers from 1 to N with one number missing, find the missing number. Use the formula: expected sum = N*(N+1)/2.",
+  input:"5\n1 2 4 5",
+  output:"3" },
+
+{ id:70, sec:"08 · Lists", tag:"list",
+  title:"Maximum Subarray Sum (Kadane's)",
+  stmt:"Read N numbers. Find the largest sum of any contiguous subarray using Kadane's algorithm.",
+  input:"8\n-2 1 -3 4 -1 2 1 -5",
+  output:"6" },
+
+
+/* ════════════════════════════════════════════════
+   09 · DICTIONARIES  (12 problems)
+════════════════════════════════════════════════ */
+{ id:71, sec:"09 · Dictionaries", tag:"dict",
+  title:"Word Frequency Counter",
+  stmt:"Read a sentence. Count how often each word appears. Print each word and its count (in order of first appearance).",
+  input:"the cat sat on the mat the cat",
+  output:"the: 3\ncat: 2\nsat: 1\non: 1\nmat: 1" },
+
+{ id:72, sec:"09 · Dictionaries", tag:"dict",
+  title:"Invert a Dictionary",
+  stmt:"Given a dict like {'a':1, 'b':2, 'c':3}, swap keys and values. Print the inverted dict.",
+  input:"a 1\nb 2\nc 3",
+  output:"{1: 'a', 2: 'b', 3: 'c'}" },
+
+{ id:73, sec:"09 · Dictionaries", tag:"dict",
+  title:"Group Words by First Letter",
+  stmt:"Read N words. Group them into a dict by their first letter. Print groups sorted alphabetically.",
+  input:"5\napple ant ball cat dog",
+  output:"a: apple ant\nb: ball\nc: cat\nd: dog" },
+
+{ id:74, sec:"09 · Dictionaries", tag:"dict",
+  title:"Merge Two Dicts (Sum Conflicts)",
+  stmt:"Given two dicts, merge them. If a key exists in both, sum the values. Print the merged dict.",
+  input:"a 1 b 2\nb 3 c 4",
+  output:"a: 1\nb: 5\nc: 4" },
+
+{ id:75, sec:"09 · Dictionaries", tag:"dict",
+  title:"Most Common Word",
+  stmt:"Read a sentence. Find and print the word that appears most often.",
+  input:"the cat sat on the mat the cat",
+  output:"the" },
+
+{ id:76, sec:"09 · Dictionaries", tag:"dict",
+  title:"Frequency of Each Digit",
+  stmt:"Read an integer n. Count and print how many times each digit 0–9 appears.",
+  input:"112233445",
+  output:"1: 2\n2: 2\n3: 2\n4: 2\n5: 1" },
+
+{ id:77, sec:"09 · Dictionaries", tag:"dict",
+  title:"Student Scoreboard",
+  stmt:"Read student names and scores. Print them sorted by score (highest first). Print the topper's name.",
+  input:"3\nAlice 85\nBob 92\nEve 78",
+  output:"Bob: 92\nAlice: 85\nEve: 78\nTopper: Bob" },
+
+{ id:78, sec:"09 · Dictionaries", tag:"dict",
+  title:"Two-Sum Using Dictionary",
+  stmt:"Read N numbers and a target K. Use a dict to find two numbers that sum to K. Print the pair or 'Not found'.",
+  input:"4 9\n2 7 11 15",
+  output:"2 7" },
+
+{ id:79, sec:"09 · Dictionaries", tag:"dict",
+  title:"Frequency Sort",
+  stmt:"Read N numbers. Sort them by frequency (most frequent first). If tie in frequency, keep original order.",
+  input:"6\n1 1 2 3 2 1",
+  output:"1 1 1 2 2 3" },
+
+{ id:80, sec:"09 · Dictionaries", tag:"dict",
+  title:"Phone Book (Add / Search / Delete)",
+  stmt:"Implement a simple phone book. Support commands: ADD name number, SEARCH name, DELETE name. Read commands until 'QUIT'.",
+  input:"ADD Alice 12345\nSEARCH Alice\nDELETE Alice\nSEARCH Alice\nQUIT",
+  output:"Added.\n12345\nDeleted.\nNot found." },
+
+{ id:81, sec:"09 · Dictionaries", tag:"dict",
+  title:"Word Dictionary (Add / Lookup / Delete)",
+  stmt:"Build a word-meaning dictionary. Support: ADD word meaning, LOOKUP word, DELETE word. Read until QUIT.",
+  input:"ADD python 'a programming language'\nLOOKUP python\nDELETE python\nLOOKUP python\nQUIT",
+  output:"Added.\na programming language\nDeleted.\nNot found." },
+
+{ id:82, sec:"09 · Dictionaries", tag:"dict",
+  title:"CRUD Dictionary App",
+  stmt:"Build a full CRUD in-memory dictionary. Support commands: CREATE key value, READ key, UPDATE key newvalue, DELETE key, LIST (show all), QUIT.",
+  input:"CREATE name Alice\nREAD name\nUPDATE name Bob\nREAD name\nDELETE name\nLIST\nQUIT",
+  output:"Created.\nAlice\nUpdated.\nBob\nDeleted.\n(empty)" },
+
+
+/* ════════════════════════════════════════════════
+   10 · SETS  (5 problems)
+════════════════════════════════════════════════ */
+{ id:83, sec:"10 · Sets", tag:"set",
+  title:"Remove Duplicates Using Set",
+  stmt:"Read N numbers. Use a set to remove duplicates. Print the unique numbers in sorted order.",
+  input:"6\n1 3 1 2 3 4",
+  output:"1 2 3 4" },
+
+{ id:84, sec:"10 · Sets", tag:"set",
+  title:"Union and Intersection",
+  stmt:"Read two space-separated lists. Print their union (all unique elements) and intersection (common elements), both sorted.",
+  input:"1 2 3 4\n3 4 5 6",
+  output:"Union: 1 2 3 4 5 6\nIntersection: 3 4" },
+
+{ id:85, sec:"10 · Sets", tag:"set",
+  title:"Difference and Symmetric Difference",
+  stmt:"Read sets A and B. Print A-B (in A but not B) and A△B (symmetric difference), both sorted.",
+  input:"1 2 3 4\n3 4 5 6",
+  output:"A-B: 1 2\nA△B: 1 2 5 6" },
+
+{ id:86, sec:"10 · Sets", tag:"set",
+  title:"Common Friends",
+  stmt:"Read two friend lists (Alice's and Bob's). Print: common friends, Alice's unique friends, all friends. All sorted.",
+  input:"alice bob charlie\nbob dave eve",
+  output:"Common: bob\nAlice only: alice charlie\nAll: alice bob charlie dave eve" },
+
+{ id:87, sec:"10 · Sets", tag:"set",
+  title:"Unique Characters in String",
+  stmt:"Read a string. Print all unique characters in alphabetical order (ignore spaces).",
+  input:"hello world",
+  output:"d e h l o r w" },
+
+
+/* ════════════════════════════════════════════════
+   11 · CONTEST-STYLE  (13 problems)
+════════════════════════════════════════════════ */
+{ id:88, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"N Numbers — Min, Max, Sum, Avg",
+  stmt:"Read N, then N integers on one line. Print minimum, maximum, sum, and average (2 decimal places).",
+  input:"5\n3 1 4 1 5",
+  output:"Min: 1\nMax: 5\nSum: 14\nAvg: 2.80" },
+
+{ id:89, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"T Test Cases Wrapper",
+  stmt:"Read T. For each of T test cases: read N, then N numbers on one line. Print their sum.",
+  input:"2\n3\n1 2 3\n2\n10 20",
+  output:"6\n30" },
+
+{ id:90, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Armstrong Number",
+  stmt:"Read n. An Armstrong number equals the sum of each digit raised to the power of the number of digits. Print 'Armstrong' or 'Not Armstrong'.",
+  input:"153",
+  output:"Armstrong" },
+
+{ id:91, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Valid Parentheses",
+  stmt:"Read a string of brackets: ( ) { } [ ]. Print 'Valid' if all brackets are properly closed and nested, else 'Invalid'.",
+  input:"({[]})",
+  output:"Valid" },
+
+{ id:92, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Binary Search",
+  stmt:"Read N sorted numbers, then a target. Find the index (0-based) of target using binary search. Print index or -1 if not found.",
+  input:"5 7\n1 3 5 7 9",
+  output:"3" },
+
+{ id:93, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Bubble Sort with Swap Count",
+  stmt:"Read N numbers. Sort using bubble sort. Print the sorted list and the total number of swaps made.",
+  input:"4\n4 3 2 1",
+  output:"1 2 3 4\nSwaps: 6" },
+
+{ id:94, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Count Pairs with Sum K",
+  stmt:"Read N numbers and K. Count how many pairs (i < j) satisfy nums[i] + nums[j] == K.",
+  input:"5 5\n1 4 2 3 5",
+  output:"2" },
+
+{ id:95, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Sieve of Eratosthenes",
+  stmt:"Read N. Print all primes ≤ N using the Sieve of Eratosthenes algorithm.",
+  input:"30",
+  output:"2 3 5 7 11 13 17 19 23 29" },
+
+{ id:96, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Matrix Transpose",
+  stmt:"Read n and m, then an n×m matrix. Print its transpose (rows become columns).",
+  input:"2 3\n1 2 3\n4 5 6",
+  output:"1 4\n2 5\n3 6" },
+
+{ id:97, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Longest Consecutive Sequence",
+  stmt:"Read N numbers (unsorted, may have duplicates). Find the length of the longest sequence of consecutive integers.",
+  input:"6\n100 4 200 1 3 2",
+  output:"4" },
+
+{ id:98, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Roman Numeral to Integer",
+  stmt:"Read a Roman numeral string. Convert it to an integer. (I=1 V=5 X=10 L=50 C=100 D=500 M=1000)",
+  input:"MCMXC",
+  output:"1990" },
+
+{ id:99, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Read a Grid (Matrix Input)",
+  stmt:"Read n and m, then an n×m grid of integers. Print the sum of each row and each column.",
+  input:"2 3\n1 2 3\n4 5 6",
+  output:"Row sums: 6 15\nCol sums: 5 7 9" },
+
+{ id:100, sec:"11 · Contest-Style Problems", tag:"contest",
+  title:"Mini Contest — Full Problem",
+  stmt:"Read T test cases. For each: read N. Print all primes ≤ N (space-separated), then their count, then their sum.",
+  input:"2\n10\n5",
+  output:"2 3 5 7\nCount: 4\nSum: 17\n---\n2 3 5\nCount: 3\nSum: 10" },
+];
+
+/* ──────────────────────────── State ─────────────────────────────── */
+const SECS = [...new Set(DATA.map(p => p.sec))];
+let done = JSON.parse(localStorage.getItem('py100v4') || '{}');
+let curFilter = 'all';
+
+function save() { localStorage.setItem('py100v4', JSON.stringify(done)); }
+
+function updateStats() {
+  const n = Object.values(done).filter(Boolean).length;
+  document.getElementById('s-done').textContent = n;
+  document.getElementById('s-left').textContent = 100 - n;
+  document.getElementById('s-pct').textContent = n + '%';
+  document.getElementById('bar').style.width = n + '%';
+  document.getElementById('doneBanner').classList.toggle('show', n === 100);
+  const next = DATA.find(p => !done[p.id]);
+  document.getElementById('s-next').textContent = next ? '#' + String(next.id).padStart(3,'0') : '✓ All';
+}
+
+/* toggle done state — only when clicking check area / left edge */
+function toggleDone(id, e) {
+  e.stopPropagation();
+  done[id] = !done[id];
+  if (!done[id]) delete done[id];
+  save(); render();
+}
+
+/* toggle expand — clicking the rest of the card */
+function toggleExpand(id, e) {
+  const card = document.getElementById('prob-' + id);
+  const detail = document.getElementById('det-' + id);
+  const isOpen = detail.classList.contains('open');
+  detail.classList.toggle('open', !isOpen);
+  card.classList.toggle('open', !isOpen);
+}
+
+function filter(f, el) {
+  curFilter = f;
+  document.querySelectorAll('.fb').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  render();
+}
+
+function resetAll() {
+  if (confirm('Reset all progress?')) { done = {}; save(); render(); }
+}
+
+function formatIO(text) {
+  return text.replace(/\n/g, '<br>');
+}
+
+function render() {
+  updateStats();
+  const list = document.getElementById('list');
+  list.innerHTML = '';
+
+  const secMap = {};
+  SECS.forEach(s => secMap[s] = []);
+  DATA.forEach(p => secMap[p.sec].push(p));
+
+  SECS.forEach((sec, si) => {
+    const probs = secMap[sec];
+    const visible = probs.filter(p => {
+      if (curFilter === 'all')  return true;
+      if (curFilter === 'done') return !!done[p.id];
+      if (curFilter === 'todo') return !done[p.id];
+      return p.tag === curFilter;
+    });
+    if (!visible.length) return;
+
+    const secDone = probs.filter(p => done[p.id]).length;
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+
+    const secName = sec.split('·')[1]?.trim() || sec;
+    secEl.innerHTML = `
+      <div class="sec-hd">
+        <span class="sec-num">${String(si+1).padStart(2,'0')}</span>
+        <span class="sec-name">${secName}</span>
+        <span class="sec-cnt">${secDone}/${probs.length}</span>
+      </div>
+    `;
+
+    visible.forEach(p => {
+      const isDone = !!done[p.id];
+      const d = document.createElement('div');
+      d.className = 'prob' + (isDone ? ' done' : '');
+      d.id = 'prob-' + p.id;
+      d.innerHTML = `
+        <div class="prob-top" onclick="toggleExpand(${p.id}, event)">
+          <span class="prob-num">#${String(p.id).padStart(3,'0')}</span>
+          <div class="prob-check" onclick="toggleDone(${p.id}, event)">✓</div>
+          <div class="prob-main">
+            <div class="prob-title">${p.title}</div>
+          </div>
+          <span class="chip c-${p.tag}">${p.tag}</span>
+          <span class="expand-hint">+ expand</span>
+        </div>
+        <div class="prob-detail" id="det-${p.id}">
+          <div class="det-stmt">
+            <div class="det-label" style="color:var(--accent4)">Problem Statement</div>
+            <div class="det-content">${p.stmt}</div>
+          </div>
+          <div class="det-row">
+            <div class="det-box">
+              <div class="det-label" style="color:var(--accent)">Sample Input</div>
+              <div class="det-content">${formatIO(p.input)}</div>
+            </div>
+            <div class="det-box">
+              <div class="det-label" style="color:var(--accent2)">Expected Output</div>
+              <div class="det-content">${formatIO(p.output)}</div>
+            </div>
+          </div>
+        </div>
+      `;
+      secEl.appendChild(d);
+    });
+
+    list.appendChild(secEl);
+  });
+}
+
+/* filter button listeners */
+document.querySelectorAll('.fb').forEach(btn => {
+  btn.addEventListener('click', () => filter(btn.dataset.f, btn));
+});
+
+render();
+</script>
+</body>
+</html>      background: #1e1e2e;
     }
     ::-webkit-scrollbar-thumb {
       background: #4a4a8a;
