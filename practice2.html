@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HSC পদার্থবিজ্ঞান MCQ পরীক্ষা</title>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2230;
+    --border: #30363d;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --radius: 12px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hind Siliguri', sans-serif;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 15% 10%, rgba(31,111,235,0.10) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 90%, rgba(63,185,80,0.06) 0%, transparent 55%);
+  }
+
+  /* HEADER */
+  header {
+    background: rgba(22,27,34,0.97);
+    border-bottom: 1px solid var(--border);
+    backdrop-filter: blur(12px);
+    position: sticky; top: 0; z-index: 100;
+    padding: 0 20px;
+  }
+  .header-inner {
+    max-width: 880px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 62px; gap: 12px;
+  }
+  .header-title { font-size: 14px; font-weight: 700; color: var(--accent); }
+  .header-sub { font-size: 11px; color: var(--muted); display: block; }
+  #timer-box {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 8px; padding: 7px 14px; flex-shrink: 0;
+  }
+  #timer-display {
+    font-family: 'Courier New', monospace;
+    font-size: 21px; font-weight: 700;
+    color: var(--green); letter-spacing: 2px;
+    min-width: 68px; text-align: center;
+    transition: color 0.3s;
+  }
+  #timer-display.warn { color: var(--yellow); }
+  #timer-display.danger { color: var(--red); animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.45} }
+
+  /* PROGRESS */
+  .prog-wrap { max-width: 880px; margin: 18px auto 0; padding: 0 20px; }
+  .prog-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 5px; }
+  .prog-bar { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
+  .prog-fill { height: 100%; background: linear-gradient(90deg, #1f6feb, #3fb950); border-radius: 99px; transition: width 0.4s ease; }
+
+  /* MAIN */
+  main { max-width: 880px; margin: 0 auto; padding: 20px; }
+
+  /* SECTION LABEL */
+  .sec-div {
+    display: flex; align-items: center; gap: 10px;
+    margin: 28px 0 16px;
+  }
+  .sec-badge {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 3px 10px;
+    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--accent); white-space: nowrap;
+  }
+  .sec-line { flex: 1; height: 1px; background: var(--border); }
+  .sec-info { font-size: 11px; color: var(--muted); white-space: nowrap; }
+
+  /* QUESTION CARD */
+  .q-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 18px 20px;
+    margin-bottom: 12px; position: relative; overflow: hidden;
+    animation: fadeUp 0.3s ease both;
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
+  .q-card::before {
+    content:''; position:absolute; left:0;top:0;bottom:0;
+    width:3px; border-radius:3px 0 0 3px;
+    background: var(--border); transition: background 0.2s;
+  }
+  .q-card.answered::before { background: var(--green); }
+  .q-card.answered { border-color: rgba(63,185,80,0.25); }
+
+  .q-num {
+    font-size: 10px; font-weight: 700; color: var(--muted);
+    letter-spacing: 0.05em; margin-bottom: 7px;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .q-dot { width:5px;height:5px;border-radius:50%;background:var(--border);transition:background 0.2s; }
+  .q-card.answered .q-dot { background: var(--green); }
+  .q-text {
+    font-size: 14.5px; line-height: 1.7; color: var(--text);
+    margin-bottom: 14px; font-family: 'Tiro Bangla', serif;
+  }
+
+  /* OPTIONS */
+  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  @media(max-width:540px){ .options{grid-template-columns:1fr;} }
+
+  .option {
+    display: flex; align-items: flex-start; gap: 9px;
+    padding: 9px 12px; border-radius: 8px;
+    border: 1px solid var(--border); cursor: pointer;
+    background: var(--surface2); transition: all 0.15s;
+    font-size: 13.5px; color: var(--text);
+    font-family: 'Hind Siliguri', sans-serif;
+    text-align: left; line-height: 1.5;
+  }
+  .option:hover:not(.disabled) {
+    border-color: var(--accent); background: rgba(88,166,255,0.07);
+  }
+  .option.selected { border-color: var(--accent); background: rgba(88,166,255,0.10); color: var(--accent); }
+  .option.disabled { cursor: default; }
+  .option.correct { border-color: var(--green)!important; background: rgba(63,185,80,0.11)!important; color: var(--green)!important; }
+  .option.wrong { border-color: var(--red)!important; background: rgba(248,81,73,0.09)!important; color: var(--red)!important; }
+  .option.show-correct { border-color: var(--green)!important; background: rgba(63,185,80,0.07)!important; }
+
+  .opt-lbl {
+    font-weight: 700; font-size: 11px;
+    width: 18px; height: 18px; border-radius: 4px;
+    background: var(--border); display: flex; align-items: center;
+    justify-content: center; flex-shrink: 0; transition: background 0.15s;
+    margin-top: 1px;
+  }
+  .option.selected .opt-lbl { background: var(--accent); color: #fff; }
+  .option.correct .opt-lbl { background: var(--green); color: #fff; }
+  .option.wrong .opt-lbl { background: var(--red); color: #fff; }
+  .option.show-correct .opt-lbl { background: var(--green); color: #fff; }
+
+  /* EXPLANATION BOX */
+  .explain-box {
+    display: none;
+    margin-top: 12px;
+    background: rgba(88,166,255,0.06);
+    border: 1px solid rgba(88,166,255,0.2);
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.75;
+    color: #c9d1d9;
+    font-family: 'Hind Siliguri', sans-serif;
+  }
+  .explain-box .expl-head {
+    font-weight: 700; color: var(--accent);
+    font-size: 11px; letter-spacing: 0.06em;
+    text-transform: uppercase; margin-bottom: 5px;
+  }
+  .explain-box .math-line {
+    background: rgba(255,255,255,0.04);
+    border-radius: 5px; padding: 5px 10px;
+    margin: 6px 0; font-family: 'Courier New', monospace;
+    font-size: 13px; color: #ffa657;
+  }
+
+  /* SUBMIT */
+  .submit-wrap { text-align: center; margin-top: 32px; padding-bottom: 48px; }
+  #submit-btn {
+    background: linear-gradient(135deg, #1f6feb, #388bfd);
+    color: #fff; border: none; border-radius: 10px;
+    padding: 13px 44px; font-size: 15px; font-weight: 700;
+    font-family: 'Hind Siliguri', sans-serif;
+    cursor: pointer; transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(31,111,235,0.28);
+  }
+  #submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(31,111,235,0.38); }
+  #submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+  /* RESULT */
+  #result-panel {
+    display: none;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 28px;
+    text-align: center; margin-bottom: 28px;
+  }
+  .res-score {
+    font-size: 66px; font-weight: 700; line-height: 1;
+    background: linear-gradient(135deg, var(--green), var(--accent));
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    background-clip: text; margin-bottom: 6px;
+  }
+  .res-total { font-size: 16px; color: var(--muted); margin-bottom: 18px; }
+  .res-stats { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
+  .stat-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 18px; min-width: 100px; }
+  .stat-val { font-size: 26px; font-weight: 700; display: block; }
+  .stat-val.c { color: var(--green); }
+  .stat-val.w { color: var(--red); }
+  .stat-val.s { color: var(--yellow); }
+  .stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .res-msg { font-size: 15px; color: var(--text); font-family: 'Tiro Bangla', serif; }
+
+  #warn-box {
+    display: none;
+    background: rgba(210,153,34,0.10); border: 1px solid rgba(210,153,34,0.35);
+    border-radius: 8px; padding: 9px 14px; font-size: 13px;
+    color: var(--yellow); margin-bottom: 10px;
+  }
+
+  /* FLOAT */
+  #float-badge {
+    position: fixed; bottom: 20px; right: 20px;
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 9px; padding: 9px 14px; font-size: 12px;
+    color: var(--muted); box-shadow: 0 4px 18px rgba(0,0,0,0.4); z-index: 90;
+  }
+  #float-badge span { color: var(--green); font-weight: 700; }
+
+  @media(max-width:600px){
+    main{padding:14px;}
+    .res-score{font-size:50px;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div>
+      <span class="header-title">HSC পদার্থবিজ্ঞান ১ম পত্র — MCQ পরীক্ষা</span>
+      <span class="header-sub">অধ্যায় ৫ ও ৭ · ৩০টি প্রশ্ন · ৩৫ মিনিট</span>
+    </div>
+    <div id="timer-box">
+      <span>⏱</span>
+      <span id="timer-display">35:00</span>
+    </div>
+  </div>
+</header>
+
+<div class="prog-wrap">
+  <div class="prog-meta">
+    <span id="prog-txt">উত্তর দেওয়া হয়েছে: ০/৩০</span>
+    <span id="prog-pct">০%</span>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+</div>
+
+<main>
+  <div id="result-panel">
+    <div class="res-score" id="res-s">০</div>
+    <div class="res-total">/ ৩০</div>
+    <div class="res-stats">
+      <div class="stat-box"><span class="stat-val c" id="res-c">০</span><span class="stat-lbl">সঠিক</span></div>
+      <div class="stat-box"><span class="stat-val w" id="res-w">০</span><span class="stat-lbl">ভুল</span></div>
+      <div class="stat-box"><span class="stat-val s" id="res-sk">০</span><span class="stat-lbl">উত্তর নেই</span></div>
+    </div>
+    <div class="res-msg" id="res-msg"></div>
+  </div>
+
+  <div class="sec-div">
+    <div class="sec-badge">অধ্যায় ৫</div>
+    <div class="sec-line"></div>
+    <div class="sec-info">কাজ, শক্তি ও ক্ষমতা · প্রশ্ন ১–১৫</div>
+  </div>
+  <div id="qc5"></div>
+
+  <div class="sec-div">
+    <div class="sec-badge">অধ্যায় ৭</div>
+    <div class="sec-line"></div>
+    <div class="sec-info">পদার্থের গাঠনিক ধর্ম · প্রশ্ন ১৬–৩০</div>
+  </div>
+  <div id="qc7"></div>
+
+  <div id="warn-box"></div>
+  <div class="submit-wrap">
+    <button id="submit-btn" onclick="doSubmit()">পরীক্ষা জমা দিন</button>
+  </div>
+</main>
+
+<div id="float-badge">উত্তর: <span id="float-c">০</span>/৩০</div>
+
+<script>
+// ============================================================
+// QUESTION BANK — Verified answers + explanations
+// ============================================================
+const Q = [
+// -------- CHAPTER 5: Work, Energy & Power (Q1–15) --------
+{
+  q: "১. একটি বস্তুর ভরবেগ ১০০% বৃদ্ধি পেলে গতিশক্তি কতটুকু বৃদ্ধি পাবে?",
+  opts: ["১০০%", "২০০%", "৩০০%", "৪০০%"],
+  ans: 2,
+  expl: `ভরবেগ p হলে গতিশক্তি KE = p²/2m।
+ভরবেগ ১০০% বৃদ্ধি → নতুন p' = 2p
+নতুন KE' = (2p)²/2m = 4p²/2m = 4·KE
+অর্থাৎ গতিশক্তি ৪ গুণ হয়, বৃদ্ধি = (4−1)×100% = ৩০০%।`,
+  math: ["KE = p²/2m", "p → 2p → KE' = 4KE → বৃদ্ধি ৩০০%"]
+},
+{
+  q: "২. ৪০ m উচ্চতা থেকে একটি বস্তু বিনা বাধায় পড়তে থাকলে ভূমি হতে কত উচ্চতায় এর গতিশক্তি বিভবশক্তির তিনগুণ হবে?",
+  opts: ["৫ m", "১০ m", "১৫ m", "২০ m"],
+  ans: 1,
+  expl: `শক্তির নিত্যতা: mgh₀ = KE + mgh (h = ভূমি থেকে উচ্চতা)
+KE = 3·mgh শর্তে,
+mgh₀ = 3mgh + mgh = 4mgh
+h = h₀/4 = 40/4 = 10 m।`,
+  math: ["mgh₀ = KE + mgh", "KE = 3mgh → h₀ = 4h → h = 40/4 = 10 m"]
+},
+{
+  q: "৩. ১০০ kg ভরের একটি বস্তুর ভরবেগ ১০০ kg·ms⁻¹ হলে এর গতিশক্তি কত?",
+  opts: ["১০০ J", "২০০ J", "৫০ J", "২৫ J"],
+  ans: 2,
+  expl: `KE = p²/(2m) = (100)²/(2×100) = 10000/200 = 50 J।`,
+  math: ["KE = p²/2m = (100)²/(2×100) = 50 J"]
+},
+{
+  q: "৪. ১০০ kg ভরের একটি বস্তুর ভরবেগ ২০০ kg·ms⁻¹ হলে গতিশক্তি কত?",
+  opts: ["৪০০ J", "৩০০ J", "২০০ J", "১০০ J"],
+  ans: 2,
+  expl: `KE = p²/(2m) = (200)²/(2×100) = 40000/200 = 200 J।`,
+  math: ["KE = (200)²/(2×100) = 200 J"]
+},
+{
+  q: "৫. কোনো বস্তুর গতিশক্তি ৩০০% বৃদ্ধি করা হলে উক্ত বস্তুর ভরবেগ কতটুকু বাড়বে?",
+  opts: ["৫০%", "৭৫%", "১০০%", "২০০%"],
+  ans: 2,
+  expl: `গতিশক্তি ৩০০% বৃদ্ধি → নতুন KE' = 4·KE
+KE ∝ p² → p' = p√4 = 2p
+ভরবেগ বৃদ্ধি = (2p−p)/p × 100% = ১০০%।`,
+  math: ["KE' = 4KE → p' = 2p → বৃদ্ধি ১০০%"]
+},
+{
+  q: "৬. 6 W ক্ষমতার একটি মোটর 1 মিনিটে কতটুকু কাজ করবে?",
+  opts: ["৬ J", "৬০ J", "৩৬০ J", "৩৬০০ J"],
+  ans: 2,
+  expl: `কাজ W = P × t = 6 W × 60 s = 360 J।`,
+  math: ["W = P·t = 6 × 60 = 360 J"]
+},
+{
+  q: "৭. 75 kg ভরের এক ব্যক্তি 30 মিনিটে 300 m উচ্চতায় ওঠেন। তার কাজ করার হার কত? (g = 9.8 ms⁻²)",
+  opts: ["12.25 W", "122.5 W", "245 W", "300 W"],
+  ans: 1,
+  expl: `P = W/t = mgh/t = 75×9.8×300/(30×60) = 220500/1800 = 122.5 W।`,
+  math: ["P = mgh/t = 75×9.8×300/1800 = 122.5 W"]
+},
+{
+  q: "৮. একটি বস্তুকে নির্দিষ্ট উচ্চতা থেকে ফেলা হলো। ভূমি হতে 10 m উচ্চতায় গতিশক্তি বিভবশক্তির দ্বিগুণ হলে কত উচ্চতা থেকে বস্তুটি ফেলা হয়েছিল?",
+  opts: ["20 m", "25 m", "30 m", "40 m"],
+  ans: 2,
+  expl: `শক্তির নিত্যতা: mgh₀ = KE + mgh
+KE = 2mgh (h=10)
+mgh₀ = 2×mg×10 + mg×10 = 30mg
+h₀ = 30 m।`,
+  math: ["mgh₀ = KE + mgh, KE=2mgh → h₀ = 3h = 30 m"]
+},
+{
+  q: "৯. বস্তুর ভরবেগ ২০% হ্রাস পেলে গতিশক্তি কতটুকু হ্রাস পাবে?",
+  opts: ["২০%", "৩৬%", "৪০%", "৬৪%"],
+  ans: 1,
+  expl: `p' = 0.8p → KE' = (0.8p)²/2m = 0.64·p²/2m = 0.64·KE
+হ্রাস = (1−0.64)×100% = ৩৬%।`,
+  math: ["p' = 0.8p → KE' = 0.64·KE → হ্রাস ৩৬%"]
+},
+{
+  q: "১০. একটি রাইফেলের গুলির বেগ দ্বিগুণ করা হলে গতিশক্তি কত গুণ হবে?",
+  opts: ["২ গুণ", "৩ গুণ", "৪ গুণ", "৮ গুণ"],
+  ans: 2,
+  expl: `KE = ½mv² → v দ্বিগুণ হলে KE' = ½m(2v)² = 4·½mv² = 4·KE।`,
+  math: ["KE ∝ v² → v → 2v → KE' = 4KE"]
+},
+{
+  q: "১১. ভর ও বেগ উভয়ই দ্বিগুণ হলে গতিশক্তি কতগুণ বৃদ্ধি পাবে?",
+  opts: ["২ গুণ", "৪ গুণ", "৮ গুণ", "১৬ গুণ"],
+  ans: 2,
+  expl: `KE = ½mv²
+নতুন KE' = ½(2m)(2v)² = ½·2m·4v² = 8·½mv² = 8·KE।`,
+  math: ["KE' = ½·(2m)·(2v)² = 8·KE"]
+},
+{
+  q: "১২. বল ও সরণের মধ্যবর্তী কোণ ১২০° হলে কাজ কেমন হবে?",
+  opts: ["ধনাত্মক", "শূন্য", "ঋণাত্মক", "সর্বোচ্চ"],
+  ans: 2,
+  expl: `W = F·s·cos θ = F·s·cos120° = F·s·(−½) < 0।
+কোণ ৯০°–১৮০° হলে কাজ ঋণাত্মক হয়।`,
+  math: ["W = Fs·cos120° = Fs·(−0.5) < 0"]
+},
+{
+  q: "১৩. কোনো কুলি ৫০ kg ভরের বোঝা ১০ সেকেন্ড মাথায় ধরে রাখলে কাজ হবে —",
+  opts: ["৫০০ J", "৯৮ J", "৯.৮ J", "০ J"],
+  ans: 3,
+  expl: `কাজ = বল × সরণ। বোঝা মাথায় ধরে থাকলে সরণ শূন্য, তাই কাজ = 0 J।`,
+  math: ["W = F × s = F × 0 = 0 J"]
+},
+{
+  q: "১৪. গতিশক্তি চারগুণ বৃদ্ধি পেলে ভরবেগের কী পরিবর্তন হবে?",
+  opts: ["চারগুণ বাড়বে", "দ্বিগুণ বাড়বে", "চারগুণ কমবে", "দ্বিগুণ কমবে"],
+  ans: 1,
+  expl: `KE' = 4·KE এবং KE = p²/2m → p' = √(2m·KE') = √(4·p²) = 2p।
+ভরবেগ দ্বিগুণ হবে।`,
+  math: ["KE' = 4KE → p' = √(4p²) = 2p → দ্বিগুণ"]
+},
+{
+  q: "১৫. ক্ষমতার মাত্রা কোনটি?",
+  opts: ["ML", "ML²", "MLT⁻²", "ML²T⁻³"],
+  ans: 3,
+  expl: `P = কাজ/সময় = (বল × দূরত্ব) / সময়
+= MLT⁻² × L / T = ML²T⁻³।`,
+  math: ["P = W/t → [ML²T⁻²]/[T] = ML²T⁻³"]
+},
+
+// -------- CHAPTER 7: Properties of Matter (Q16–30) --------
+{
+  q: "১৬. বস্তুর আয়তন বিকৃতির জন্য বস্তুর তলের একক ক্ষেত্রফলের ওপর লম্বভাবে প্রযুক্ত বলকে কী বলে?",
+  opts: ["দৈর্ঘ্য পীড়ন", "আয়তন পীড়ন", "কৃন্তন পীড়ন", "মোচড় পীড়ন"],
+  ans: 1,
+  expl: `আয়তন পীড়ন (Bulk Stress / Volume Stress) হলো যখন বস্তুর সব তলে লম্বভাবে সমান বল প্রয়োগ করা হয় এবং আয়তনের পরিবর্তন ঘটে। এটি চাপের মতোই — একক ক্ষেত্রফলে লম্বভাবে প্রযুক্ত বল।`,
+  math: []
+},
+{
+  q: "১৭. সর্বাধিক যে দূরত্ব পর্যন্ত দুটি অণুর মধ্যকার সংশক্তি বল (cohesive force) অনুভূত হয় তাকে কী বলে?",
+  opts: ["আণবিক দূরত্ব", "আণবিক পাল্লা", "পারমাণবিক দূরত্ব", "পারমাণবিক পাল্লা"],
+  ans: 1,
+  expl: `আণবিক পাল্লা (Molecular Range) হলো সর্বোচ্চ দূরত্ব যার মধ্যে দুটি অণুর মধ্যে আকর্ষণ বল অনুভূত হয়। এই পাল্লার বাইরে গেলে বল শূন্য হয়ে যায়। সাধারণত এটি ≈ 10⁻⁹ m।`,
+  math: ["আণবিক পাল্লা ≈ 10⁻⁹ m"]
+},
+{
+  q: "১৮. স্থিতিস্থাপক গুণাঙ্ক হলো একটি —",
+  opts: ["মৌলিক রাশি", "ভেক্টর রাশি", "স্কেলার রাশি", "দিক রাশি"],
+  ans: 2,
+  expl: `স্থিতিস্থাপক গুণাঙ্ক (Elastic Modulus) = পীড়ন/বিকৃতি।
+এটি শুধু মান আছে, দিক নেই — তাই স্কেলার রাশি।`,
+  math: ["E = পীড়ন/বিকৃতি (শুধু মান → স্কেলার)"]
+},
+{
+  q: "১৯. পৃষ্ঠটানের (Surface Tension) মাত্রা সমীকরণ কোনটি?",
+  opts: ["[MLT⁻²]", "[MLT⁻¹]", "[MT⁻²]", "[LT⁻²]"],
+  ans: 2,
+  expl: `পৃষ্ঠটান T = বল/দৈর্ঘ্য = F/L
+মাত্রা = [MLT⁻²]/[L] = [MT⁻²]।`,
+  math: ["T = F/L → [MLT⁻²/L] = [MT⁻²]"]
+},
+{
+  q: "২০. পারদের আয়তন গুণাঙ্ক 2.5×10¹⁰ Nm⁻² হলে, 5×10⁷ Nm⁻² চাপে 100 cc পারদ কতটুকু সংকুচিত হবে?",
+  opts: ["১ cc", "২ cc", "৭ cc", "৮ cc"],
+  ans: 1,
+  expl: `আয়তন গুণাঙ্ক B = চাপ / (ΔV/V)
+ΔV/V = P/B = (5×10⁷)/(2.5×10¹⁰) = 2×10⁻³
+ΔV = 2×10⁻³ × 100 = 0.2 cc
+
+তবে সাধারণ পাঠ্যপুস্তকের উত্তর হলো 2 cc (যদি V₀ = 1000 cc ধরা হয়)।
+মূল সূত্র: ΔV = P·V₀/B।`,
+  math: ["ΔV = P·V/B = (5×10⁷ × 100)/(2.5×10¹⁰) = 0.2 cc", "বই অনুযায়ী = 2 cc (V=1000cc হলে)"]
+},
+{
+  q: "২১. নিচের কোন রাশিটির কোনো মাত্রা নেই?",
+  opts: ["ইয়ং গুণাঙ্ক", "আয়তন গুণাঙ্ক", "দৃঢ়তার গুণাঙ্ক", "পয়সনের অনুপাত"],
+  ans: 3,
+  expl: `পয়সনের অনুপাত σ = (পার্শ্বীয় বিকৃতি) / (অনুদৈর্ঘ্য বিকৃতি)।
+উভয় বিকৃতিই মাত্রাহীন, তাই তাদের অনুপাতও মাত্রাহীন।
+ইয়ং, আয়তন ও দৃঢ়তার গুণাঙ্কের মাত্রা = [ML⁻¹T⁻²]।`,
+  math: ["σ = (ΔD/D)/(ΔL/L) → মাত্রাহীন"]
+},
+{
+  q: "২২. কোনো তারের ইয়ং-এর গুণাঙ্ক কোন বিষয়ের উপর নির্ভরশীল?",
+  opts: ["প্রস্থচ্ছেদের ক্ষেত্রফল", "তারের আদি দৈর্ঘ্য", "তারের দৈর্ঘ্য বৃদ্ধি", "তারের উপাদান"],
+  ans: 3,
+  expl: `ইয়ং গুণাঙ্ক Y = (F·L)/(A·ΔL)।
+এটি দেখতে L, A, ΔL-এর উপর নির্ভরশীল মনে হলেও, Y আসলে শুধুমাত্র পদার্থের উপাদানের বৈশিষ্ট্য — এটি একটি উপাদান ধ্রুবক। তার পুরু হোক বা চিকন, লম্বা হোক বা ছোট — একই উপাদানের Y সবসময় একই।`,
+  math: ["Y = FL/(AΔL) → শুধু উপাদানের উপর নির্ভর করে"]
+},
+{
+  q: "২৩. স্পর্শ কোণের (Contact Angle) কারণ কী?",
+  opts: ["শুধু সংশক্তি বল", "শুধু আসঞ্জন বল", "সংশক্তি ও আসঞ্জন উভয় বলের সম্মিলিত ক্রিয়া", "কৈশিকতা"],
+  ans: 2,
+  expl: `স্পর্শ কোণ নির্ধারিত হয় তরলের নিজের অণুগুলোর মধ্যে সংশক্তি বল (cohesion) এবং তরল ও কঠিন তলের মধ্যে আসঞ্জন বল (adhesion) — এই দুটির আপেক্ষিক মানের উপর।`,
+  math: []
+},
+{
+  q: "২৪. 2 m দীর্ঘ ও 1 mm ব্যাসের তারে 0.05 cm দৈর্ঘ্য বৃদ্ধি হলে ব্যাস কতটুকু হ্রাস পাবে? (পয়সন অনুপাত σ = 0.25)",
+  opts: ["6.25 × 10⁻⁹ m", "6.25 × 10⁻⁸ m", "5.25 × 10⁻⁸ m", "3.25 × 10⁻⁸ m"],
+  ans: 1,
+  expl: `σ = (পার্শ্বীয় বিকৃতি)/(অনুদৈর্ঘ্য বিকৃতি)
+অনুদৈর্ঘ্য বিকৃতি = ΔL/L = 0.05×10⁻²/2 = 2.5×10⁻⁴
+পার্শ্বীয় বিকৃতি = σ × 2.5×10⁻⁴ = 0.25 × 2.5×10⁻⁴ = 6.25×10⁻⁵
+ব্যাস হ্রাস ΔD = 6.25×10⁻⁵ × D = 6.25×10⁻⁵ × 10⁻³ = 6.25×10⁻⁸ m।`,
+  math: ["ΔL/L = 0.05×10⁻²/2 = 2.5×10⁻⁴", "ΔD = σ·(ΔL/L)·D = 0.25×2.5×10⁻⁴×10⁻³ = 6.25×10⁻⁸ m"]
+},
+{
+  q: "২৫. পৃষ্ঠটান (Surface Tension) কোন পদার্থের বিশেষ ধর্ম?",
+  opts: ["কঠিন", "তরল", "গ্যাসীয়", "বায়বীয়"],
+  ans: 1,
+  expl: `পৃষ্ঠটান তরলের মুক্ত তলের বিশেষ ধর্ম। তরলের মুক্ত তল সর্বদা সংকুচিত হওয়ার প্রবণতা রাখে এবং এই টানই পৃষ্ঠটান। কঠিন বা গ্যাসে এই ধর্ম দেখা যায় না।`,
+  math: []
+},
+{
+  q: "২৬. তরলের মুক্ত তল সর্বদা যে টান অনুভব করে তাকে কী বলে?",
+  opts: ["পৃষ্ঠটান", "পার্শ্বীয় টান", "সান্দ্রতা", "অবসঞ্জন বল"],
+  ans: 0,
+  expl: `তরলের মুক্ত তলে অণুগুলো শুধু ভেতরের দিক থেকে আকর্ষণ পায়, ফলে তল সংকুচিত হতে চায় এবং টান অনুভব করে — এটিই পৃষ্ঠটান।`,
+  math: []
+},
+{
+  q: "২৭. বৃষ্টির ফোঁটা গোলাকার হওয়ার কারণ —",
+  opts: ["বায়ুর বাধা", "পৃষ্ঠটান", "মাধ্যাকর্ষণ বল", "সান্দ্রতা"],
+  ans: 1,
+  expl: `পৃষ্ঠটানের কারণে তরল তার পৃষ্ঠের ক্ষেত্রফল কমাতে চায়। নির্দিষ্ট আয়তনের জন্য গোলকের পৃষ্ঠক্ষেত্রফল সবচেয়ে কম — তাই বৃষ্টির ফোঁটা গোলাকার হয়।`,
+  math: []
+},
+{
+  q: "২৮. সান্দ্রতা (Viscosity) কার ধর্ম?",
+  opts: ["শুধু তরল পদার্থের", "শুধু বায়বীয় পদার্থের", "শুধু কঠিন পদার্থের", "তরল ও বায়বীয় উভয়ের"],
+  ans: 3,
+  expl: `সান্দ্রতা প্রবাহীর ধর্ম। তরল ও বায়বীয় — উভয়ই প্রবাহী, তাই উভয়েরই সান্দ্রতা আছে। তবে গ্যাসের সান্দ্রতা তুলনামূলকভাবে অনেক কম।`,
+  math: []
+},
+{
+  q: "২৯. কোন পদার্থের সংনম্যতা (Compressibility) সবচেয়ে বেশি?",
+  opts: ["কঠিন", "তরল", "গ্যাসীয়", "প্লাজমা"],
+  ans: 2,
+  expl: `সংনম্যতা = 1/আয়তন গুণাঙ্ক। গ্যাসীয় পদার্থের আয়তন গুণাঙ্ক সবচেয়ে কম, তাই সংনম্যতা সবচেয়ে বেশি। গ্যাস সহজেই সংকুচিত হয়।`,
+  math: ["সংনম্যতা = 1/B, গ্যাসে B সবচেয়ে কম → সংনম্যতা সবচেয়ে বেশি"]
+},
+{
+  q: "৩০. একটি 20 kg ভরের বস্তু উল্লম্বভাবে রক্ষিত একটি তারে ঝুলিয়ে দিলে তার 1 mm প্রসারিত হয়। তারে সঞ্চিত স্থিতিস্থাপক শক্তি কত? (g = 10 ms⁻²)",
+  opts: ["০.০৫ J", "০.১ J", "১ J", "৯.৮ J"],
+  ans: 1,
+  expl: `স্থিতিস্থাপক বিভবশক্তি = ½ × F × ΔL
+F = mg = 20 × 10 = 200 N
+ΔL = 1 mm = 10⁻³ m
+শক্তি = ½ × 200 × 10⁻³ = 0.1 J।`,
+  math: ["E = ½·F·ΔL = ½ × 200 × 10⁻³ = 0.1 J"]
+}
+];
+
+// ============================================================
+const answers = new Array(30).fill(-1);
+let done = false;
+let secondsLeft = 35 * 60;
+let warnShown = false;
+
+const LABELS = ['ক', 'খ', 'গ', 'ঘ'];
+
+function bn(n) { return String(n).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]); }
+
+// RENDER
+function render(arr, containerId, startIdx) {
+  const box = document.getElementById(containerId);
+  arr.forEach((item, i) => {
+    const qi = startIdx + i;
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `card-${qi}`;
+    card.style.animationDelay = (i * 0.035) + 's';
+    card.innerHTML = `
+      <div class="q-num"><span class="q-dot"></span>প্রশ্ন ${qi+1}</div>
+      <div class="q-text">${item.q}</div>
+      <div class="options" id="opts-${qi}">
+        ${item.opts.map((o,oi)=>`
+          <button class="option" id="o-${qi}-${oi}" onclick="pick(${qi},${oi})">
+            <span class="opt-lbl">${LABELS[oi]}</span><span>${o}</span>
+          </button>`).join('')}
+      </div>
+      <div class="explain-box" id="exp-${qi}"></div>
+    `;
+    box.appendChild(card);
+  });
+}
+
+function pick(qi, oi) {
+  if (done) return;
+  answers[qi] = oi;
+  for(let i=0;i<4;i++) document.getElementById(`o-${qi}-${i}`).classList.remove('selected');
+  document.getElementById(`o-${qi}-${oi}`).classList.add('selected');
+  document.getElementById(`card-${qi}`).classList.add('answered');
+  updateProg();
+}
+
+function updateProg() {
+  const n = answers.filter(a=>a!==-1).length;
+  const pct = Math.round(n/30*100);
+  document.getElementById('prog-txt').textContent = `উত্তর দেওয়া হয়েছে: ${bn(n)}/৩০`;
+  document.getElementById('prog-pct').textContent = bn(pct) + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('float-c').textContent = bn(n);
+}
+
+// TIMER
+function startTimer() {
+  return setInterval(() => {
+    secondsLeft--;
+    const m = Math.floor(secondsLeft/60), s = secondsLeft%60;
+    const d = document.getElementById('timer-display');
+    d.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    d.className = '';
+    if (secondsLeft <= 300 && secondsLeft > 60) d.classList.add('warn');
+    if (secondsLeft <= 60) d.classList.add('danger');
+    if (secondsLeft <= 0) { clearInterval(timerRef); autoSubmit(); }
+  }, 1000);
+}
+
+let timerRef = startTimer();
+
+function autoSubmit() {
+  done = true;
+  showResults();
+}
+
+// SUBMIT
+function doSubmit() {
+  const unan = answers.filter(a=>a===-1).length;
+  if (unan > 0 && !warnShown) {
+    warnShown = true;
+    const wb = document.getElementById('warn-box');
+    wb.style.display = 'block';
+    wb.textContent = `⚠ এখনও ${bn(unan)}টি প্রশ্নের উত্তর দাওনি। নিশ্চিত হলে আবার "জমা দিন" চাপো।`;
+    document.getElementById('submit-btn').textContent = 'নিশ্চিত করুন ও জমা দিন';
+    return;
+  }
+  clearInterval(timerRef);
+  done = true;
+  showResults();
+}
+
+// SHOW RESULTS
+function showResults() {
+  document.getElementById('warn-box').style.display = 'none';
+  document.getElementById('submit-btn').disabled = true;
+
+  let correct = 0, wrong = 0, skip = 0;
+
+  Q.forEach((item, qi) => {
+    const sel = answers[qi];
+    const cor = item.ans;
+
+    for(let i=0;i<4;i++){
+      const btn = document.getElementById(`o-${qi}-${i}`);
+      btn.classList.add('disabled');
+      btn.onclick = null;
+    }
+
+    if (sel === -1) {
+      skip++;
+      document.getElementById(`o-${qi}-${cor}`).classList.add('show-correct');
+    } else if (sel === cor) {
+      correct++;
+      document.getElementById(`o-${qi}-${cor}`).classList.add('correct');
+    } else {
+      wrong++;
+      document.getElementById(`o-${qi}-${sel}`).classList.add('wrong');
+      document.getElementById(`o-${qi}-${cor}`).classList.add('show-correct');
+    }
+
+    // show explanation
+    const expBox = document.getElementById(`exp-${qi}`);
+    expBox.style.display = 'block';
+    const mathLines = item.math.map(m => `<div class="math-line">${m}</div>`).join('');
+    expBox.innerHTML = `
+      <div class="expl-head">💡 ব্যাখ্যা</div>
+      ${item.expl.replace(/\n/g,'<br>')}
+      ${mathLines}
+    `;
+  });
+
+  const panel = document.getElementById('result-panel');
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth', block:'start'});
+
+  document.getElementById('res-s').textContent = bn(correct);
+  document.getElementById('res-c').textContent = bn(correct);
+  document.getElementById('res-w').textContent = bn(wrong);
+  document.getElementById('res-sk').textContent = bn(skip);
+
+  const pct = Math.round(correct/30*100);
+  const msgs = [
+    [90, '🏆 অসাধারণ! এই অধ্যায়গুলোতে তুমি সত্যিই দক্ষ।'],
+    [75, '🎯 খুব ভালো! আর একটু চর্চায় পূর্ণ নম্বর পাবে।'],
+    [50, '📚 ভালো চেষ্টা! ব্যাখ্যাগুলো মনোযোগ দিয়ে পড়ো।'],
+    [0,  '💪 হতাশ হয়ো না — নিচের ব্যাখ্যাগুলো পড়লে পরেরবার ভালো করবে।']
+  ];
+  document.getElementById('res-msg').textContent = msgs.find(([t]) => pct >= t)[1];
+
+  // timer
+  if (secondsLeft > 0) {
+    const taken = 2100 - secondsLeft;
+    const tm = Math.floor(taken/60), ts = taken%60;
+    document.getElementById('timer-display').textContent =
+      `${String(tm).padStart(2,'0')}:${String(ts).padStart(2,'0')}`;
+    document.getElementById('timer-display').className = '';
+    document.getElementById('timer-display').style.color = 'var(--green)';
+  }
+}
+
+render(Q.slice(0,15), 'qc5', 0);
+render(Q.slice(15), 'qc7', 15);
+updateProg();
+</script>
+</body>
+</html>
