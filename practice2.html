@@ -1,704 +1,1571 @@
 <!DOCTYPE html>
-<html lang="bn">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HSC পদার্থবিজ্ঞান MCQ পরীক্ষা</title>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Tiro+Bangla:ital@0;1&display=swap" rel="stylesheet">
+<title>Tech Universe — Interactive Knowledge Tree</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:ital,wght@0,400;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap');
+
   :root {
-    --bg: #0d1117;
-    --surface: #161b22;
-    --surface2: #1c2230;
-    --border: #30363d;
-    --accent: #58a6ff;
-    --green: #3fb950;
-    --red: #f85149;
-    --yellow: #d29922;
-    --text: #e6edf3;
-    --muted: #8b949e;
-    --radius: 12px;
+    --bg: #07090f;
+    --bg2: #0d1117;
+    --surface: #111827;
+    --border: #1f2d3d;
+    --accent1: #00f5c4;
+    --accent2: #7b5cf0;
+    --accent3: #f5a623;
+    --accent4: #e83a6e;
+    --accent5: #3ab4f5;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --panel-w: 420px;
   }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: 'Hind Siliguri', sans-serif;
-    min-height: 100vh;
-    background-image:
-      radial-gradient(ellipse at 15% 10%, rgba(31,111,235,0.10) 0%, transparent 55%),
-      radial-gradient(ellipse at 85% 90%, rgba(63,185,80,0.06) 0%, transparent 55%);
+    font-family: 'Space Mono', monospace;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
   }
 
-  /* HEADER */
-  header {
-    background: rgba(22,27,34,0.97);
-    border-bottom: 1px solid var(--border);
+  /* ── TOP BAR ── */
+  #topbar {
+    position: fixed; top:0; left:0; right:0; z-index:100;
+    height: 56px;
+    background: rgba(7,9,15,.92);
     backdrop-filter: blur(12px);
-    position: sticky; top: 0; z-index: 100;
-    padding: 0 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap:16px; padding: 0 20px;
   }
-  .header-inner {
-    max-width: 880px; margin: 0 auto;
-    display: flex; align-items: center; justify-content: space-between;
-    height: 62px; gap: 12px;
+  #topbar h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: 16px; font-weight:800;
+    background: linear-gradient(90deg, var(--accent1), var(--accent2));
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    white-space:nowrap;
   }
-  .header-title { font-size: 14px; font-weight: 700; color: var(--accent); }
-  .header-sub { font-size: 11px; color: var(--muted); display: block; }
-  #timer-box {
-    display: flex; align-items: center; gap: 8px;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 8px; padding: 7px 14px; flex-shrink: 0;
+  #search-wrap {
+    flex:1; max-width:360px; position:relative;
   }
-  #timer-display {
-    font-family: 'Courier New', monospace;
-    font-size: 21px; font-weight: 700;
-    color: var(--green); letter-spacing: 2px;
-    min-width: 68px; text-align: center;
-    transition: color 0.3s;
-  }
-  #timer-display.warn { color: var(--yellow); }
-  #timer-display.danger { color: var(--red); animation: blink 1s infinite; }
-  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.45} }
-
-  /* PROGRESS */
-  .prog-wrap { max-width: 880px; margin: 18px auto 0; padding: 0 20px; }
-  .prog-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--muted); margin-bottom: 5px; }
-  .prog-bar { height: 3px; background: var(--border); border-radius: 99px; overflow: hidden; }
-  .prog-fill { height: 100%; background: linear-gradient(90deg, #1f6feb, #3fb950); border-radius: 99px; transition: width 0.4s ease; }
-
-  /* MAIN */
-  main { max-width: 880px; margin: 0 auto; padding: 20px; }
-
-  /* SECTION LABEL */
-  .sec-div {
-    display: flex; align-items: center; gap: 10px;
-    margin: 28px 0 16px;
-  }
-  .sec-badge {
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 6px; padding: 3px 10px;
-    font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; color: var(--accent); white-space: nowrap;
-  }
-  .sec-line { flex: 1; height: 1px; background: var(--border); }
-  .sec-info { font-size: 11px; color: var(--muted); white-space: nowrap; }
-
-  /* QUESTION CARD */
-  .q-card {
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 18px 20px;
-    margin-bottom: 12px; position: relative; overflow: hidden;
-    animation: fadeUp 0.3s ease both;
-  }
-  @keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-  .q-card::before {
-    content:''; position:absolute; left:0;top:0;bottom:0;
-    width:3px; border-radius:3px 0 0 3px;
-    background: var(--border); transition: background 0.2s;
-  }
-  .q-card.answered::before { background: var(--green); }
-  .q-card.answered { border-color: rgba(63,185,80,0.25); }
-
-  .q-num {
-    font-size: 10px; font-weight: 700; color: var(--muted);
-    letter-spacing: 0.05em; margin-bottom: 7px;
-    display: flex; align-items: center; gap: 6px;
-  }
-  .q-dot { width:5px;height:5px;border-radius:50%;background:var(--border);transition:background 0.2s; }
-  .q-card.answered .q-dot { background: var(--green); }
-  .q-text {
-    font-size: 14.5px; line-height: 1.7; color: var(--text);
-    margin-bottom: 14px; font-family: 'Tiro Bangla', serif;
-  }
-
-  /* OPTIONS */
-  .options { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
-  @media(max-width:540px){ .options{grid-template-columns:1fr;} }
-
-  .option {
-    display: flex; align-items: flex-start; gap: 9px;
-    padding: 9px 12px; border-radius: 8px;
-    border: 1px solid var(--border); cursor: pointer;
-    background: var(--surface2); transition: all 0.15s;
-    font-size: 13.5px; color: var(--text);
-    font-family: 'Hind Siliguri', sans-serif;
-    text-align: left; line-height: 1.5;
-  }
-  .option:hover:not(.disabled) {
-    border-color: var(--accent); background: rgba(88,166,255,0.07);
-  }
-  .option.selected { border-color: var(--accent); background: rgba(88,166,255,0.10); color: var(--accent); }
-  .option.disabled { cursor: default; }
-  .option.correct { border-color: var(--green)!important; background: rgba(63,185,80,0.11)!important; color: var(--green)!important; }
-  .option.wrong { border-color: var(--red)!important; background: rgba(248,81,73,0.09)!important; color: var(--red)!important; }
-  .option.show-correct { border-color: var(--green)!important; background: rgba(63,185,80,0.07)!important; }
-
-  .opt-lbl {
-    font-weight: 700; font-size: 11px;
-    width: 18px; height: 18px; border-radius: 4px;
-    background: var(--border); display: flex; align-items: center;
-    justify-content: center; flex-shrink: 0; transition: background 0.15s;
-    margin-top: 1px;
-  }
-  .option.selected .opt-lbl { background: var(--accent); color: #fff; }
-  .option.correct .opt-lbl { background: var(--green); color: #fff; }
-  .option.wrong .opt-lbl { background: var(--red); color: #fff; }
-  .option.show-correct .opt-lbl { background: var(--green); color: #fff; }
-
-  /* EXPLANATION BOX */
-  .explain-box {
-    display: none;
-    margin-top: 12px;
-    background: rgba(88,166,255,0.06);
-    border: 1px solid rgba(88,166,255,0.2);
+  #search {
+    width:100%; padding: 7px 12px 7px 36px;
+    background: var(--surface);
+    border: 1px solid var(--border);
     border-radius: 8px;
-    padding: 12px 14px;
-    font-size: 13px;
-    line-height: 1.75;
-    color: #c9d1d9;
-    font-family: 'Hind Siliguri', sans-serif;
+    color: var(--text); font-family:'Space Mono',monospace; font-size:12px;
+    outline:none; transition:.2s;
   }
-  .explain-box .expl-head {
-    font-weight: 700; color: var(--accent);
-    font-size: 11px; letter-spacing: 0.06em;
-    text-transform: uppercase; margin-bottom: 5px;
+  #search:focus { border-color: var(--accent1); }
+  .search-icon {
+    position:absolute; left:10px; top:50%; transform:translateY(-50%);
+    color: var(--muted); font-size:14px; pointer-events:none;
   }
-  .explain-box .math-line {
-    background: rgba(255,255,255,0.04);
-    border-radius: 5px; padding: 5px 10px;
-    margin: 6px 0; font-family: 'Courier New', monospace;
-    font-size: 13px; color: #ffa657;
+  #count-badge {
+    font-size:11px; color:var(--muted);
+    white-space:nowrap;
+  }
+  .topbar-btns { display:flex; gap:8px; margin-left:auto; }
+  .topbar-btns button {
+    background: var(--surface); border:1px solid var(--border);
+    color:var(--text); font-family:'Space Mono',monospace; font-size:11px;
+    padding:5px 12px; border-radius:6px; cursor:pointer; transition:.2s;
+  }
+  .topbar-btns button:hover { border-color:var(--accent1); color:var(--accent1); }
+  .topbar-btns button.active { border-color:var(--accent1); color:var(--accent1); background:#001a13; }
+
+  /* ── CANVAS AREA ── */
+  #canvas-wrap {
+    position: fixed; top:56px; left:0; right:0; bottom:0;
+    overflow: hidden; cursor: grab;
+  }
+  #canvas-wrap.grabbing { cursor: grabbing; }
+  #tree-root {
+    position: absolute;
+    transform-origin: 0 0;
+    padding: 60px 40px 200px 40px;
   }
 
-  /* SUBMIT */
-  .submit-wrap { text-align: center; margin-top: 32px; padding-bottom: 48px; }
-  #submit-btn {
-    background: linear-gradient(135deg, #1f6feb, #388bfd);
-    color: #fff; border: none; border-radius: 10px;
-    padding: 13px 44px; font-size: 15px; font-weight: 700;
-    font-family: 'Hind Siliguri', sans-serif;
-    cursor: pointer; transition: all 0.2s;
-    box-shadow: 0 4px 16px rgba(31,111,235,0.28);
+  /* ── LEGEND ── */
+  #legend {
+    position:fixed; bottom:20px; left:20px; z-index:50;
+    background: rgba(13,17,23,.88); backdrop-filter:blur(8px);
+    border:1px solid var(--border); border-radius:10px;
+    padding:12px 16px; display:flex; flex-direction:column; gap:6px;
   }
-  #submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 22px rgba(31,111,235,0.38); }
-  #submit-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  #legend .leg-title { font-size:10px; color:var(--muted); margin-bottom:2px; }
+  .leg-item { display:flex; align-items:center; gap:8px; font-size:11px; }
+  .leg-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; }
 
-  /* RESULT */
-  #result-panel {
-    display: none;
-    background: var(--surface); border: 1px solid var(--border);
-    border-radius: var(--radius); padding: 28px;
-    text-align: center; margin-bottom: 28px;
+  /* ── MINIMAP ── */
+  #minimap {
+    position:fixed; bottom:20px; right:20px; z-index:50;
+    width:140px; height:90px;
+    background: rgba(13,17,23,.88); backdrop-filter:blur(8px);
+    border:1px solid var(--border); border-radius:8px;
+    overflow:hidden; display:none;
   }
-  .res-score {
-    font-size: 66px; font-weight: 700; line-height: 1;
-    background: linear-gradient(135deg, var(--green), var(--accent));
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    background-clip: text; margin-bottom: 6px;
-  }
-  .res-total { font-size: 16px; color: var(--muted); margin-bottom: 18px; }
-  .res-stats { display: flex; justify-content: center; gap: 18px; flex-wrap: wrap; margin-bottom: 16px; }
-  .stat-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; padding: 10px 18px; min-width: 100px; }
-  .stat-val { font-size: 26px; font-weight: 700; display: block; }
-  .stat-val.c { color: var(--green); }
-  .stat-val.w { color: var(--red); }
-  .stat-val.s { color: var(--yellow); }
-  .stat-lbl { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-  .res-msg { font-size: 15px; color: var(--text); font-family: 'Tiro Bangla', serif; }
+  #minimap canvas { width:100%; height:100%; }
 
-  #warn-box {
-    display: none;
-    background: rgba(210,153,34,0.10); border: 1px solid rgba(210,153,34,0.35);
-    border-radius: 8px; padding: 9px 14px; font-size: 13px;
-    color: var(--yellow); margin-bottom: 10px;
+  /* ── NODE STYLES ── */
+  .node {
+    display: inline-flex; flex-direction:column;
+    vertical-align: top;
+    position: relative;
   }
 
-  /* FLOAT */
-  #float-badge {
-    position: fixed; bottom: 20px; right: 20px;
-    background: var(--surface2); border: 1px solid var(--border);
-    border-radius: 9px; padding: 9px 14px; font-size: 12px;
-    color: var(--muted); box-shadow: 0 4px 18px rgba(0,0,0,0.4); z-index: 90;
+  .node-header {
+    display: flex; align-items:center; gap:8px;
+    cursor: pointer; user-select:none;
+    padding: 8px 14px 8px 12px;
+    border-radius: 10px;
+    border: 1.5px solid transparent;
+    transition: all .18s;
+    position: relative; z-index:1;
+    white-space: nowrap;
+    max-width: 280px;
   }
-  #float-badge span { color: var(--green); font-weight: 700; }
+  .node-header:hover { transform: translateY(-1px); }
 
-  @media(max-width:600px){
-    main{padding:14px;}
-    .res-score{font-size:50px;}
+  .node-icon { font-size:16px; flex-shrink:0; }
+  .node-label {
+    font-family:'Syne',sans-serif;
+    font-weight:700; flex:1;
+    overflow:hidden; text-overflow:ellipsis;
   }
+  .node-count {
+    font-size:10px; color:var(--muted);
+    background: rgba(255,255,255,.06);
+    padding:1px 6px; border-radius:20px; flex-shrink:0;
+  }
+  .node-toggle {
+    font-size:10px; color:var(--muted); flex-shrink:0;
+    transition: transform .2s;
+    width:12px; text-align:center;
+  }
+  .node-toggle.open { transform: rotate(90deg); }
+
+  /* DEPTH-BASED SIZING */
+  .depth-0 > .node-header { font-size:15px; padding:12px 18px; border-radius:14px; }
+  .depth-1 > .node-header { font-size:13px; }
+  .depth-2 > .node-header { font-size:12px; }
+  .depth-3 > .node-header { font-size:11px; padding:6px 12px; }
+  .depth-4 > .node-header { font-size:10.5px; padding:5px 10px; }
+
+  .node-children {
+    display:none;
+    margin-left: 22px;
+    padding-left: 16px;
+    border-left: 1.5px solid var(--border);
+    margin-top: 4px;
+    flex-direction: column; gap: 4px;
+  }
+  .node-children.open { display:flex; }
+
+  /* HIGHLIGHT */
+  .node-header.highlighted { outline:2px solid var(--accent3); outline-offset:2px; }
+  .node-header.search-match { background: rgba(245,166,35,.12) !important; border-color: var(--accent3) !important; }
+  .node-header.search-hidden { opacity:.18; }
+
+  /* ── CATEGORY COLORS ── */
+  .cat-prog { --c: #00f5c4; }
+  .cat-markup { --c: #f5a623; }
+  .cat-query { --c: #3ab4f5; }
+  .cat-style { --c: #e83a6e; }
+  .cat-hw { --c: #7b5cf0; }
+  .cat-os { --c: #f06d3a; }
+  .cat-net { --c: #3af0a0; }
+  .cat-data { --c: #d0f53a; }
+  .cat-shell { --c: #f53ad0; }
+  .cat-template { --c: #3ad0f5; }
+  .cat-config { --c: #f5d03a; }
+  .cat-asm { --c: #ff6b6b; }
+  .cat-func { --c: #a8f53a; }
+  .cat-proto { --c: #f53a7b; }
+  .cat-elex { --c: #c77dff; }
+
+  .node-header {
+    background: rgba(255,255,255,.03);
+    border-color: color-mix(in srgb, var(--c, #444) 30%, transparent);
+    color: var(--text);
+  }
+  .node-header:hover, .node-header.active {
+    background: color-mix(in srgb, var(--c, #444) 12%, transparent);
+    border-color: var(--c, #444);
+    color: color-mix(in srgb, var(--c, #444) 80%, white);
+    box-shadow: 0 0 14px color-mix(in srgb, var(--c, #444) 20%, transparent);
+  }
+  .node-icon { color: var(--c, var(--muted)); }
+
+  /* ── DETAIL PANEL ── */
+  #panel {
+    position:fixed; top:56px; right:-480px; bottom:0;
+    width: var(--panel-w);
+    background: var(--bg2);
+    border-left: 1px solid var(--border);
+    display:flex; flex-direction:column;
+    transition: right .3s cubic-bezier(.4,0,.2,1);
+    z-index:200; overflow:hidden;
+  }
+  #panel.open { right:0; }
+
+  #panel-header {
+    padding:20px 20px 16px;
+    border-bottom: 1px solid var(--border);
+    display:flex; align-items:flex-start; gap:12px;
+  }
+  #panel-icon { font-size:32px; flex-shrink:0; }
+  #panel-title-wrap { flex:1; }
+  #panel-title {
+    font-family:'Syne',sans-serif; font-size:18px; font-weight:800;
+    line-height:1.2; margin-bottom:4px;
+  }
+  #panel-breadcrumb { font-size:10px; color:var(--muted); }
+  #panel-close {
+    background:none; border:none; color:var(--muted);
+    font-size:20px; cursor:pointer; padding:0; flex-shrink:0;
+    line-height:1; transition:.2s;
+  }
+  #panel-close:hover { color:var(--accent4); }
+
+  #panel-body { flex:1; overflow-y:auto; padding:20px; display:flex; flex-direction:column; gap:16px; }
+  #panel-body::-webkit-scrollbar { width:4px; }
+  #panel-body::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+
+  .panel-section {}
+  .panel-label {
+    font-size:10px; color:var(--accent1); letter-spacing:.12em; text-transform:uppercase;
+    margin-bottom:8px; display:flex; align-items:center; gap:6px;
+  }
+  .panel-label::after { content:''; flex:1; height:1px; background:var(--border); }
+  .panel-text { font-size:12.5px; line-height:1.7; color:#b0bec5; }
+  .panel-text strong { color:var(--text); }
+
+  .example-chips { display:flex; flex-wrap:wrap; gap:6px; margin-top:6px; }
+  .chip {
+    font-size:11px; padding:4px 10px; border-radius:20px;
+    background: rgba(255,255,255,.06); border:1px solid var(--border);
+    cursor:default; transition:.15s;
+  }
+  .chip:hover { border-color:var(--c, #444); color:var(--c, var(--text)); }
+  .chip.chip-lang { border-color: color-mix(in srgb, var(--c,#444) 50%, transparent); }
+
+  .why-box {
+    background: rgba(123,92,240,.08);
+    border:1px solid rgba(123,92,240,.25);
+    border-radius:8px; padding:12px 14px;
+    font-size:12px; line-height:1.7; color:#b0c4de;
+  }
+  .why-box em { color: var(--accent2); font-style:normal; font-weight:700; }
+
+  .lang-card {
+    background: var(--surface); border:1px solid var(--border);
+    border-radius:8px; padding:12px 14px;
+    display:flex; align-items:flex-start; gap:10px; cursor:pointer;
+    transition:.15s;
+  }
+  .lang-card:hover { border-color:var(--c, #444); }
+  .lang-card-icon { font-size:20px; flex-shrink:0; }
+  .lang-card-name { font-family:'Syne',sans-serif; font-size:13px; font-weight:700; margin-bottom:2px; }
+  .lang-card-desc { font-size:11px; color:var(--muted); line-height:1.5; }
+  .lang-cards { display:flex; flex-direction:column; gap:8px; }
+
+  /* YEAR BADGE */
+  .year-badge {
+    display:inline-block; font-size:10px; padding:2px 8px;
+    border-radius:20px; border:1px solid; margin-left:6px; vertical-align:middle;
+  }
+
+  /* TOAST */
+  #toast {
+    position:fixed; bottom:70px; left:50%; transform:translateX(-50%) translateY(20px);
+    background:var(--accent1); color:#000; font-size:12px; font-weight:700;
+    padding:8px 18px; border-radius:20px; opacity:0;
+    transition:all .3s; pointer-events:none; z-index:999;
+  }
+  #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="header-inner">
-    <div>
-      <span class="header-title">HSC পদার্থবিজ্ঞান ১ম পত্র — MCQ পরীক্ষা</span>
-      <span class="header-sub">অধ্যায় ৫ ও ৭ · ৩০টি প্রশ্ন · ৩৫ মিনিট</span>
-    </div>
-    <div id="timer-box">
-      <span>⏱</span>
-      <span id="timer-display">35:00</span>
-    </div>
+<!-- TOP BAR -->
+<div id="topbar">
+  <h1>⬡ TECH UNIVERSE</h1>
+  <div id="search-wrap">
+    <span class="search-icon">⌕</span>
+    <input id="search" type="text" placeholder="Search languages, categories...">
   </div>
-</header>
-
-<div class="prog-wrap">
-  <div class="prog-meta">
-    <span id="prog-txt">উত্তর দেওয়া হয়েছে: ০/৩০</span>
-    <span id="prog-pct">০%</span>
+  <span id="count-badge"></span>
+  <div class="topbar-btns">
+    <button id="btn-expand-all">Expand All</button>
+    <button id="btn-collapse-all">Collapse All</button>
+    <button id="btn-reset-view">Reset View</button>
   </div>
-  <div class="prog-bar"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
 </div>
 
-<main>
-  <div id="result-panel">
-    <div class="res-score" id="res-s">০</div>
-    <div class="res-total">/ ৩০</div>
-    <div class="res-stats">
-      <div class="stat-box"><span class="stat-val c" id="res-c">০</span><span class="stat-lbl">সঠিক</span></div>
-      <div class="stat-box"><span class="stat-val w" id="res-w">০</span><span class="stat-lbl">ভুল</span></div>
-      <div class="stat-box"><span class="stat-val s" id="res-sk">০</span><span class="stat-lbl">উত্তর নেই</span></div>
+<!-- CANVAS -->
+<div id="canvas-wrap">
+  <div id="tree-root"></div>
+</div>
+
+<!-- LEGEND -->
+<div id="legend">
+  <div class="leg-title">CATEGORY COLORS</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#00f5c4"></div> Programming</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#f5a623"></div> Markup</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#3ab4f5"></div> Query</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#e83a6e"></div> Stylesheet</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#7b5cf0"></div> Hardware</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#f06d3a"></div> OS / System</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#3af0a0"></div> Networking</div>
+  <div class="leg-item"><div class="leg-dot" style="background:#f53ad0"></div> Shell / Script</div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div id="panel">
+  <div id="panel-header">
+    <div id="panel-icon">📦</div>
+    <div id="panel-title-wrap">
+      <div id="panel-title">Select a node</div>
+      <div id="panel-breadcrumb"></div>
     </div>
-    <div class="res-msg" id="res-msg"></div>
+    <button id="panel-close">✕</button>
   </div>
+  <div id="panel-body"></div>
+</div>
 
-  <div class="sec-div">
-    <div class="sec-badge">অধ্যায় ৫</div>
-    <div class="sec-line"></div>
-    <div class="sec-info">কাজ, শক্তি ও ক্ষমতা · প্রশ্ন ১–১৫</div>
-  </div>
-  <div id="qc5"></div>
-
-  <div class="sec-div">
-    <div class="sec-badge">অধ্যায় ৭</div>
-    <div class="sec-line"></div>
-    <div class="sec-info">পদার্থের গাঠনিক ধর্ম · প্রশ্ন ১৬–৩০</div>
-  </div>
-  <div id="qc7"></div>
-
-  <div id="warn-box"></div>
-  <div class="submit-wrap">
-    <button id="submit-btn" onclick="doSubmit()">পরীক্ষা জমা দিন</button>
-  </div>
-</main>
-
-<div id="float-badge">উত্তর: <span id="float-c">০</span>/৩০</div>
+<!-- TOAST -->
+<div id="toast"></div>
 
 <script>
-// ============================================================
-// QUESTION BANK — Verified answers + explanations
-// ============================================================
-const Q = [
-// -------- CHAPTER 5: Work, Energy & Power (Q1–15) --------
-{
-  q: "১. একটি বস্তুর ভরবেগ ১০০% বৃদ্ধি পেলে গতিশক্তি কতটুকু বৃদ্ধি পাবে?",
-  opts: ["১০০%", "২০০%", "৩০০%", "৪০০%"],
-  ans: 2,
-  expl: `ভরবেগ p হলে গতিশক্তি KE = p²/2m।
-ভরবেগ ১০০% বৃদ্ধি → নতুন p' = 2p
-নতুন KE' = (2p)²/2m = 4p²/2m = 4·KE
-অর্থাৎ গতিশক্তি ৪ গুণ হয়, বৃদ্ধি = (4−1)×100% = ৩০০%।`,
-  math: ["KE = p²/2m", "p → 2p → KE' = 4KE → বৃদ্ধি ৩০০%"]
-},
-{
-  q: "২. ৪০ m উচ্চতা থেকে একটি বস্তু বিনা বাধায় পড়তে থাকলে ভূমি হতে কত উচ্চতায় এর গতিশক্তি বিভবশক্তির তিনগুণ হবে?",
-  opts: ["৫ m", "১০ m", "১৫ m", "২০ m"],
-  ans: 1,
-  expl: `শক্তির নিত্যতা: mgh₀ = KE + mgh (h = ভূমি থেকে উচ্চতা)
-KE = 3·mgh শর্তে,
-mgh₀ = 3mgh + mgh = 4mgh
-h = h₀/4 = 40/4 = 10 m।`,
-  math: ["mgh₀ = KE + mgh", "KE = 3mgh → h₀ = 4h → h = 40/4 = 10 m"]
-},
-{
-  q: "৩. ১০০ kg ভরের একটি বস্তুর ভরবেগ ১০০ kg·ms⁻¹ হলে এর গতিশক্তি কত?",
-  opts: ["১০০ J", "২০০ J", "৫০ J", "২৫ J"],
-  ans: 2,
-  expl: `KE = p²/(2m) = (100)²/(2×100) = 10000/200 = 50 J।`,
-  math: ["KE = p²/2m = (100)²/(2×100) = 50 J"]
-},
-{
-  q: "৪. ১০০ kg ভরের একটি বস্তুর ভরবেগ ২০০ kg·ms⁻¹ হলে গতিশক্তি কত?",
-  opts: ["৪০০ J", "৩০০ J", "২০০ J", "১০০ J"],
-  ans: 2,
-  expl: `KE = p²/(2m) = (200)²/(2×100) = 40000/200 = 200 J।`,
-  math: ["KE = (200)²/(2×100) = 200 J"]
-},
-{
-  q: "৫. কোনো বস্তুর গতিশক্তি ৩০০% বৃদ্ধি করা হলে উক্ত বস্তুর ভরবেগ কতটুকু বাড়বে?",
-  opts: ["৫০%", "৭৫%", "১০০%", "২০০%"],
-  ans: 2,
-  expl: `গতিশক্তি ৩০০% বৃদ্ধি → নতুন KE' = 4·KE
-KE ∝ p² → p' = p√4 = 2p
-ভরবেগ বৃদ্ধি = (2p−p)/p × 100% = ১০০%।`,
-  math: ["KE' = 4KE → p' = 2p → বৃদ্ধি ১০০%"]
-},
-{
-  q: "৬. 6 W ক্ষমতার একটি মোটর 1 মিনিটে কতটুকু কাজ করবে?",
-  opts: ["৬ J", "৬০ J", "৩৬০ J", "৩৬০০ J"],
-  ans: 2,
-  expl: `কাজ W = P × t = 6 W × 60 s = 360 J।`,
-  math: ["W = P·t = 6 × 60 = 360 J"]
-},
-{
-  q: "৭. 75 kg ভরের এক ব্যক্তি 30 মিনিটে 300 m উচ্চতায় ওঠেন। তার কাজ করার হার কত? (g = 9.8 ms⁻²)",
-  opts: ["12.25 W", "122.5 W", "245 W", "300 W"],
-  ans: 1,
-  expl: `P = W/t = mgh/t = 75×9.8×300/(30×60) = 220500/1800 = 122.5 W।`,
-  math: ["P = mgh/t = 75×9.8×300/1800 = 122.5 W"]
-},
-{
-  q: "৮. একটি বস্তুকে নির্দিষ্ট উচ্চতা থেকে ফেলা হলো। ভূমি হতে 10 m উচ্চতায় গতিশক্তি বিভবশক্তির দ্বিগুণ হলে কত উচ্চতা থেকে বস্তুটি ফেলা হয়েছিল?",
-  opts: ["20 m", "25 m", "30 m", "40 m"],
-  ans: 2,
-  expl: `শক্তির নিত্যতা: mgh₀ = KE + mgh
-KE = 2mgh (h=10)
-mgh₀ = 2×mg×10 + mg×10 = 30mg
-h₀ = 30 m।`,
-  math: ["mgh₀ = KE + mgh, KE=2mgh → h₀ = 3h = 30 m"]
-},
-{
-  q: "৯. বস্তুর ভরবেগ ২০% হ্রাস পেলে গতিশক্তি কতটুকু হ্রাস পাবে?",
-  opts: ["২০%", "৩৬%", "৪০%", "৬৪%"],
-  ans: 1,
-  expl: `p' = 0.8p → KE' = (0.8p)²/2m = 0.64·p²/2m = 0.64·KE
-হ্রাস = (1−0.64)×100% = ৩৬%।`,
-  math: ["p' = 0.8p → KE' = 0.64·KE → হ্রাস ৩৬%"]
-},
-{
-  q: "১০. একটি রাইফেলের গুলির বেগ দ্বিগুণ করা হলে গতিশক্তি কত গুণ হবে?",
-  opts: ["২ গুণ", "৩ গুণ", "৪ গুণ", "৮ গুণ"],
-  ans: 2,
-  expl: `KE = ½mv² → v দ্বিগুণ হলে KE' = ½m(2v)² = 4·½mv² = 4·KE।`,
-  math: ["KE ∝ v² → v → 2v → KE' = 4KE"]
-},
-{
-  q: "১১. ভর ও বেগ উভয়ই দ্বিগুণ হলে গতিশক্তি কতগুণ বৃদ্ধি পাবে?",
-  opts: ["২ গুণ", "৪ গুণ", "৮ গুণ", "১৬ গুণ"],
-  ans: 2,
-  expl: `KE = ½mv²
-নতুন KE' = ½(2m)(2v)² = ½·2m·4v² = 8·½mv² = 8·KE।`,
-  math: ["KE' = ½·(2m)·(2v)² = 8·KE"]
-},
-{
-  q: "১২. বল ও সরণের মধ্যবর্তী কোণ ১২০° হলে কাজ কেমন হবে?",
-  opts: ["ধনাত্মক", "শূন্য", "ঋণাত্মক", "সর্বোচ্চ"],
-  ans: 2,
-  expl: `W = F·s·cos θ = F·s·cos120° = F·s·(−½) < 0।
-কোণ ৯০°–১৮০° হলে কাজ ঋণাত্মক হয়।`,
-  math: ["W = Fs·cos120° = Fs·(−0.5) < 0"]
-},
-{
-  q: "১৩. কোনো কুলি ৫০ kg ভরের বোঝা ১০ সেকেন্ড মাথায় ধরে রাখলে কাজ হবে —",
-  opts: ["৫০০ J", "৯৮ J", "৯.৮ J", "০ J"],
-  ans: 3,
-  expl: `কাজ = বল × সরণ। বোঝা মাথায় ধরে থাকলে সরণ শূন্য, তাই কাজ = 0 J।`,
-  math: ["W = F × s = F × 0 = 0 J"]
-},
-{
-  q: "১৪. গতিশক্তি চারগুণ বৃদ্ধি পেলে ভরবেগের কী পরিবর্তন হবে?",
-  opts: ["চারগুণ বাড়বে", "দ্বিগুণ বাড়বে", "চারগুণ কমবে", "দ্বিগুণ কমবে"],
-  ans: 1,
-  expl: `KE' = 4·KE এবং KE = p²/2m → p' = √(2m·KE') = √(4·p²) = 2p।
-ভরবেগ দ্বিগুণ হবে।`,
-  math: ["KE' = 4KE → p' = √(4p²) = 2p → দ্বিগুণ"]
-},
-{
-  q: "১৫. ক্ষমতার মাত্রা কোনটি?",
-  opts: ["ML", "ML²", "MLT⁻²", "ML²T⁻³"],
-  ans: 3,
-  expl: `P = কাজ/সময় = (বল × দূরত্ব) / সময়
-= MLT⁻² × L / T = ML²T⁻³।`,
-  math: ["P = W/t → [ML²T⁻²]/[T] = ML²T⁻³"]
-},
-
-// -------- CHAPTER 7: Properties of Matter (Q16–30) --------
-{
-  q: "১৬. বস্তুর আয়তন বিকৃতির জন্য বস্তুর তলের একক ক্ষেত্রফলের ওপর লম্বভাবে প্রযুক্ত বলকে কী বলে?",
-  opts: ["দৈর্ঘ্য পীড়ন", "আয়তন পীড়ন", "কৃন্তন পীড়ন", "মোচড় পীড়ন"],
-  ans: 1,
-  expl: `আয়তন পীড়ন (Bulk Stress / Volume Stress) হলো যখন বস্তুর সব তলে লম্বভাবে সমান বল প্রয়োগ করা হয় এবং আয়তনের পরিবর্তন ঘটে। এটি চাপের মতোই — একক ক্ষেত্রফলে লম্বভাবে প্রযুক্ত বল।`,
-  math: []
-},
-{
-  q: "১৭. সর্বাধিক যে দূরত্ব পর্যন্ত দুটি অণুর মধ্যকার সংশক্তি বল (cohesive force) অনুভূত হয় তাকে কী বলে?",
-  opts: ["আণবিক দূরত্ব", "আণবিক পাল্লা", "পারমাণবিক দূরত্ব", "পারমাণবিক পাল্লা"],
-  ans: 1,
-  expl: `আণবিক পাল্লা (Molecular Range) হলো সর্বোচ্চ দূরত্ব যার মধ্যে দুটি অণুর মধ্যে আকর্ষণ বল অনুভূত হয়। এই পাল্লার বাইরে গেলে বল শূন্য হয়ে যায়। সাধারণত এটি ≈ 10⁻⁹ m।`,
-  math: ["আণবিক পাল্লা ≈ 10⁻⁹ m"]
-},
-{
-  q: "১৮. স্থিতিস্থাপক গুণাঙ্ক হলো একটি —",
-  opts: ["মৌলিক রাশি", "ভেক্টর রাশি", "স্কেলার রাশি", "দিক রাশি"],
-  ans: 2,
-  expl: `স্থিতিস্থাপক গুণাঙ্ক (Elastic Modulus) = পীড়ন/বিকৃতি।
-এটি শুধু মান আছে, দিক নেই — তাই স্কেলার রাশি।`,
-  math: ["E = পীড়ন/বিকৃতি (শুধু মান → স্কেলার)"]
-},
-{
-  q: "১৯. পৃষ্ঠটানের (Surface Tension) মাত্রা সমীকরণ কোনটি?",
-  opts: ["[MLT⁻²]", "[MLT⁻¹]", "[MT⁻²]", "[LT⁻²]"],
-  ans: 2,
-  expl: `পৃষ্ঠটান T = বল/দৈর্ঘ্য = F/L
-মাত্রা = [MLT⁻²]/[L] = [MT⁻²]।`,
-  math: ["T = F/L → [MLT⁻²/L] = [MT⁻²]"]
-},
-{
-  q: "২০. পারদের আয়তন গুণাঙ্ক 2.5×10¹⁰ Nm⁻² হলে, 5×10⁷ Nm⁻² চাপে 100 cc পারদ কতটুকু সংকুচিত হবে?",
-  opts: ["১ cc", "২ cc", "৭ cc", "৮ cc"],
-  ans: 1,
-  expl: `আয়তন গুণাঙ্ক B = চাপ / (ΔV/V)
-ΔV/V = P/B = (5×10⁷)/(2.5×10¹⁰) = 2×10⁻³
-ΔV = 2×10⁻³ × 100 = 0.2 cc
-
-তবে সাধারণ পাঠ্যপুস্তকের উত্তর হলো 2 cc (যদি V₀ = 1000 cc ধরা হয়)।
-মূল সূত্র: ΔV = P·V₀/B।`,
-  math: ["ΔV = P·V/B = (5×10⁷ × 100)/(2.5×10¹⁰) = 0.2 cc", "বই অনুযায়ী = 2 cc (V=1000cc হলে)"]
-},
-{
-  q: "২১. নিচের কোন রাশিটির কোনো মাত্রা নেই?",
-  opts: ["ইয়ং গুণাঙ্ক", "আয়তন গুণাঙ্ক", "দৃঢ়তার গুণাঙ্ক", "পয়সনের অনুপাত"],
-  ans: 3,
-  expl: `পয়সনের অনুপাত σ = (পার্শ্বীয় বিকৃতি) / (অনুদৈর্ঘ্য বিকৃতি)।
-উভয় বিকৃতিই মাত্রাহীন, তাই তাদের অনুপাতও মাত্রাহীন।
-ইয়ং, আয়তন ও দৃঢ়তার গুণাঙ্কের মাত্রা = [ML⁻¹T⁻²]।`,
-  math: ["σ = (ΔD/D)/(ΔL/L) → মাত্রাহীন"]
-},
-{
-  q: "২২. কোনো তারের ইয়ং-এর গুণাঙ্ক কোন বিষয়ের উপর নির্ভরশীল?",
-  opts: ["প্রস্থচ্ছেদের ক্ষেত্রফল", "তারের আদি দৈর্ঘ্য", "তারের দৈর্ঘ্য বৃদ্ধি", "তারের উপাদান"],
-  ans: 3,
-  expl: `ইয়ং গুণাঙ্ক Y = (F·L)/(A·ΔL)।
-এটি দেখতে L, A, ΔL-এর উপর নির্ভরশীল মনে হলেও, Y আসলে শুধুমাত্র পদার্থের উপাদানের বৈশিষ্ট্য — এটি একটি উপাদান ধ্রুবক। তার পুরু হোক বা চিকন, লম্বা হোক বা ছোট — একই উপাদানের Y সবসময় একই।`,
-  math: ["Y = FL/(AΔL) → শুধু উপাদানের উপর নির্ভর করে"]
-},
-{
-  q: "২৩. স্পর্শ কোণের (Contact Angle) কারণ কী?",
-  opts: ["শুধু সংশক্তি বল", "শুধু আসঞ্জন বল", "সংশক্তি ও আসঞ্জন উভয় বলের সম্মিলিত ক্রিয়া", "কৈশিকতা"],
-  ans: 2,
-  expl: `স্পর্শ কোণ নির্ধারিত হয় তরলের নিজের অণুগুলোর মধ্যে সংশক্তি বল (cohesion) এবং তরল ও কঠিন তলের মধ্যে আসঞ্জন বল (adhesion) — এই দুটির আপেক্ষিক মানের উপর।`,
-  math: []
-},
-{
-  q: "২৪. 2 m দীর্ঘ ও 1 mm ব্যাসের তারে 0.05 cm দৈর্ঘ্য বৃদ্ধি হলে ব্যাস কতটুকু হ্রাস পাবে? (পয়সন অনুপাত σ = 0.25)",
-  opts: ["6.25 × 10⁻⁹ m", "6.25 × 10⁻⁸ m", "5.25 × 10⁻⁸ m", "3.25 × 10⁻⁸ m"],
-  ans: 1,
-  expl: `σ = (পার্শ্বীয় বিকৃতি)/(অনুদৈর্ঘ্য বিকৃতি)
-অনুদৈর্ঘ্য বিকৃতি = ΔL/L = 0.05×10⁻²/2 = 2.5×10⁻⁴
-পার্শ্বীয় বিকৃতি = σ × 2.5×10⁻⁴ = 0.25 × 2.5×10⁻⁴ = 6.25×10⁻⁵
-ব্যাস হ্রাস ΔD = 6.25×10⁻⁵ × D = 6.25×10⁻⁵ × 10⁻³ = 6.25×10⁻⁸ m।`,
-  math: ["ΔL/L = 0.05×10⁻²/2 = 2.5×10⁻⁴", "ΔD = σ·(ΔL/L)·D = 0.25×2.5×10⁻⁴×10⁻³ = 6.25×10⁻⁸ m"]
-},
-{
-  q: "২৫. পৃষ্ঠটান (Surface Tension) কোন পদার্থের বিশেষ ধর্ম?",
-  opts: ["কঠিন", "তরল", "গ্যাসীয়", "বায়বীয়"],
-  ans: 1,
-  expl: `পৃষ্ঠটান তরলের মুক্ত তলের বিশেষ ধর্ম। তরলের মুক্ত তল সর্বদা সংকুচিত হওয়ার প্রবণতা রাখে এবং এই টানই পৃষ্ঠটান। কঠিন বা গ্যাসে এই ধর্ম দেখা যায় না।`,
-  math: []
-},
-{
-  q: "২৬. তরলের মুক্ত তল সর্বদা যে টান অনুভব করে তাকে কী বলে?",
-  opts: ["পৃষ্ঠটান", "পার্শ্বীয় টান", "সান্দ্রতা", "অবসঞ্জন বল"],
-  ans: 0,
-  expl: `তরলের মুক্ত তলে অণুগুলো শুধু ভেতরের দিক থেকে আকর্ষণ পায়, ফলে তল সংকুচিত হতে চায় এবং টান অনুভব করে — এটিই পৃষ্ঠটান।`,
-  math: []
-},
-{
-  q: "২৭. বৃষ্টির ফোঁটা গোলাকার হওয়ার কারণ —",
-  opts: ["বায়ুর বাধা", "পৃষ্ঠটান", "মাধ্যাকর্ষণ বল", "সান্দ্রতা"],
-  ans: 1,
-  expl: `পৃষ্ঠটানের কারণে তরল তার পৃষ্ঠের ক্ষেত্রফল কমাতে চায়। নির্দিষ্ট আয়তনের জন্য গোলকের পৃষ্ঠক্ষেত্রফল সবচেয়ে কম — তাই বৃষ্টির ফোঁটা গোলাকার হয়।`,
-  math: []
-},
-{
-  q: "২৮. সান্দ্রতা (Viscosity) কার ধর্ম?",
-  opts: ["শুধু তরল পদার্থের", "শুধু বায়বীয় পদার্থের", "শুধু কঠিন পদার্থের", "তরল ও বায়বীয় উভয়ের"],
-  ans: 3,
-  expl: `সান্দ্রতা প্রবাহীর ধর্ম। তরল ও বায়বীয় — উভয়ই প্রবাহী, তাই উভয়েরই সান্দ্রতা আছে। তবে গ্যাসের সান্দ্রতা তুলনামূলকভাবে অনেক কম।`,
-  math: []
-},
-{
-  q: "২৯. কোন পদার্থের সংনম্যতা (Compressibility) সবচেয়ে বেশি?",
-  opts: ["কঠিন", "তরল", "গ্যাসীয়", "প্লাজমা"],
-  ans: 2,
-  expl: `সংনম্যতা = 1/আয়তন গুণাঙ্ক। গ্যাসীয় পদার্থের আয়তন গুণাঙ্ক সবচেয়ে কম, তাই সংনম্যতা সবচেয়ে বেশি। গ্যাস সহজেই সংকুচিত হয়।`,
-  math: ["সংনম্যতা = 1/B, গ্যাসে B সবচেয়ে কম → সংনম্যতা সবচেয়ে বেশি"]
-},
-{
-  q: "৩০. একটি 20 kg ভরের বস্তু উল্লম্বভাবে রক্ষিত একটি তারে ঝুলিয়ে দিলে তার 1 mm প্রসারিত হয়। তারে সঞ্চিত স্থিতিস্থাপক শক্তি কত? (g = 10 ms⁻²)",
-  opts: ["০.০৫ J", "০.১ J", "১ J", "৯.৮ J"],
-  ans: 1,
-  expl: `স্থিতিস্থাপক বিভবশক্তি = ½ × F × ΔL
-F = mg = 20 × 10 = 200 N
-ΔL = 1 mm = 10⁻³ m
-শক্তি = ½ × 200 × 10⁻³ = 0.1 J।`,
-  math: ["E = ½·F·ΔL = ½ × 200 × 10⁻³ = 0.1 J"]
-}
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// DATA
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+const DATA = [
+  {
+    id:"root_prog", label:"Programming Languages", icon:"💻", cat:"prog",
+    what:"Programming languages হলো এমন formal languages যা দিয়ে computer কে instructions দেওয়া যায়। এগুলো দিয়ে software, apps, systems তৈরি করা হয়।",
+    why:"Computer শুধু binary (0/1) বোঝে। Programming language আমাদের human-readable syntax এ code লিখতে দেয় যা compile বা interpret হয়ে machine code এ পরিণত হয়।",
+    examples:["Python","C","Java","JavaScript","Rust"],
+    children:[
+      {
+        id:"prog_low", label:"Low-Level Languages", icon:"⚙️", cat:"prog",
+        what:"Hardware এর খুব কাছাকাছি থেকে কাজ করে। Memory management, CPU instructions সরাসরি control করা যায়।",
+        why:"Operating systems, device drivers, embedded systems এ maximum performance দরকার — তাই low-level language ব্যবহার হয়।",
+        examples:["Assembly","C","C++","Rust","Fortran"],
+        children:[
+          {
+            id:"lang_asm", label:"Assembly Language", icon:"🔩", cat:"asm", year:"1949",
+            what:"Assembly হলো machine code এর human-readable representation। প্রতিটি instruction directly CPU এর একটি operation কে correspond করে।",
+            why:"এটি সবচেয়ে নিচের level এর human-readable language। Machine code এর ঠিক একধাপ উপরে।",
+            examples:["x86 ASM","ARM ASM","MIPS ASM","NASM","FASM"],
+            langs:[
+              {name:"x86 Assembly",icon:"🔧",desc:"Intel/AMD processors এর জন্য — OS booting, BIOS, reverse engineering এ ব্যবহৃত"},
+              {name:"ARM Assembly",icon:"📱",desc:"Mobile chips (Qualcomm, Apple Silicon) এর জন্য"},
+              {name:"MIPS Assembly",icon:"🎮",desc:"Embedded systems ও academic teaching এ পরিচিত"},
+            ]
+          },
+          {
+            id:"lang_c", label:"C Language", icon:"🅒", cat:"prog", year:"1972",
+            what:"C হলো একটি general-purpose, procedural programming language। Dennis Ritchie তৈরি করেছেন। প্রায় সব modern language এর parent।",
+            why:"OS (Linux, Windows kernel), embedded systems, databases — সব জায়গায় C চলে। 'Mother of all languages' বলা হয়।",
+            examples:["Linux Kernel","Windows NT","SQLite","Redis","CPython"],
+            langs:[
+              {name:"C",icon:"🅒",desc:"System programming এর backbone — 1972 সাল থেকে আজও প্রাসঙ্গিক"},
+              {name:"C++",icon:"➕",desc:"C এর উপর OOP যোগ করা হয়েছে — games, browsers, compilers এ ব্যবহৃত"},
+            ]
+          },
+          {
+            id:"lang_rust", label:"Rust", icon:"🦀", cat:"prog", year:"2010",
+            what:"Rust একটি systems programming language যেখানে memory safety guarantee দেওয়া হয় garbage collector ছাড়াই।",
+            why:"C/C++ এর memory bugs (null pointer, buffer overflow) avoid করতে — Mozilla, Microsoft, Linux kernel এ adopt হচ্ছে।",
+            examples:["Firefox","Servo","Dropbox","Discord","WebAssembly"],
+            langs:[{name:"Rust",icon:"🦀",desc:"Memory safe systems programming — 'most loved language' ৮ বছর ধরে Stack Overflow survey অনুযায়ী"}]
+          },
+        ]
+      },
+      {
+        id:"prog_oop", label:"Object-Oriented Languages", icon:"📦", cat:"prog",
+        what:"OOP languages real-world entities কে objects হিসেবে model করে। Class, Object, Inheritance, Polymorphism — এই concepts ব্যবহার করে।",
+        why:"Large software systems কে modular ও maintainable রাখতে OOP সবচেয়ে জনপ্রিয় paradigm।",
+        examples:["Java","C#","Python","Ruby","Swift"],
+        children:[
+          {
+            id:"lang_java", label:"Java", icon:"☕", cat:"prog", year:"1995",
+            what:"Java হলো 'Write Once, Run Anywhere' principle এ তৈরি। JVM (Java Virtual Machine) এর উপর চলে।",
+            why:"Enterprise applications, Android development, backend systems এ dominant। Platform independence এর জন্য বিখ্যাত।",
+            examples:["Android","Spring Boot","Minecraft","IntelliJ IDEA","Hadoop"],
+            langs:[
+              {name:"Java",icon:"☕",desc:"Enterprise ও Android এর backbone"},
+              {name:"Kotlin",icon:"🎯",desc:"Java এর modern alternative — Android official language"},
+              {name:"Scala",icon:"🌊",desc:"Functional+OOP hybrid — big data (Spark) এ জনপ্রিয়"},
+            ]
+          },
+          {
+            id:"lang_python", label:"Python", icon:"🐍", cat:"prog", year:"1991",
+            what:"Python একটি high-level, interpreted, dynamically-typed language। Guido van Rossum তৈরি করেছেন। Readable syntax এর জন্য বিখ্যাত।",
+            why:"AI/ML, Data Science, web development, automation — সব জায়গায় চলে। Beginner-friendly।",
+            examples:["TensorFlow","Django","NumPy","Jupyter","YouTube backend"],
+            langs:[
+              {name:"Python",icon:"🐍",desc:"সর্বোচ্চ জনপ্রিয় language — AI/ML এর de facto standard"},
+              {name:"MicroPython",icon:"🤖",desc:"Microcontrollers (ESP32, Raspberry Pi) এর জন্য Python"},
+            ]
+          },
+          {
+            id:"lang_csharp", label:"C# (.NET)", icon:"🔷", cat:"prog", year:"2000",
+            what:"Microsoft এর তৈরি C# .NET ecosystem এ চলে। Java এর সাথে similar কিন্তু Windows ও game dev এ বেশি প্রচলিত।",
+            why:"Unity game engine, Windows apps, ASP.NET — Microsoft ecosystem এর জন্য primary language।",
+            examples:["Unity Games","ASP.NET","Azure Functions","Xamarin","Visual Studio"],
+            langs:[
+              {name:"C#",icon:"🔷",desc:"Microsoft ecosystem ও Unity game development এর center"},
+              {name:"F#",icon:"🔹",desc:"Functional programming — .NET platform এ"},
+            ]
+          },
+          {
+            id:"lang_swift", label:"Swift", icon:"🐦", cat:"prog", year:"2014",
+            what:"Apple এর তৈরি Swift iOS, macOS, watchOS apps বানাতে ব্যবহৃত হয়। Objective-C কে replace করেছে।",
+            why:"Apple devices এর জন্য official language। Safe ও fast — Objective-C এর জায়গায় এসেছে।",
+            examples:["iOS Apps","macOS Apps","Server-Side Vapor","Swift Playgrounds"],
+            langs:[{name:"Swift",icon:"🐦",desc:"Apple ecosystem এর modern language"},{name:"Objective-C",icon:"🍎",desc:"Swift এর আগের Apple language — legacy codebase এ আছে"}]
+          },
+          {
+            id:"lang_ruby", label:"Ruby", icon:"💎", cat:"prog", year:"1995",
+            what:"Ruby একটি elegant, dynamic OOP language। 'Developer happiness' এর জন্য design করা হয়েছে।",
+            why:"Ruby on Rails framework এর কারণে web development এ বিখ্যাত। Startup গুলোর early choice।",
+            examples:["GitHub","Shopify","Twitter (early)","Airbnb","Rails"],
+            langs:[{name:"Ruby",icon:"💎",desc:"Elegant syntax, Rails framework এর language"}]
+          },
+        ]
+      },
+      {
+        id:"prog_functional", label:"Functional Languages", icon:"λ", cat:"func",
+        what:"Functional programming এ functions হলো first-class citizens। Pure functions, immutability, no side effects — এই principles follow করা হয়।",
+        why:"Concurrent programming, mathematical computation, compiler design এ functional languages অনেক সুবিধাজনক।",
+        examples:["Haskell","Erlang","Clojure","Elm","F#"],
+        children:[
+          {
+            id:"lang_haskell", label:"Haskell", icon:"λ", cat:"func", year:"1990",
+            what:"Purely functional language। Type system অত্যন্ত strong। Lazy evaluation ব্যবহার করে।",
+            why:"Academic research, compiler writing, financial systems এ — correctness guarantee দরকার যেখানে।",
+            examples:["GHC Compiler","Facebook's spam filter","Standard Chartered Bank"],
+            langs:[{name:"Haskell",icon:"λ",desc:"Pure functional — academia ও finance এ"},{name:"Elm",icon:"🌳",desc:"Web UI এর জন্য Haskell-inspired — no runtime errors"}]
+          },
+          {
+            id:"lang_erlang", label:"Erlang / Elixir", icon:"🔴", cat:"func", year:"1986",
+            what:"Erlang concurrency ও fault-tolerance এর জন্য তৈরি। Telecom industry এ জন্মেছে। Elixir হলো modern Erlang।",
+            why:"WhatsApp, Discord — millions of concurrent users handle করার জন্য।",
+            examples:["WhatsApp","Discord","RabbitMQ","CouchDB"],
+            langs:[{name:"Erlang",icon:"🔴",desc:"Concurrency king — telecom background"},{name:"Elixir",icon:"💜",desc:"Modern Erlang — Phoenix framework, real-time apps"}]
+          },
+          {
+            id:"lang_lisp", label:"Lisp Family", icon:"🔵", cat:"func", year:"1958",
+            what:"Lisp (List Processing) সবচেয়ে পুরনো high-level language গুলোর একটি। Parentheses-heavy syntax। Code = Data।",
+            why:"AI research এর প্রথম যুগে dominant ছিল। Macro system এর জন্য অত্যন্ত expressive।",
+            examples:["Emacs","AutoCAD (AutoLISP)","Clojure apps","Scheme"],
+            langs:[{name:"Common Lisp",icon:"🔵",desc:"Classic Lisp — still used in AI, Emacs"},{name:"Scheme",icon:"📐",desc:"Minimalist Lisp — teaching language"},{name:"Clojure",icon:"🍃",desc:"Modern Lisp on JVM — data processing"}]
+          },
+        ]
+      },
+      {
+        id:"prog_scripting", label:"Scripting Languages", icon:"📜", cat:"shell",
+        what:"Scripting languages সাধারণত interpreted হয় এবং automation, rapid development এর জন্য ব্যবহার হয়।",
+        why:"Compile step নেই — দ্রুত লেখা ও run করা যায়। System automation, web dev, data processing এ ideal।",
+        examples:["JavaScript","Python","PHP","Perl","Lua"],
+        children:[
+          {
+            id:"lang_js", label:"JavaScript", icon:"🟨", cat:"prog", year:"1995",
+            what:"Web browser এর একমাত্র native programming language। Brendan Eich মাত্র ১০ দিনে তৈরি করেছিলেন। এখন সর্বত্র ব্যবহৃত।",
+            why:"Browser এ চলে — web interactivity এর জন্য mandatory। Node.js এর কারণে server-side ও।",
+            examples:["React","Node.js","Vue","Chrome V8","Electron"],
+            langs:[
+              {name:"JavaScript",icon:"🟨",desc:"Web এর language — browser এ সরাসরি চলে"},
+              {name:"TypeScript",icon:"🔷",desc:"JS এর উপর static typing — Microsoft তৈরি"},
+              {name:"CoffeeScript",icon:"☕",desc:"JS এর cleaner syntax — legacy projects এ"},
+            ]
+          },
+          {
+            id:"lang_php", label:"PHP", icon:"🐘", cat:"prog", year:"1994",
+            what:"PHP হলো server-side scripting language। Web এর বড় অংশ PHP এ চলে।",
+            why:"WordPress, Facebook (early) — dynamic websites তৈরির সহজ option হিসেবে জনপ্রিয় হয়েছিল।",
+            examples:["WordPress","Facebook (early)","Wikipedia","Laravel","Magento"],
+            langs:[{name:"PHP",icon:"🐘",desc:"Web এর workhorse — ৭৫%+ websites PHP use করে (WordPress সহ)"}]
+          },
+          {
+            id:"lang_lua", label:"Lua", icon:"🌙", cat:"prog", year:"1993",
+            what:"Lua একটি lightweight, embeddable scripting language। Game engines এ plugin scripting এর জন্য বিখ্যাত।",
+            why:"Small footprint — game engines, embedded systems এ easily integrate হয়।",
+            examples:["Roblox","World of Warcraft addons","Nginx","Redis scripts","LÖVE"],
+            langs:[{name:"Lua",icon:"🌙",desc:"Game modding ও embedded scripting এর champion"}]
+          },
+          {
+            id:"lang_perl", label:"Perl", icon:"🦪", cat:"prog", year:"1987",
+            what:"Perl text processing ও system administration এ শক্তিশালী। 'Practical Extraction and Reporting Language।'",
+            why:"Unix systems এ text manipulation, CGI scripting এ দীর্ঘদিন জনপ্রিয় ছিল।",
+            examples:["CPAN","Bioinformatics tools","cPanel","Legacy CGI scripts"],
+            langs:[{name:"Perl",icon:"🦪",desc:"Text processing powerhouse — bioinformatics এ আজও ব্যবহৃত"}]
+          },
+        ]
+      },
+      {
+        id:"prog_mobile", label:"Mobile Languages", icon:"📱", cat:"prog",
+        what:"Mobile apps (Android/iOS) তৈরির জন্য specifically designed বা commonly used languages।",
+        why:"Smartphones এর জন্য separate ecosystem — platform-specific APIs access করতে native বা cross-platform languages দরকার।",
+        examples:["Kotlin","Swift","Dart","Java","React Native"],
+        children:[
+          {
+            id:"lang_kotlin", label:"Kotlin", icon:"🎯", cat:"prog", year:"2011",
+            what:"JetBrains এর তৈরি Kotlin Android এর official language। Java এর সাথে 100% interoperable।",
+            why:"Java এর verbose syntax ও null pointer issues সমাধান করতে। Google 2017 সালে official করেছে।",
+            examples:["Android apps","Spring Boot","Ktor","Gradle scripts"],
+            langs:[{name:"Kotlin",icon:"🎯",desc:"Modern Android development এর standard"}]
+          },
+          {
+            id:"lang_dart", label:"Dart / Flutter", icon:"🎯", cat:"prog", year:"2011",
+            what:"Google এর তৈরি Dart language Flutter framework এর সাথে cross-platform apps বানাতে ব্যবহৃত।",
+            why:"একটি codebase থেকে Android, iOS, Web, Desktop — সব জায়গায় app চালানো যায়।",
+            examples:["Google Pay","Alibaba Xianyu","Flutter apps"],
+            langs:[{name:"Dart",icon:"🎯",desc:"Flutter এর backbone — cross-platform development"}]
+          },
+        ]
+      },
+      {
+        id:"prog_concurrent", label:"Concurrent & Parallel", icon:"⚡", cat:"prog",
+        what:"Multiple tasks simultaneously handle করার জন্য designed languages ও paradigms।",
+        why:"Modern hardware এ multiple cores আছে। Concurrent programs সেগুলো efficiently use করতে পারে।",
+        examples:["Go","Erlang","Rust","Java threads","OpenMP"],
+        children:[
+          {
+            id:"lang_go", label:"Go (Golang)", icon:"🐹", cat:"prog", year:"2009",
+            what:"Google এর তৈরি Go simple, fast, concurrent programming language। Goroutines এর জন্য বিখ্যাত।",
+            why:"C এর performance, Python এর simplicity — cloud infrastructure (Docker, Kubernetes) এ dominant।",
+            examples:["Docker","Kubernetes","Terraform","Caddy","CockroachDB"],
+            langs:[{name:"Go",icon:"🐹",desc:"Cloud infrastructure এর favorite language"}]
+          },
+        ]
+      },
+      {
+        id:"prog_ai", label:"AI / Data Science Languages", icon:"🧠", cat:"prog",
+        what:"Artificial Intelligence, Machine Learning, Data Analysis এর জন্য commonly used languages।",
+        why:"Statistical computation, matrix operations, data visualization এর জন্য specialized libraries ও syntax দরকার।",
+        examples:["Python","R","Julia","MATLAB","Scala"],
+        children:[
+          {
+            id:"lang_r", label:"R Language", icon:"📊", cat:"prog", year:"1993",
+            what:"Statistics ও data visualization এর জন্য তৈরি। Academic research এ অত্যন্ত জনপ্রিয়।",
+            why:"Statistical computing এর জন্য built-in functions, CRAN এ হাজার হাজার packages।",
+            examples:["ggplot2","Bioconductor","Shiny apps","RStudio","dplyr"],
+            langs:[{name:"R",icon:"📊",desc:"Statistics ও bioinformatics এর language"}]
+          },
+          {
+            id:"lang_julia", label:"Julia", icon:"🔮", cat:"prog", year:"2012",
+            what:"Scientific computing এর জন্য তৈরি। Python এর ease + C এর speed।",
+            why:"Numerical analysis, scientific simulation এ Python এর চেয়ে অনেক দ্রুত।",
+            examples:["JuliaBio","Flux.jl","Turing.jl","NASA research"],
+            langs:[{name:"Julia",icon:"🔮",desc:"Scientific computing এর rising star"}]
+          },
+          {
+            id:"lang_matlab", label:"MATLAB", icon:"🔢", cat:"prog", year:"1984",
+            what:"MathWorks এর তৈরি MATLAB matrix computation ও signal processing এ বিখ্যাত।",
+            why:"Engineering ও scientific research এ industry standard — GUI, simulation, DSP সব এক জায়গায়।",
+            examples:["Signal Processing","Image Processing","Control Systems","Simulink"],
+            langs:[{name:"MATLAB",icon:"🔢",desc:"Engineering simulation এর standard"},{name:"Octave",icon:"🔢",desc:"MATLAB এর free open-source alternative"}]
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id:"root_markup", label:"Markup Languages", icon:"📄", cat:"markup",
+    what:"Markup languages হলো text formatting ও structure define করার জন্য ব্যবহৃত languages। Programming এর মতো logic থাকে না — শুধু content ও structure বর্ণনা করে।",
+    why:"Human-readable content কে structured ও styled format এ present করতে। Web, documents, data exchange এ markup languages essential।",
+    examples:["HTML","XML","Markdown","LaTeX","SVG"],
+    children:[
+      {
+        id:"markup_web", label:"Web Markup", icon:"🌐", cat:"markup",
+        what:"Web browsers render করার জন্য তৈরি markup languages।",
+        why:"Web pages এর structure, content ও presentation define করতে।",
+        examples:["HTML","XHTML","HTML5","SVG","MathML"],
+        children:[
+          {
+            id:"lang_html", label:"HTML", icon:"🌐", cat:"markup", year:"1993",
+            what:"HyperText Markup Language — Web এর skeleton। Tim Berners-Lee তৈরি করেছেন। সব web pages HTML দিয়ে তৈরি।",
+            why:"Browser শুধু HTML বোঝে — web content structure করার একমাত্র standard way।",
+            examples:["সব ওয়েবসাইট","Web Apps","Email templates","PWAs"],
+            langs:[
+              {name:"HTML5",icon:"🌐",desc:"Latest HTML — audio, video, canvas, semantic tags সহ"},
+              {name:"XHTML",icon:"📝",desc:"XML rules অনুসরণ করা HTML — stricter syntax"},
+              {name:"MathML",icon:"∑",desc:"Web এ mathematical formulas render করার জন্য"},
+            ]
+          },
+          {
+            id:"lang_svg", label:"SVG", icon:"🎨", cat:"markup", year:"1999",
+            what:"Scalable Vector Graphics — XML-based vector image format। Resolution-independent graphics।",
+            why:"Icons, charts, animations — যেকোনো size এ crisp দেখায়। CSS ও JavaScript দিয়ে animate করা যায়।",
+            examples:["Website icons","Data visualizations","Animated logos","Maps"],
+            langs:[{name:"SVG",icon:"🎨",desc:"Web এর vector graphics format"}]
+          },
+        ]
+      },
+      {
+        id:"markup_doc", label:"Document Markup", icon:"📝", cat:"markup",
+        what:"Documents, academic papers, books formatting এর জন্য markup languages।",
+        why:"Word processors এর চেয়ে বেশি control ও consistency — academic publishing এ standard।",
+        examples:["LaTeX","Markdown","AsciiDoc","reStructuredText","Org-mode"],
+        children:[
+          {
+            id:"lang_latex", label:"LaTeX", icon:"∑", cat:"markup", year:"1984",
+            what:"Academic document preparation system। Complex mathematical equations, research papers এর জন্য standard।",
+            why:"Physics, Mathematics, Computer Science research papers — journals LaTeX ছাড়া accept করে না।",
+            examples:["IEEE papers","PhD theses","Springer books","arXiv papers"],
+            langs:[{name:"LaTeX",icon:"∑",desc:"Academic publishing এর gold standard"}]
+          },
+          {
+            id:"lang_md", label:"Markdown", icon:"📝", cat:"markup", year:"2004",
+            what:"John Gruber এর তৈরি lightweight markup। Plain text থেকে HTML generate করে। অত্যন্ত readable।",
+            why:"README files, documentation, blogs — simple ও portable। GitHub, Notion, Discord সব Markdown support করে।",
+            examples:["GitHub README","Notion","Discord","Jekyll blogs","Obsidian notes"],
+            langs:[
+              {name:"Markdown",icon:"📝",desc:"Documentation এর universal language"},
+              {name:"MDX",icon:"⚛️",desc:"Markdown + JSX — React components এর সাথে"},
+              {name:"AsciiDoc",icon:"📃",desc:"Technical documentation — O'Reilly books এ"}
+            ]
+          },
+        ]
+      },
+      {
+        id:"markup_data", label:"Data Exchange Markup", icon:"🔄", cat:"data",
+        what:"Systems এর মধ্যে data transfer ও storage এর জন্য structured markup।",
+        why:"Different programs, different platforms এর মধ্যে data share করতে common format দরকার।",
+        examples:["XML","JSON","YAML","TOML","CSV"],
+        children:[
+          {
+            id:"lang_xml", label:"XML", icon:"🔖", cat:"data", year:"1998",
+            what:"eXtensible Markup Language — self-describing, hierarchical data format। Human ও machine উভয়ের পড়ার জন্য।",
+            why:"Cross-platform data exchange এর early standard। Web services, config files, Office documents এ ব্যবহৃত।",
+            examples:["RSS feeds","SOAP","Android layouts","SVG","Microsoft Office files"],
+            langs:[
+              {name:"XML",icon:"🔖",desc:"Enterprise data exchange এর workhorse"},
+              {name:"SOAP",icon:"🧼",desc:"XML-based web service protocol"},
+              {name:"RSS/Atom",icon:"📡",desc:"Blog ও news feed format"},
+            ]
+          },
+          {
+            id:"lang_json", label:"JSON", icon:"{}", cat:"data", year:"2001",
+            what:"JavaScript Object Notation — lightweight data format। XML এর simpler alternative।",
+            why:"Web APIs এর de facto standard। Human-readable, compact, সব programming languages এ support আছে।",
+            examples:["REST APIs","npm package.json","MongoDB","Config files","Firebase"],
+            langs:[
+              {name:"JSON",icon:"{}",desc:"Web APIs এর universal data format"},
+              {name:"JSON5",icon:"{+}",desc:"JSON এর superset — comments ও trailing commas সহ"},
+              {name:"JSONL",icon:"📋",desc:"Line-delimited JSON — log files ও ML datasets এ"},
+            ]
+          },
+          {
+            id:"lang_yaml", label:"YAML / TOML", icon:"📋", cat:"config", year:"2001",
+            what:"YAML (YAML Ain't Markup Language) — human-friendly data serialization। Indentation-based structure।",
+            why:"DevOps config files (Docker, Kubernetes, GitHub Actions) এ readable format দরকার — YAML সেটাই দেয়।",
+            examples:["Docker Compose","Kubernetes manifests","GitHub Actions","Ansible","Jekyll config"],
+            langs:[
+              {name:"YAML",icon:"📋",desc:"DevOps ও CI/CD এর config language"},
+              {name:"TOML",icon:"⚙️",desc:"Rust এর Cargo.toml — clearer syntax than YAML"},
+            ]
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id:"root_query", label:"Query Languages", icon:"🔍", cat:"query",
+    what:"Databases এবং data stores থেকে data retrieve, manipulate করার জন্য specialized languages।",
+    why:"Data যেখানে থাকে সেখানে efficient ভাবে query করতে general programming languages এর চেয়ে specialized languages বেশি কার্যকর।",
+    examples:["SQL","GraphQL","SPARQL","XQuery","JPQL"],
+    children:[
+      {
+        id:"query_relational", label:"Relational DB Query", icon:"🗄️", cat:"query",
+        what:"Relational databases (tables, rows, columns) query করার জন্য।",
+        why:"Structured data efficiently store, retrieve, join করার জন্য।",
+        examples:["SQL","PL/SQL","T-SQL","PL/pgSQL"],
+        children:[
+          {
+            id:"lang_sql", label:"SQL", icon:"🗄️", cat:"query", year:"1974",
+            what:"Structured Query Language — relational databases এর universal language। Edgar F. Codd এর relational model এর উপর based।",
+            why:"Data store, retrieve, update, delete সবই এক language এ। সব major databases SQL এর কোনো variant support করে।",
+            examples:["MySQL","PostgreSQL","SQLite","Microsoft SQL Server","Oracle"],
+            langs:[
+              {name:"MySQL",icon:"🐬",desc:"Web development এর most popular open-source DB"},
+              {name:"PostgreSQL",icon:"🐘",desc:"Advanced features সহ most powerful open-source DB"},
+              {name:"SQLite",icon:"💾",desc:"File-based, serverless DB — mobile apps এ"},
+              {name:"T-SQL",icon:"🪟",desc:"Microsoft SQL Server এর SQL dialect"},
+              {name:"PL/SQL",icon:"🔴",desc:"Oracle এর procedural SQL extension"},
+            ]
+          },
+        ]
+      },
+      {
+        id:"query_nosql", label:"NoSQL Query", icon:"🍃", cat:"query",
+        what:"Non-relational databases — document, key-value, graph, column-family stores এর query languages।",
+        why:"Flexible schema, horizontal scaling — modern web apps এর dynamic data এর জন্য।",
+        examples:["MongoDB Query","Redis commands","Cypher","CQL","DynamoDB"],
+        children:[
+          {
+            id:"lang_mql", label:"MongoDB Query", icon:"🍃", cat:"query", year:"2009",
+            what:"MongoDB এর JSON-like query language। Document-based database query করার জন্য।",
+            why:"Schema-less — evolving data structures এর সাথে সহজে adapt করা যায়। JSON দিয়ে query করা যায়।",
+            examples:["MongoDB","Mongoose","Atlas Search","Realm"],
+            langs:[{name:"MongoDB Query Language",icon:"🍃",desc:"Document DB এর flexible query interface"}]
+          },
+          {
+            id:"lang_cypher", label:"Cypher (Graph)", icon:"🕸️", cat:"query", year:"2011",
+            what:"Neo4j graph database এর query language। Nodes ও relationships দিয়ে data model করে।",
+            why:"Social networks, recommendation engines, fraud detection — connected data এর জন্য।",
+            examples:["Neo4j","AWS Neptune","Social graph analysis","Knowledge graphs"],
+            langs:[{name:"Cypher",icon:"🕸️",desc:"Graph database এর SQL equivalent"}]
+          },
+        ]
+      },
+      {
+        id:"query_api", label:"API Query Languages", icon:"🔗", cat:"query",
+        what:"APIs থেকে data fetch করার modern query languages।",
+        why:"REST APIs এর over-fetching/under-fetching সমস্যা সমাধান করতে।",
+        examples:["GraphQL","SPARQL","OData","FIQL"],
+        children:[
+          {
+            id:"lang_graphql", label:"GraphQL", icon:"🔷", cat:"query", year:"2015",
+            what:"Facebook এর তৈরি API query language। Client ঠিক করে কোন data দরকার।",
+            why:"REST APIs এ over-fetching ও under-fetching সমস্যা ছিল। GraphQL exactly দরকারি data return করে।",
+            examples:["GitHub API","Shopify","Twitter API","Hasura","Apollo"],
+            langs:[{name:"GraphQL",icon:"🔷",desc:"Modern API এর favorite query language"}]
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id:"root_style", label:"Stylesheet Languages", icon:"🎨", cat:"style",
+    what:"Web pages ও documents এর visual presentation define করার জন্য languages।",
+    why:"Content (HTML) আর presentation (CSS) আলাদা রাখলে maintenance সহজ হয়।",
+    examples:["CSS","Sass","Less","Stylus","Tailwind"],
+    children:[
+      {
+        id:"lang_css", label:"CSS", icon:"🎨", cat:"style", year:"1996",
+        what:"Cascading Style Sheets — web elements এর color, font, layout, animation সব CSS দিয়ে control করা হয়।",
+        why:"HTML শুধু structure দেয়। CSS দিয়ে সেই structure কে visually beautiful করা হয়।",
+        examples:["সব websites","Bootstrap","Tailwind","Animations","Responsive design"],
+        langs:[
+          {name:"CSS3",icon:"🎨",desc:"Latest CSS — variables, grid, flexbox, animations সহ"},
+          {name:"Sass/SCSS",icon:"💅",desc:"CSS preprocessor — variables, nesting, mixins যোগ করে"},
+          {name:"Less",icon:"🔹",desc:"CSS preprocessor — Bootstrap ব্যবহার করে"},
+          {name:"Tailwind CSS",icon:"💨",desc:"Utility-first CSS framework — class দিয়ে directly style"},
+          {name:"Stylus",icon:"✒️",desc:"Flexible CSS preprocessor — optional braces/colons"},
+        ]
+      },
+    ]
+  },
+  {
+    id:"root_shell", label:"Shell / Scripting", icon:"💻", cat:"shell",
+    what:"Operating system এর command-line interface এ automation ও system administration এর জন্য scripting languages।",
+    why:"Repetitive tasks automate করতে, servers manage করতে, files process করতে shell scripts ব্যবহার হয়।",
+    examples:["Bash","PowerShell","Zsh","Fish","Batch"],
+    children:[
+      {
+        id:"lang_bash", label:"Bash / Shell", icon:"🐚", cat:"shell", year:"1989",
+        what:"Bourne Again SHell — Unix/Linux systems এর default shell ও scripting language।",
+        why:"Linux servers, DevOps automation, CI/CD pipelines — সব জায়গায় Bash scripts চলে।",
+        examples:["Linux automation","Docker scripts","CI/CD pipelines","Cron jobs","System admin"],
+        langs:[
+          {name:"Bash",icon:"🐚",desc:"Linux/Mac এর default shell — DevOps essential"},
+          {name:"Zsh",icon:"⚡",desc:"Bash এর improved version — Oh-My-Zsh দিয়ে customize"},
+          {name:"Fish",icon:"🐟",desc:"User-friendly shell — auto-suggestions সহ"},
+          {name:"sh (POSIX)",icon:"📜",desc:"POSIX-compliant basic shell — portability এর জন্য"},
+        ]
+      },
+      {
+        id:"lang_powershell", label:"PowerShell", icon:"🪟", cat:"shell", year:"2006",
+        what:"Microsoft এর object-oriented shell scripting language। Windows, Linux, macOS সব জায়গায় চলে।",
+        why:"Windows automation, Azure management, Active Directory administration এর জন্য।",
+        examples:["Windows automation","Azure PowerShell","Group Policy","Exchange Server","CI/CD"],
+        langs:[{name:"PowerShell",icon:"🪟",desc:"Windows sysadmin এর powerful tool"}]
+      },
+      {
+        id:"lang_batch", label:"Windows Batch", icon:"📋", cat:"shell", year:"1981",
+        what:"Windows এর পুরনো command-line scripting। .bat files। Legacy systems এ আজও ব্যবহৃত।",
+        why:"Windows এর early automation এর জন্য তৈরি — PowerShell আসার আগে এটাই ছিল।",
+        examples:["Legacy Windows scripts","Installer scripts","Build automation (old)"],
+        langs:[{name:"Batch Script",icon:"📋",desc:"Windows legacy scripting — .bat files"}]
+      },
+    ]
+  },
+  {
+    id:"root_template", label:"Template Languages", icon:"📋", cat:"template",
+    what:"Dynamic content generate করার জন্য template engines ও languages। Static template এ dynamic data inject করা হয়।",
+    why:"Server-side HTML generation, email templates, code generation — সব জায়গায় template languages ব্যবহার হয়।",
+    examples:["Jinja2","Handlebars","EJS","Pug","Mustache"],
+    children:[
+      {
+        id:"lang_jinja", label:"Jinja2 / Django Templates", icon:"🧱", cat:"template", year:"2008",
+        what:"Python এর সবচেয়ে popular template engine। Flask ও Django এ ব্যবহৃত। HTML এ Python-like syntax।",
+        why:"Python web apps এ dynamic HTML generate করার জন্য।",
+        examples:["Flask apps","Django","Ansible playbooks","GitHub Pages with Jekyll"],
+        langs:[{name:"Jinja2",icon:"🧱",desc:"Python এর template engine — Ansible ও web এ"},{name:"Django Templates",icon:"🎸",desc:"Django এর built-in template system"}]
+      },
+      {
+        id:"lang_handlebars", label:"Handlebars / Mustache", icon:"{{", cat:"template", year:"2010",
+        what:"Logic-less template engines। {{ }} দিয়ে variables inject করা হয়।",
+        why:"Simple, cross-language — JavaScript ও non-JS environments উভয়ে চলে।",
+        examples:["Email templates","Ember.js","Express.js","Jekyll"],
+        langs:[{name:"Handlebars",icon:"{{",desc:"Semantic templates — helpers সহ"},{name:"Mustache",icon:"👨",desc:"Logic-less, cross-platform templates"}]
+      },
+      {
+        id:"lang_ejs", label:"EJS / Pug", icon:"📄", cat:"template", year:"2010",
+        what:"Node.js এর template engines। EJS HTML এর মধ্যে JavaScript, Pug indentation-based।",
+        why:"Node.js/Express apps এ server-side HTML rendering এর জন্য।",
+        examples:["Express.js apps","Node.js backends"],
+        langs:[{name:"EJS",icon:"📄",desc:"Embedded JS — HTML এর মধ্যে JS সরাসরি"},{name:"Pug (Jade)",icon:"🐶",desc:"Indentation-based, minimal HTML template engine"}]
+      },
+    ]
+  },
+  {
+    id:"root_config", label:"Config & Build Languages", icon:"⚙️", cat:"config",
+    what:"Software configuration, build automation, infrastructure definition এর জন্য languages।",
+    why:"Software কিভাবে build হবে, কোথায় deploy হবে, কিভাবে configure হবে — সেটা code এ define করতে।",
+    examples:["Makefile","Dockerfile","Terraform HCL","CMake","Gradle"],
+    children:[
+      {
+        id:"lang_make", label:"Make / CMake", icon:"🔨", cat:"config", year:"1977",
+        what:"Make হলো build automation tool। Makefile এ কিভাবে compile ও link করবে সেটা লেখা হয়।",
+        why:"C/C++ projects এ complex build steps automate করতে।",
+        examples:["Linux Kernel build","GCC","Open source C projects","Autotools"],
+        langs:[{name:"Makefile",icon:"🔨",desc:"Classic build automation"},{name:"CMake",icon:"🏗️",desc:"Cross-platform C++ build system — Qt, OpenCV ব্যবহার করে"}]
+      },
+      {
+        id:"lang_docker", label:"Dockerfile / HCL", icon:"🐳", cat:"config", year:"2013",
+        what:"Dockerfile দিয়ে Docker container images define করা হয়। HCL (HashiCorp Configuration Language) Terraform এ infrastructure as code।",
+        why:"Infrastructure reproducible ও version-controlled করতে — 'everything as code' philosophy।",
+        examples:["Docker containers","Kubernetes manifests","AWS infrastructure","Terraform"],
+        langs:[
+          {name:"Dockerfile",icon:"🐳",desc:"Container image definition — Docker এর core"},
+          {name:"HCL (Terraform)",icon:"🏗️",desc:"Infrastructure as Code — cloud resources define করে"},
+          {name:"Pulumi",icon:"💜",desc:"Real programming languages দিয়ে infrastructure"},
+        ]
+      },
+      {
+        id:"lang_gradle", label:"Gradle / Maven", icon:"🐘", cat:"config", year:"2007",
+        what:"Java project এর dependency management ও build automation tools। Gradle Groovy/Kotlin DSL ব্যবহার করে।",
+        why:"Java/Android projects এ dependencies manage ও build process automate করতে।",
+        examples:["Android apps","Spring Boot","Java microservices"],
+        langs:[{name:"Gradle",icon:"🐘",desc:"Modern Java/Android build tool"},{name:"Maven POM",icon:"🔴",desc:"XML-based Java dependency management"}]
+      },
+    ]
+  },
+  {
+    id:"root_hardware", label:"Hardware & Electronics", icon:"🔌", cat:"hw",
+    what:"Physical computing devices — CPUs, memory, circuits, embedded systems। এটা software নয়, physical world এর সাথে interact করে।",
+    why:"All software ultimately hardware এর উপর চলে। Hardware জানা মানে computer এর root বোঝা।",
+    examples:["CPU","RAM","GPU","PCB","Microcontrollers"],
+    children:[
+      {
+        id:"hw_cpu", label:"Processors & Chips", icon:"🧠", cat:"hw",
+        what:"Computation করার central unit। Program instructions execute করে।",
+        why:"কম্পিউটারের brain — সব calculations এখানেই হয়।",
+        examples:["Intel Core","AMD Ryzen","Apple M4","ARM Cortex","RISC-V"],
+        children:[
+          {
+            id:"hw_cpu_arch", label:"CPU Architectures", icon:"⚡", cat:"hw",
+            what:"CPU design করার fundamental principles। Instruction Set Architecture (ISA) define করে CPU কোন instructions execute করতে পারে।",
+            why:"Different use cases এ different architectures — performance, power efficiency, cost balance করতে।",
+            examples:["x86-64","ARM64","RISC-V","MIPS","PowerPC"],
+            langs:[
+              {name:"x86/x86-64",icon:"💻",desc:"Intel/AMD — PCs ও servers এ dominant"},
+              {name:"ARM",icon:"📱",desc:"Mobile, embedded — power efficient। Apple Silicon, Qualcomm"},
+              {name:"RISC-V",icon:"🆓",desc:"Open-source ISA — emerging standard"},
+              {name:"MIPS",icon:"🎮",desc:"MIPS Technologies — routers, gaming consoles (PS1/2)"},
+            ]
+          },
+          {
+            id:"hw_gpu", label:"GPU", icon:"🎮", cat:"hw",
+            what:"Graphics Processing Unit — originally graphics rendering এর জন্য, এখন AI/ML ও scientific computing এ ব্যাপক ব্যবহার।",
+            why:"Thousands of simple cores — parallel computation এ CPUs এর চেয়ে অনেক বেশি দ্রুত।",
+            examples:["NVIDIA RTX","AMD Radeon","Intel Arc","Apple Neural Engine","CUDA"],
+            langs:[
+              {name:"NVIDIA GPU (CUDA)",icon:"💚",desc:"AI training এর industry standard"},
+              {name:"AMD GPU (ROCm)",icon:"🔴",desc:"Open-source GPU computing"},
+              {name:"Apple Silicon GPU",icon:"🍎",desc:"Unified Memory Architecture সহ"},
+            ]
+          },
+        ]
+      },
+      {
+        id:"hw_memory", label:"Memory & Storage", icon:"💾", cat:"hw",
+        what:"Data store করার জন্য hardware components। Volatile (RAM) ও Non-volatile (SSD, HDD)।",
+        why:"Programs run করতে memory দরকার। Data persist করতে storage দরকার।",
+        examples:["DDR5 RAM","NVMe SSD","HDD","Flash Memory","Cache"],
+        children:[
+          {
+            id:"hw_ram", label:"RAM Types", icon:"📊", cat:"hw",
+            what:"Random Access Memory — CPU সরাসরি access করে। Volatile — power off হলে data যায়।",
+            why:"Running programs এর data store হয় RAM এ। বেশি RAM মানে বেশি apps একসাথে চালানো।",
+            examples:["DDR4","DDR5","LPDDR5","ECC RAM","GDDR6"],
+            langs:[
+              {name:"DDR5 SDRAM",icon:"📊",desc:"Latest desktop/laptop RAM — current standard"},
+              {name:"LPDDR5",icon:"📱",desc:"Low Power DDR — mobile devices এ"},
+              {name:"GDDR6",icon:"🎮",desc:"Graphics RAM — GPU VRAM হিসেবে"},
+              {name:"ECC RAM",icon:"🛡️",desc:"Error Correcting Code — servers ও workstations এ"},
+            ]
+          },
+          {
+            id:"hw_storage", label:"Storage Types", icon:"💿", cat:"hw",
+            what:"Non-volatile data storage — data permanently (power ছাড়াও) রাখে।",
+            why:"OS, files, databases — সব persistent storage এ থাকে।",
+            examples:["NVMe SSD","SATA SSD","HDD","USB Flash","SD Card"],
+            langs:[
+              {name:"NVMe SSD",icon:"⚡",desc:"Fastest consumer storage — PCIe interface"},
+              {name:"SATA SSD",icon:"💾",desc:"Older, slower SSD interface — budget option"},
+              {name:"HDD",icon:"💿",desc:"Magnetic disk — cheap, high capacity, slow"},
+              {name:"eMMC/UFS",icon:"📱",desc:"Mobile storage — smartphones ও tablets এ"},
+            ]
+          },
+        ]
+      },
+      {
+        id:"hw_embedded", label:"Embedded Systems", icon:"🤖", cat:"elex",
+        what:"Specific purpose এর জন্য তৈরি small computers। Microcontrollers ও microprocessors ব্যবহার করে।",
+        why:"IoT devices, consumer electronics, automotive — everywhere around us। Software without a screen।",
+        examples:["Arduino","Raspberry Pi","ESP32","STM32","PIC"],
+        children:[
+          {
+            id:"hw_arduino", label:"Arduino / AVR", icon:"🟦", cat:"elex",
+            what:"Arduino একটি open-source microcontroller platform। C/C++ দিয়ে program করা হয়। Beginner-friendly।",
+            why:"Electronics শেখার সবচেয়ে popular platform। LEDs থেকে robots সব বানানো যায়।",
+            examples:["LED blinkers","Sensors","Robotics","Home automation","3D printers"],
+            langs:[
+              {name:"Arduino (AVR)",icon:"🟦",desc:"Beginner-friendly microcontroller — C/C++ based"},
+              {name:"AVR Microcontrollers",icon:"⚙️",desc:"Atmel এর 8-bit MCUs — Arduino র backbone"},
+            ]
+          },
+          {
+            id:"hw_raspi", label:"Raspberry Pi", icon:"🍓", cat:"elex",
+            what:"Credit card-size single-board computer। Full Linux OS চলে। Python দিয়ে commonly program করা হয়।",
+            why:"Education, prototyping, IoT gateway, media center — versatile mini PC।",
+            examples:["Home servers","Retro gaming","Security cameras","Weather stations","Kiosk"],
+            langs:[
+              {name:"Raspberry Pi 5",icon:"🍓",desc:"Latest model — 2.4GHz quad-core"},
+              {name:"Pi Zero",icon:"🔴",desc:"Ultra-small, ultra-cheap — wearables ও simple IoT"},
+            ]
+          },
+          {
+            id:"hw_esp", label:"ESP32 / ESP8266", icon:"📡", cat:"elex",
+            what:"WiFi ও Bluetooth built-in microcontrollers। Espressif Systems এর। IoT projects এ অত্যন্ত জনপ্রিয়।",
+            why:"Built-in WiFi দিয়ে internet-connected devices বানানো যায় খুব কম cost এ।",
+            examples:["Smart home devices","Weather stations","IoT sensors","WiFi robots"],
+            langs:[
+              {name:"ESP32",icon:"📡",desc:"WiFi+Bluetooth MCU — IoT এর top choice"},
+              {name:"ESP8266",icon:"📶",desc:"Cheaper WiFi-only MCU — legacy IoT projects"},
+            ]
+          },
+        ]
+      },
+      {
+        id:"hw_circuits", label:"Electronic Components", icon:"⚡", cat:"elex",
+        what:"Electronic circuits এর fundamental building blocks।",
+        why:"All hardware ultimately এই components দিয়ে তৈরি।",
+        examples:["Resistor","Capacitor","Transistor","Diode","Op-Amp","Logic Gates"],
+        children:[
+          {
+            id:"hw_passive", label:"Passive Components", icon:"🔋", cat:"elex",
+            what:"নিজে energy supply করে না। Resistors, capacitors, inductors — circuit এর passive elements।",
+            why:"Current limit, energy store, frequency filter — circuit design এ অপরিহার্য।",
+            examples:["Resistors","Capacitors","Inductors","Transformers","Crystals"],
+            langs:[
+              {name:"Resistor",icon:"🔴",desc:"Current flow resist করে — Ohm's law"},
+              {name:"Capacitor",icon:"⚡",desc:"Energy store করে — filtering, timing এ"},
+              {name:"Inductor",icon:"🌀",desc:"Magnetic field দিয়ে energy store — RF circuits এ"},
+            ]
+          },
+          {
+            id:"hw_active", label:"Active Components", icon:"🔌", cat:"elex",
+            what:"নিজে energy inject বা control করতে পারে। Transistors, ICs, diodes।",
+            why:"Amplification, switching, logic — modern electronics এর heart।",
+            examples:["BJT Transistor","MOSFET","Op-Amp","555 Timer","FPGA"],
+            langs:[
+              {name:"BJT Transistor",icon:"▲",desc:"Bipolar Junction — amplifier ও switch"},
+              {name:"MOSFET",icon:"⚡",desc:"Modern switching — CPUs, power supplies, motor control"},
+              {name:"Op-Amp",icon:"🔺",desc:"Operational Amplifier — signal processing"},
+              {name:"FPGA",icon:"🧩",desc:"Field Programmable Gate Array — custom hardware logic"},
+            ]
+          },
+          {
+            id:"hw_hdl", label:"HDL — Hardware Description", icon:"🧩", cat:"hw",
+            what:"Hardware Description Languages — digital circuits design করার জন্য। Software code না, hardware behavior describe করে।",
+            why:"FPGAs ও ASICs design করতে। Circuit simulate ও synthesize করতে।",
+            examples:["Verilog","VHDL","SystemVerilog","Chisel","Bluespec"],
+            langs:[
+              {name:"Verilog",icon:"🧩",desc:"Industry standard HDL — FPGA ও ASIC design"},
+              {name:"VHDL",icon:"📐",desc:"Verbose, strongly-typed HDL — defense ও aerospace এ"},
+              {name:"SystemVerilog",icon:"✅",desc:"Verilog এর superset — verification সহ"},
+              {name:"Chisel",icon:"🔨",desc:"Scala-based modern HDL — RISC-V designs এ"},
+            ]
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id:"root_os", label:"Operating Systems & Platforms", icon:"🖥️", cat:"os",
+    what:"Hardware ও software এর মধ্যে bridge। Hardware resources manage করে, applications চালানোর environment দেয়।",
+    why:"OS ছাড়া hardware directly use করতে হতো — অত্যন্ত কঠিন। OS সব complexity abstract করে।",
+    examples:["Linux","Windows","macOS","Android","iOS","FreeRTOS"],
+    children:[
+      {
+        id:"os_desktop", label:"Desktop Operating Systems", icon:"🖥️", cat:"os",
+        what:"Personal computers ও workstations এর জন্য operating systems।",
+        why:"File management, application execution, user interface — সব OS handle করে।",
+        examples:["Windows 11","macOS Sequoia","Ubuntu","Fedora","Arch Linux"],
+        children:[
+          {
+            id:"os_windows", label:"Windows Family", icon:"🪟", cat:"os",
+            what:"Microsoft এর Windows family — বিশ্বের সবচেয়ে বেশি ব্যবহৃত desktop OS।",
+            why:"Office productivity, gaming, enterprise — সব segment এ dominant।",
+            examples:["Windows 11","Windows Server","Windows IoT","Xbox OS"],
+            langs:[
+              {name:"Windows 11",icon:"🪟",desc:"Latest consumer Windows"},
+              {name:"Windows Server",icon:"🗄️",desc:"Enterprise server OS"},
+              {name:"Windows CE/IoT",icon:"🤖",desc:"Embedded Windows variant"},
+            ]
+          },
+          {
+            id:"os_linux", label:"Linux Family", icon:"🐧", cat:"os",
+            what:"Open-source Unix-like OS। Linus Torvalds 1991 সালে তৈরি করেছেন। Servers, supercomputers, Android সব Linux based।",
+            why:"Free, open-source, stable, secure। Internet infrastructure এর ৯৬%+ Linux এ চলে।",
+            examples:["Ubuntu","Arch Linux","Fedora","Debian","Red Hat","Android"],
+            langs:[
+              {name:"Ubuntu",icon:"🟠",desc:"Beginner-friendly, most popular Linux distro"},
+              {name:"Arch Linux",icon:"🏹",desc:"DIY, rolling release — advanced users এর পছন্দ"},
+              {name:"Debian",icon:"🌀",desc:"Stable, reliable — server ও Ubuntu এর base"},
+              {name:"Fedora",icon:"🔵",desc:"Red Hat এর community distro — latest features"},
+              {name:"NixOS",icon:"❄️",desc:"Declarative configuration — reproducible system"},
+            ]
+          },
+          {
+            id:"os_macos", label:"macOS / Darwin", icon:"🍎", cat:"os",
+            what:"Apple এর Unix-based desktop OS। BSD kernel (Darwin) এর উপর built।",
+            why:"Creative professionals, developers — Unix tools + polished UI।",
+            examples:["macOS Sequoia","iOS","iPadOS","watchOS","tvOS"],
+            langs:[
+              {name:"macOS",icon:"🍎",desc:"Apple desktop OS — creative ও dev-friendly"},
+              {name:"iOS",icon:"📱",desc:"iPhone এর OS"},
+              {name:"iPadOS",icon:"📱",desc:"iPad specific features সহ"},
+            ]
+          },
+        ]
+      },
+      {
+        id:"os_mobile", label:"Mobile OS", icon:"📱", cat:"os",
+        what:"Smartphones ও tablets এর operating systems। Touch interface, battery optimization এর জন্য designed।",
+        why:"Mobile devices এর unique constraints (battery, touch, sensors) handle করতে specialized OS দরকার।",
+        examples:["Android","iOS","HarmonyOS","Wear OS","KaiOS"],
+        children:[
+          {
+            id:"os_android", label:"Android", icon:"🤖", cat:"os",
+            what:"Google এর Linux-based mobile OS। Open source (AOSP)। বিশ্বের সবচেয়ে বেশি ব্যবহৃত mobile OS।",
+            why:"Open platform — যেকোনো OEM use করতে পারে। App ecosystem বিশাল।",
+            examples:["Samsung Galaxy","Xiaomi","OnePlus","Google Pixel","Android TV"],
+            langs:[{name:"Android (AOSP)",icon:"🤖",desc:"Global mobile OS — 70%+ market share"}]
+          },
+          {
+            id:"os_harmonyos", label:"HarmonyOS", icon:"🌸", cat:"os",
+            what:"Huawei এর নিজস্ব OS। Android alternative হিসেবে develop করা হয়েছে।",
+            why:"US sanctions এর পর Huawei কে independent OS দরকার হয়েছে।",
+            examples:["Huawei phones","Huawei tablets","Smart TVs","IoT devices"],
+            langs:[{name:"HarmonyOS",icon:"🌸",desc:"Huawei এর cross-device OS ecosystem"}]
+          },
+        ]
+      },
+      {
+        id:"os_rtos", label:"Real-Time OS (RTOS)", icon:"⏱️", cat:"os",
+        what:"Time-critical tasks এর জন্য OS। Guaranteed response time দেয়। Embedded systems এ ব্যবহৃত।",
+        why:"Medical devices, automotive, industrial control — specific time এর মধ্যে respond না করলে catastrophic।",
+        examples:["FreeRTOS","VxWorks","QNX","Zephyr","RTLinux"],
+        children:[
+          {
+            id:"os_freertos", label:"FreeRTOS", icon:"⏱️", cat:"os",
+            what:"Open-source real-time operating system। Microcontrollers এ চলে। Amazon maintain করে।",
+            why:"IoT devices, embedded systems এ lightweight RTOS দরকার — FreeRTOS industry standard।",
+            examples:["ESP32","STM32","Arduino","AWS IoT","Smart appliances"],
+            langs:[{name:"FreeRTOS",icon:"⏱️",desc:"Most popular embedded RTOS — microcontroller standard"}]
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id:"root_net", label:"Networking & Protocols", icon:"🌐", cat:"net",
+    what:"Computers এর মধ্যে data transfer ও communication এর standards ও protocols।",
+    why:"Networking ছাড়া internet নেই। Protocols ensure করে যে different systems একে অপরের সাথে communicate করতে পারে।",
+    examples:["TCP/IP","HTTP","DNS","WebSocket","Bluetooth","WiFi"],
+    children:[
+      {
+        id:"net_internet", label:"Internet Protocols", icon:"🌍", cat:"net",
+        what:"Internet এ data পাঠানোর rules ও standards।",
+        why:"Billions of different devices কে একসাথে communicate করতে common rules দরকার।",
+        examples:["TCP/IP","HTTP","HTTPS","DNS","FTP","SMTP"],
+        children:[
+          {
+            id:"net_tcpip", label:"TCP/IP Stack", icon:"📡", cat:"net",
+            what:"Internet এর foundation। 4 layers: Network Access, Internet, Transport, Application।",
+            why:"সব internet communication এই protocol stack এ চলে।",
+            examples:["সব internet connections","Email","Web browsing","File transfer"],
+            langs:[
+              {name:"IP (Internet Protocol)",icon:"🌐",desc:"Addressing ও routing — IPv4 ও IPv6"},
+              {name:"TCP",icon:"🔗",desc:"Reliable, ordered delivery — web, email, SSH"},
+              {name:"UDP",icon:"⚡",desc:"Fast, connectionless — gaming, video call, DNS"},
+              {name:"ICMP",icon:"📢",desc:"Network diagnostics — ping command ব্যবহার করে"},
+            ]
+          },
+          {
+            id:"net_http", label:"HTTP / HTTPS / HTTP3", icon:"🔒", cat:"net",
+            what:"HyperText Transfer Protocol — web browsers ও servers এর মধ্যে communication এর protocol।",
+            why:"Web এর foundation। Every website visit এ HTTP/HTTPS ব্যবহার হয়।",
+            examples:["সব websites","REST APIs","WebDAV","QUIC"],
+            langs:[
+              {name:"HTTP/1.1",icon:"🔗",desc:"Classic web protocol — text-based"},
+              {name:"HTTP/2",icon:"⚡",desc:"Multiplexing — faster loading"},
+              {name:"HTTP/3 (QUIC)",icon:"🚀",desc:"UDP-based — fastest web protocol"},
+              {name:"HTTPS",icon:"🔒",desc:"HTTP over TLS — encrypted web traffic"},
+            ]
+          },
+          {
+            id:"net_ws", label:"WebSocket / WebRTC", icon:"🔌", cat:"net",
+            what:"Real-time bidirectional communication protocols for web applications।",
+            why:"Chat apps, live games, video calls — HTTP এর request-response model যথেষ্ট না।",
+            examples:["WhatsApp Web","Google Meet","Online games","Live dashboards"],
+            langs:[
+              {name:"WebSocket",icon:"🔌",desc:"Full-duplex — chat, live updates"},
+              {name:"WebRTC",icon:"📹",desc:"Peer-to-peer — video calls, file sharing"},
+              {name:"SSE (Server-Sent Events)",icon:"📡",desc:"One-way server→client streaming"},
+            ]
+          },
+        ]
+      },
+      {
+        id:"net_wireless", label:"Wireless Standards", icon:"📶", cat:"net",
+        what:"Cables ছাড়া wireless communication এর standards।",
+        why:"Mobile devices, IoT — wired connection সম্ভব না বা impractical।",
+        examples:["WiFi 6E","Bluetooth 5.3","5G","Zigbee","LoRa"],
+        children:[
+          {
+            id:"net_wifi", label:"WiFi Standards", icon:"📶", cat:"net",
+            what:"IEEE 802.11 standards — wireless LAN। বাড়ি ও office এ internet access এর primary method।",
+            why:"Cable ছাড়া internet — mobility ও convenience।",
+            examples:["Home routers","Laptops","Smartphones","Smart TVs","IoT devices"],
+            langs:[
+              {name:"WiFi 6 (802.11ax)",icon:"📶",desc:"Current standard — OFDMA, multi-user support"},
+              {name:"WiFi 7 (802.11be)",icon:"🚀",desc:"Latest — 46 Gbps, multi-link operation"},
+              {name:"WiFi 5 (802.11ac)",icon:"📡",desc:"5GHz band — still widely deployed"},
+            ]
+          },
+          {
+            id:"net_bt", label:"Bluetooth / Zigbee / LoRa", icon:"🔷", cat:"net",
+            what:"Short ও long range wireless communication protocols for IoT ও personal devices।",
+            why:"Different range ও power requirements এর জন্য different protocols।",
+            examples:["Headphones","Smart home","Industrial IoT","Agriculture sensors"],
+            langs:[
+              {name:"Bluetooth 5.3",icon:"🔷",desc:"Personal devices — headphones, keyboards"},
+              {name:"BLE (Bluetooth Low Energy)",icon:"⚡",desc:"IoT sensors — coin battery তে months চলে"},
+              {name:"Zigbee",icon:"🕸️",desc:"Mesh network — smart home devices"},
+              {name:"LoRaWAN",icon:"📡",desc:"Long range, low power — agriculture, smart city"},
+              {name:"NFC",icon:"💳",desc:"Very short range — contactless payment"},
+            ]
+          },
+          {
+            id:"net_cellular", label:"Cellular (4G/5G)", icon:"📱", cat:"net",
+            what:"Mobile network standards। Base stations এর মাধ্যমে wide-area wireless coverage।",
+            why:"Anywhere internet access — mobile broadband, IoT connectivity।",
+            examples:["Smartphones","IoT SIM","Mobile hotspot","Autonomous vehicles"],
+            langs:[
+              {name:"5G NR",icon:"🚀",desc:"Current generation — ultra-low latency, massive IoT"},
+              {name:"LTE (4G)",icon:"📱",desc:"Widespread mobile broadband"},
+              {name:"4G LTE-M / NB-IoT",icon:"📡",desc:"Low-power cellular IoT — smart meters"},
+            ]
+          },
+        ]
+      },
+    ]
+  },
+  {
+    id:"root_proto", label:"Interface & Bus Protocols", icon:"🔌", cat:"proto",
+    what:"Hardware components এর মধ্যে data communication এর physical ও logical protocols।",
+    why:"CPU, memory, peripherals — সব different speeds ও methods এ communicate করে। Standard protocols এই diversity manage করে।",
+    examples:["USB","PCIe","I2C","SPI","UART","HDMI"],
+    children:[
+      {
+        id:"proto_storage", label:"Storage Interfaces", icon:"💾", cat:"proto",
+        what:"Storage devices (SSD, HDD) কে computer এ connect করার physical ও logical interfaces।",
+        why:"Storage speed ও capacity bottleneck হয় interface দিয়ে — faster interface মানে faster system।",
+        examples:["NVMe PCIe","SATA","USB 3.2","Thunderbolt","M.2"],
+        children:[
+          {
+            id:"proto_nvme", label:"NVMe / PCIe", icon:"⚡", cat:"proto",
+            what:"NVM Express (NVMe) — PCIe bus এ directly connected SSDs এর protocol। Fastest storage interface।",
+            why:"SATA এর bottleneck bypass করে — 7 GB/s পর্যন্ত speed।",
+            examples:["M.2 NVMe SSDs","PCIe 4.0/5.0 SSDs","Server storage"],
+            langs:[
+              {name:"PCIe 5.0",icon:"⚡",desc:"Latest — 64 GT/s, GPU ও NVMe SSDs"},
+              {name:"PCIe 4.0",icon:"🔌",desc:"Current mainstream — 32 GT/s"},
+              {name:"NVMe Protocol",icon:"💾",desc:"Low-latency SSD communication layer"},
+            ]
+          },
+        ]
+      },
+      {
+        id:"proto_embedded", label:"Embedded Protocols", icon:"🔌", cat:"proto",
+        what:"Microcontrollers ও sensors এর মধ্যে communication এর protocols।",
+        why:"Embedded systems এ different sensors ও modules connect করার standard ways দরকার।",
+        examples:["I2C","SPI","UART","CAN bus","1-Wire"],
+        children:[
+          {
+            id:"proto_i2c", label:"I2C / SPI / UART", icon:"🔗", cat:"proto",
+            what:"Embedded systems এর common serial communication protocols। Different speed ও wire count এ কাজ করে।",
+            why:"Sensors, displays, memory — microcontroller এর সাথে communicate করার standard ways।",
+            examples:["Temperature sensors","OLED displays","SD cards","GPS modules","IMUs"],
+            langs:[
+              {name:"I2C",icon:"🔗",desc:"2-wire — multiple devices, medium speed — BMP280 sensor"},
+              {name:"SPI",icon:"⚡",desc:"4-wire — fast, full-duplex — SD cards, displays"},
+              {name:"UART",icon:"📡",desc:"2-wire serial — GPS, Bluetooth modules, debug"},
+              {name:"CAN Bus",icon:"🚗",desc:"Automotive — noise resistant, multi-master"},
+              {name:"1-Wire",icon:"🌡️",desc:"Single wire — DS18B20 temperature sensor"},
+            ]
+          },
+        ]
+      },
+      {
+        id:"proto_display", label:"Display & Video Interfaces", icon:"🖥️", cat:"proto",
+        what:"Display devices connect করার protocols — monitors, projectors, TVs।",
+        why:"High resolution, high refresh rate video data transfer করার জন্য high-bandwidth interfaces দরকার।",
+        examples:["HDMI 2.1","DisplayPort 2.1","USB-C Alt Mode","VGA","DVI"],
+        children:[
+          {
+            id:"proto_hdmi", label:"HDMI / DisplayPort", icon:"🖥️", cat:"proto",
+            what:"Consumer ও professional display connection standards। Audio ও video এক cable এ।",
+            why:"TVs, monitors, projectors — universal connection standard।",
+            examples:["4K/8K TVs","Gaming monitors","Projectors","Video capture"],
+            langs:[
+              {name:"HDMI 2.1",icon:"🖥️",desc:"Consumer standard — 4K@120Hz, 8K@60Hz"},
+              {name:"DisplayPort 2.1",icon:"🖥️",desc:"PC monitor standard — higher bandwidth"},
+              {name:"Thunderbolt 4",icon:"⚡",desc:"Universal cable — video+data+power+charging"},
+              {name:"USB-C (Alt Mode)",icon:"🔌",desc:"Video over USB-C — laptop monitors"},
+            ]
+          },
+        ]
+      },
+    ]
+  },
 ];
 
-// ============================================================
-const answers = new Array(30).fill(-1);
-let done = false;
-let secondsLeft = 35 * 60;
-let warnShown = false;
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TREE RENDERER
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let nodeMap = {};
+let totalNodes = 0;
 
-const LABELS = ['ক', 'খ', 'গ', 'ঘ'];
-
-function bn(n) { return String(n).replace(/[0-9]/g, d => '০১২৩৪৫৬৭৮৯'[d]); }
-
-// RENDER
-function render(arr, containerId, startIdx) {
-  const box = document.getElementById(containerId);
-  arr.forEach((item, i) => {
-    const qi = startIdx + i;
-    const card = document.createElement('div');
-    card.className = 'q-card';
-    card.id = `card-${qi}`;
-    card.style.animationDelay = (i * 0.035) + 's';
-    card.innerHTML = `
-      <div class="q-num"><span class="q-dot"></span>প্রশ্ন ${qi+1}</div>
-      <div class="q-text">${item.q}</div>
-      <div class="options" id="opts-${qi}">
-        ${item.opts.map((o,oi)=>`
-          <button class="option" id="o-${qi}-${oi}" onclick="pick(${qi},${oi})">
-            <span class="opt-lbl">${LABELS[oi]}</span><span>${o}</span>
-          </button>`).join('')}
-      </div>
-      <div class="explain-box" id="exp-${qi}"></div>
-    `;
-    box.appendChild(card);
-  });
+function countChildren(node) {
+  let n = 1;
+  if(node.children) node.children.forEach(c => n += countChildren(c));
+  return n;
 }
 
-function pick(qi, oi) {
-  if (done) return;
-  answers[qi] = oi;
-  for(let i=0;i<4;i++) document.getElementById(`o-${qi}-${i}`).classList.remove('selected');
-  document.getElementById(`o-${qi}-${oi}`).classList.add('selected');
-  document.getElementById(`card-${qi}`).classList.add('answered');
-  updateProg();
-}
+function buildNode(data, depth=0, breadcrumb=[]) {
+  nodeMap[data.id] = data;
+  totalNodes++;
 
-function updateProg() {
-  const n = answers.filter(a=>a!==-1).length;
-  const pct = Math.round(n/30*100);
-  document.getElementById('prog-txt').textContent = `উত্তর দেওয়া হয়েছে: ${bn(n)}/৩০`;
-  document.getElementById('prog-pct').textContent = bn(pct) + '%';
-  document.getElementById('prog-fill').style.width = pct + '%';
-  document.getElementById('float-c').textContent = bn(n);
-}
+  const bc = [...breadcrumb, data.label];
+  const hasChildren = data.children && data.children.length > 0;
+  const childCount = hasChildren ? countChildren(data) - 1 : 0;
 
-// TIMER
-function startTimer() {
-  return setInterval(() => {
-    secondsLeft--;
-    const m = Math.floor(secondsLeft/60), s = secondsLeft%60;
-    const d = document.getElementById('timer-display');
-    d.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-    d.className = '';
-    if (secondsLeft <= 300 && secondsLeft > 60) d.classList.add('warn');
-    if (secondsLeft <= 60) d.classList.add('danger');
-    if (secondsLeft <= 0) { clearInterval(timerRef); autoSubmit(); }
-  }, 1000);
-}
+  const el = document.createElement('div');
+  el.className = `node depth-${Math.min(depth,4)} cat-${data.cat || 'prog'}`;
+  el.dataset.id = data.id;
+  el.dataset.depth = depth;
+  data._breadcrumb = bc.join(' › ');
 
-let timerRef = startTimer();
+  const header = document.createElement('div');
+  header.className = 'node-header';
+  header.dataset.id = data.id;
+  header.innerHTML = `
+    <span class="node-icon">${data.icon || '●'}</span>
+    <span class="node-label">${data.label}</span>
+    ${childCount > 0 ? `<span class="node-count">${childCount}</span>` : ''}
+    ${hasChildren ? `<span class="node-toggle">▶</span>` : ''}
+  `;
 
-function autoSubmit() {
-  done = true;
-  showResults();
-}
-
-// SUBMIT
-function doSubmit() {
-  const unan = answers.filter(a=>a===-1).length;
-  if (unan > 0 && !warnShown) {
-    warnShown = true;
-    const wb = document.getElementById('warn-box');
-    wb.style.display = 'block';
-    wb.textContent = `⚠ এখনও ${bn(unan)}টি প্রশ্নের উত্তর দাওনি। নিশ্চিত হলে আবার "জমা দিন" চাপো।`;
-    document.getElementById('submit-btn').textContent = 'নিশ্চিত করুন ও জমা দিন';
-    return;
-  }
-  clearInterval(timerRef);
-  done = true;
-  showResults();
-}
-
-// SHOW RESULTS
-function showResults() {
-  document.getElementById('warn-box').style.display = 'none';
-  document.getElementById('submit-btn').disabled = true;
-
-  let correct = 0, wrong = 0, skip = 0;
-
-  Q.forEach((item, qi) => {
-    const sel = answers[qi];
-    const cor = item.ans;
-
-    for(let i=0;i<4;i++){
-      const btn = document.getElementById(`o-${qi}-${i}`);
-      btn.classList.add('disabled');
-      btn.onclick = null;
+  header.addEventListener('click', e => {
+    e.stopPropagation();
+    // toggle
+    if(hasChildren) {
+      const ch = el.querySelector(':scope > .node-children');
+      const tog = header.querySelector('.node-toggle');
+      const isOpen = ch.classList.contains('open');
+      ch.classList.toggle('open', !isOpen);
+      tog.classList.toggle('open', !isOpen);
     }
-
-    if (sel === -1) {
-      skip++;
-      document.getElementById(`o-${qi}-${cor}`).classList.add('show-correct');
-    } else if (sel === cor) {
-      correct++;
-      document.getElementById(`o-${qi}-${cor}`).classList.add('correct');
-    } else {
-      wrong++;
-      document.getElementById(`o-${qi}-${sel}`).classList.add('wrong');
-      document.getElementById(`o-${qi}-${cor}`).classList.add('show-correct');
-    }
-
-    // show explanation
-    const expBox = document.getElementById(`exp-${qi}`);
-    expBox.style.display = 'block';
-    const mathLines = item.math.map(m => `<div class="math-line">${m}</div>`).join('');
-    expBox.innerHTML = `
-      <div class="expl-head">💡 ব্যাখ্যা</div>
-      ${item.expl.replace(/\n/g,'<br>')}
-      ${mathLines}
-    `;
+    // show detail
+    showPanel(data);
+    document.querySelectorAll('.node-header.active').forEach(h => h.classList.remove('active'));
+    header.classList.add('active');
   });
 
-  const panel = document.getElementById('result-panel');
-  panel.style.display = 'block';
-  panel.scrollIntoView({behavior:'smooth', block:'start'});
+  el.appendChild(header);
 
-  document.getElementById('res-s').textContent = bn(correct);
-  document.getElementById('res-c').textContent = bn(correct);
-  document.getElementById('res-w').textContent = bn(wrong);
-  document.getElementById('res-sk').textContent = bn(skip);
+  if(hasChildren) {
+    const childWrap = document.createElement('div');
+    childWrap.className = 'node-children';
+    // auto-open depth 0
+    if(depth === 0) childWrap.classList.add('open');
 
-  const pct = Math.round(correct/30*100);
-  const msgs = [
-    [90, '🏆 অসাধারণ! এই অধ্যায়গুলোতে তুমি সত্যিই দক্ষ।'],
-    [75, '🎯 খুব ভালো! আর একটু চর্চায় পূর্ণ নম্বর পাবে।'],
-    [50, '📚 ভালো চেষ্টা! ব্যাখ্যাগুলো মনোযোগ দিয়ে পড়ো।'],
-    [0,  '💪 হতাশ হয়ো না — নিচের ব্যাখ্যাগুলো পড়লে পরেরবার ভালো করবে।']
-  ];
-  document.getElementById('res-msg').textContent = msgs.find(([t]) => pct >= t)[1];
+    data.children.forEach(c => {
+      childWrap.appendChild(buildNode(c, depth+1, bc));
+    });
+    el.appendChild(childWrap);
 
-  // timer
-  if (secondsLeft > 0) {
-    const taken = 2100 - secondsLeft;
-    const tm = Math.floor(taken/60), ts = taken%60;
-    document.getElementById('timer-display').textContent =
-      `${String(tm).padStart(2,'0')}:${String(ts).padStart(2,'0')}`;
-    document.getElementById('timer-display').className = '';
-    document.getElementById('timer-display').style.color = 'var(--green)';
+    // update toggle
+    if(depth === 0) {
+      header.querySelector('.node-toggle').classList.add('open');
+    }
   }
+
+  return el;
 }
 
-render(Q.slice(0,15), 'qc5', 0);
-render(Q.slice(15), 'qc7', 15);
-updateProg();
+function renderTree() {
+  const root = document.getElementById('tree-root');
+  root.innerHTML = '';
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex; flex-wrap:wrap; gap:24px; align-items:flex-start;';
+
+  DATA.forEach(cat => {
+    const node = buildNode(cat, 0, []);
+    wrap.appendChild(node);
+  });
+  root.appendChild(wrap);
+
+  document.getElementById('count-badge').textContent = `${totalNodes} nodes`;
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PANEL
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function showPanel(data) {
+  const panel = document.getElementById('panel');
+  document.getElementById('panel-icon').textContent = data.icon || '📦';
+  document.getElementById('panel-title').textContent = data.label;
+  document.getElementById('panel-breadcrumb').textContent = data._breadcrumb || data.label;
+
+  const body = document.getElementById('panel-body');
+  body.innerHTML = '';
+
+  const catClass = `cat-${data.cat || 'prog'}`;
+
+  // Year badge
+  let yearHTML = data.year ? `<span class="year-badge" style="border-color:var(--c);color:var(--c)">Since ${data.year}</span>` : '';
+
+  // WHAT IS IT
+  if(data.what) {
+    const sec = document.createElement('div');
+    sec.className = `panel-section ${catClass}`;
+    sec.innerHTML = `
+      <div class="panel-label">🔍 কী এটা ${yearHTML}</div>
+      <p class="panel-text">${data.what}</p>
+    `;
+    body.appendChild(sec);
+  }
+
+  // WHY THIS CATEGORY
+  if(data.why) {
+    const sec = document.createElement('div');
+    sec.className = 'panel-section';
+    sec.innerHTML = `
+      <div class="panel-label">💡 কেন এই category তে</div>
+      <div class="why-box">${data.why.replace(/\b(important|standard|dominant|foundation|backbone|center|champion|primary|official|universal|critical)\b/gi, m => `<em>${m}</em>`)}</div>
+    `;
+    body.appendChild(sec);
+  }
+
+  // EXAMPLES
+  if(data.examples && data.examples.length) {
+    const sec = document.createElement('div');
+    sec.className = `panel-section ${catClass}`;
+    sec.innerHTML = `<div class="panel-label">📌 Real-world ব্যবহার</div>
+      <div class="example-chips">${data.examples.map(e => `<span class="chip chip-lang">${e}</span>`).join('')}</div>`;
+    body.appendChild(sec);
+  }
+
+  // LANGUAGE CARDS
+  if(data.langs && data.langs.length) {
+    const sec = document.createElement('div');
+    sec.className = `panel-section ${catClass}`;
+    sec.innerHTML = `<div class="panel-label">🌟 Notable Examples</div>`;
+    const cards = document.createElement('div');
+    cards.className = 'lang-cards';
+    data.langs.forEach(l => {
+      const card = document.createElement('div');
+      card.className = `lang-card ${catClass}`;
+      card.innerHTML = `<div class="lang-card-icon">${l.icon}</div>
+        <div><div class="lang-card-name">${l.name}</div><div class="lang-card-desc">${l.desc}</div></div>`;
+      card.addEventListener('click', () => { toast(`Copied: ${l.name}`); navigator.clipboard?.writeText(l.name); });
+      cards.appendChild(card);
+    });
+    sec.appendChild(cards);
+    body.appendChild(sec);
+  }
+
+  // CHILDREN COUNT
+  if(data.children && data.children.length) {
+    const sec = document.createElement('div');
+    sec.className = 'panel-section';
+    sec.innerHTML = `<div class="panel-label">📂 Sub-categories</div>
+      <div class="example-chips">${data.children.map(c => `<span class="chip">${c.icon} ${c.label}</span>`).join('')}</div>`;
+    body.appendChild(sec);
+  }
+
+  panel.classList.add('open');
+}
+
+document.getElementById('panel-close').addEventListener('click', () => {
+  document.getElementById('panel').classList.remove('open');
+  document.querySelectorAll('.node-header.active').forEach(h => h.classList.remove('active'));
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// PAN & ZOOM
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+let tx=20, ty=20, scale=1;
+const wrap = document.getElementById('canvas-wrap');
+const treeRoot = document.getElementById('tree-root');
+
+function applyTransform() {
+  treeRoot.style.transform = `translate(${tx}px,${ty}px) scale(${scale})`;
+}
+applyTransform();
+
+let dragging=false, startX=0, startY=0, startTX=0, startTY=0;
+wrap.addEventListener('mousedown', e => {
+  if(e.target.closest('.node-header')) return;
+  dragging=true; wrap.classList.add('grabbing');
+  startX=e.clientX; startY=e.clientY; startTX=tx; startTY=ty;
+});
+document.addEventListener('mousemove', e => {
+  if(!dragging) return;
+  tx = startTX + (e.clientX - startX);
+  ty = startTY + (e.clientY - startY);
+  applyTransform();
+});
+document.addEventListener('mouseup', () => { dragging=false; wrap.classList.remove('grabbing'); });
+
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? 0.92 : 1.08;
+  const newScale = Math.min(Math.max(scale * delta, 0.2), 3);
+  const rect = wrap.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  tx = mx - (mx - tx) * (newScale / scale);
+  ty = my - (my - ty) * (newScale / scale);
+  scale = newScale;
+  applyTransform();
+}, {passive:false});
+
+// touch
+let touches=[], touchDist=0;
+wrap.addEventListener('touchstart', e => {
+  touches = Array.from(e.touches);
+  if(touches.length === 2) touchDist = Math.hypot(touches[0].clientX-touches[1].clientX, touches[0].clientY-touches[1].clientY);
+  if(touches.length === 1 && !e.target.closest('.node-header')) { startX=touches[0].clientX; startY=touches[0].clientY; startTX=tx; startTY=ty; dragging=true; }
+}, {passive:true});
+wrap.addEventListener('touchmove', e => {
+  const t = Array.from(e.touches);
+  if(t.length===2) {
+    const d = Math.hypot(t[0].clientX-t[1].clientX, t[0].clientY-t[1].clientY);
+    scale = Math.min(Math.max(scale * d/touchDist, 0.2), 3);
+    touchDist=d; applyTransform();
+  } else if(t.length===1 && dragging) {
+    tx=startTX+(t[0].clientX-startX); ty=startTY+(t[0].clientY-startY); applyTransform();
+  }
+}, {passive:true});
+wrap.addEventListener('touchend', () => dragging=false);
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// SEARCH
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function matchNode(node, q) {
+  const fields = [node.label, node.what, node.why, ...(node.examples||[]), ...(node.langs||[]).map(l=>l.name+' '+l.desc)].join(' ').toLowerCase();
+  return fields.includes(q);
+}
+
+document.getElementById('search').addEventListener('input', function() {
+  const q = this.value.trim().toLowerCase();
+  document.querySelectorAll('.node-header').forEach(h => {
+    h.classList.remove('search-match','search-hidden');
+  });
+  if(!q) return;
+  document.querySelectorAll('.node').forEach(nodeEl => {
+    const id = nodeEl.dataset.id;
+    const data = nodeMap[id];
+    if(!data) return;
+    const header = nodeEl.querySelector(':scope > .node-header');
+    if(matchNode(data, q)) {
+      header.classList.add('search-match');
+      // open parents
+      let parent = nodeEl.parentElement;
+      while(parent) {
+        if(parent.classList?.contains('node-children')) parent.classList.add('open');
+        if(parent.classList?.contains('node')) {
+          const ph = parent.querySelector(':scope > .node-header');
+          const tog = ph?.querySelector('.node-toggle');
+          if(tog) tog.classList.add('open');
+        }
+        parent = parent.parentElement;
+      }
+    }
+  });
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// BUTTONS
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+document.getElementById('btn-expand-all').addEventListener('click', () => {
+  document.querySelectorAll('.node-children').forEach(c => c.classList.add('open'));
+  document.querySelectorAll('.node-toggle').forEach(t => t.classList.add('open'));
+});
+document.getElementById('btn-collapse-all').addEventListener('click', () => {
+  document.querySelectorAll('.node-children').forEach(c => c.classList.remove('open'));
+  document.querySelectorAll('.node-toggle').forEach(t => t.classList.remove('open'));
+  // re-open depth 0
+  document.querySelectorAll('.node.depth-0 > .node-children').forEach(c => {
+    c.classList.add('open');
+    c.parentElement.querySelector('.node-toggle')?.classList.add('open');
+  });
+});
+document.getElementById('btn-reset-view').addEventListener('click', () => {
+  tx=20; ty=20; scale=1; applyTransform();
+});
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// TOAST
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1800);
+}
+
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+// INIT
+// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+renderTree();
 </script>
 </body>
-</html>
+  </html>
