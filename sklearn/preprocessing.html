@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Preprocessing — sklearn.bn</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand"><span class="dot">●</span><span class="brand-title">sklearn.bn</span></div>
+    <div class="brand-sub">scikit-learn ডকুমেন্টেশন, বাংলায়</div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">শুরু করি</div>
+      <a class="nav-link" href="index.html">পরিচিতি</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">০১ · ডেটা প্রস্তুতি</div>
+      <a class="nav-link active" href="preprocessing.html">Preprocessing</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">০২ · Supervised Learning</div>
+      <a class="nav-link" href="linear-models.html">Linear Models</a>
+      <a class="nav-link" href="tree-ensemble.html">Tree &amp; Ensemble</a>
+      <a class="nav-link" href="svm-knn.html">SVM &amp; KNN</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">০৩ · Unsupervised Learning</div>
+      <a class="nav-link" href="clustering-pca.html">Clustering &amp; PCA</a>
+    </div>
+    <div class="nav-group">
+      <div class="nav-group-label">০৪ · মূল্যায়ন</div>
+      <a class="nav-link" href="model-selection.html">Model Selection &amp; Metrics</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="eyebrow">sklearn.preprocessing / model_selection</div>
+    <h1 class="page-title">Preprocessing — ডেটা প্রস্তুত করা</h1>
+    <p class="page-lead">যেকোনো model train করার আগে, raw data-কে model-এর "বোঝার উপযোগী" ফরম্যাটে আনতে হয়। এই অধ্যায়ে সবচেয়ে বেশি ব্যবহৃত ৬টা টুল দেখবো।</p>
+
+    <div class="intuition-box">
+      <b>কেন Preprocessing দরকার?</b> Model-রা সংখ্যা (numbers) নিয়ে কাজ করে, text নিয়ে না। আবার অনেক model distance-based (যেমন KNN, SVM) — সেখানে যদি একটা feature-এর value 0-1000 আর আরেকটা 0-1 হয়, বড় value-টা অন্যায্যভাবে dominate করে ফেলবে। তাই আগে থেকে সব feature-কে একই "স্কেলে" আনা হয়।
+    </div>
+
+    <!-- train_test_split -->
+    <section class="block">
+      <h2>Train/Test split</h2>
+      <div class="class-card">
+        <span class="tag">function</span>
+        <div class="class-name">train_test_split</div>
+        <div class="class-import">from sklearn.model_selection import train_test_split</div>
+
+        <p>Data-কে দুই ভাগে ভাগ করে — একভাগ দিয়ে model শেখানো হয় (train), আরেক ভাগ দিয়ে যাচাই করা হয় model কতটা ভালো শিখেছে (test) — যেটা model আগে কখনো দেখেনি।</p>
+
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>test_size</td><td>কত অংশ (0 থেকে 1) test-এর জন্য রাখা হবে (যেমন 0.2 = 20%)</td></tr>
+          <tr><td>random_state</td><td>একটা fixed সংখ্যা দিলে, split প্রতিবার একই রকম হবে (reproducibility)</td></tr>
+          <tr><td>stratify</td><td>class ratio বজায় রাখতে চাইলে (যেমন classification-এ) এখানে y দাও</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(
+    X, y, test_size=<span class="num">0.2</span>, random_state=<span class="num">42</span>
+)
+<span class="c"># X_train, y_train দিয়ে model শেখাও
+# X_test, y_test দিয়ে পরে যাচাই করো</span></pre>
+      </div>
+    </section>
+
+    <!-- StandardScaler -->
+    <section class="block">
+      <h2>Scaling — সব feature-কে একই মাপে আনা</h2>
+
+      <div class="class-card">
+        <span class="tag">class</span>
+        <div class="class-name">StandardScaler</div>
+        <div class="class-import">from sklearn.preprocessing import StandardScaler</div>
+        <p>প্রতিটা feature-কে এমনভাবে রূপান্তর করে যাতে তার গড় (mean) হয় 0, আর standard deviation হয় 1। একে বলে <b>Standardization</b> (Z-score normalization — তুমি আগে Z-score শিখেছো, এটা সেটারই ব্যবহার!)।</p>
+
+        <div class="intuition-box">সূত্র: <code>z = (x - mean) / std</code> — ঠিক যেটা তুমি Z-test-এ দেখেছিলে, এখানে শুধু $\mu$-এর বদলে sample mean ব্যবহার হয়।</div>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+
+scaler = <span class="fn">StandardScaler</span>()
+scaler.<span class="fn">fit</span>(X_train)              <span class="c"># mean, std শিখে নেয় শুধু train data থেকে</span>
+X_train_scaled = scaler.<span class="fn">transform</span>(X_train)
+X_test_scaled  = scaler.<span class="fn">transform</span>(X_test)   <span class="c"># same scaler, test-এ fit করা হয় না!</span>
+
+<span class="c"># শর্টকাট: fit আর transform একসাথে</span>
+X_train_scaled = scaler.<span class="fn">fit_transform</span>(X_train)</pre>
+
+        <div class="warn-box"><b>সাবধান:</b> <code>fit()</code> সবসময় শুধু <b>train data</b>-তে করবে, কখনো test data-তে না। নাহলে model অজান্তেই test-এর তথ্য "দেখে" ফেলবে (data leakage)।</div>
+      </div>
+
+      <div class="class-card">
+        <span class="tag">class</span>
+        <div class="class-name">MinMaxScaler</div>
+        <div class="class-import">from sklearn.preprocessing import MinMaxScaler</div>
+        <p>সব value-কে একটা নির্দিষ্ট range-এ (সাধারণত 0 থেকে 1) নিয়ে আসে।</p>
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>feature_range</td><td>Default (0,1) — চাইলে অন্য range দেওয়া যায়, যেমন (-1,1)</td></tr>
+        </table>
+        <pre class="code-block"><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> MinMaxScaler
+
+scaler = <span class="fn">MinMaxScaler</span>()
+X_scaled = scaler.<span class="fn">fit_transform</span>(X_train)  <span class="c"># সব value এখন 0 থেকে 1 এর মধ্যে</span></pre>
+      </div>
+    </section>
+
+    <!-- Encoding -->
+    <section class="block">
+      <h2>Encoding — Text/Category-কে সংখ্যায় রূপান্তর</h2>
+
+      <div class="class-card">
+        <span class="tag">class</span>
+        <div class="class-name">LabelEncoder</div>
+        <div class="class-import">from sklearn.preprocessing import LabelEncoder</div>
+        <p>একটা category column-কে (যেমন "Red", "Green", "Blue") সংখ্যায় রূপান্তর করে (0, 1, 2...)। মূলত <b>target/label (y)</b> এর জন্য ব্যবহার হয়, feature (X)-এর জন্য না — কারণ এটা একটা "ranking" এর মতো implication তৈরি করে ফেলে (Blue=2 মানে Blue "বেশি" — যেটা সত্যি না)।</p>
+        <pre class="code-block"><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> LabelEncoder
+
+le = <span class="fn">LabelEncoder</span>()
+y_encoded = le.<span class="fn">fit_transform</span>([<span class="str">"cat"</span>, <span class="str">"dog"</span>, <span class="str">"dog"</span>, <span class="str">"cat"</span>])
+<span class="c"># output: [0, 1, 1, 0]</span></pre>
+      </div>
+
+      <div class="class-card">
+        <span class="tag">class</span>
+        <div class="class-name">OneHotEncoder</div>
+        <div class="class-import">from sklearn.preprocessing import OneHotEncoder</div>
+        <p>Category-কে একাধিক binary (0/1) column-এ ভাগ করে দেয় — feature (X)-এর জন্য সঠিক পদ্ধতি, কারণ এতে কোনো ভুল "ranking" তৈরি হয় না।</p>
+        <pre class="code-block"><span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> OneHotEncoder
+
+ohe = <span class="fn">OneHotEncoder</span>(sparse_output=<span class="kw">False</span>)
+X_encoded = ohe.<span class="fn">fit_transform</span>([[<span class="str">"cat"</span>], [<span class="str">"dog"</span>], [<span class="str">"cat"</span>]])
+<span class="c"># cat  -> [1, 0]
+# dog  -> [0, 1]</span></pre>
+        <div class="intuition-box"><b>মনে রাখার নিয়ম:</b> Target (y) হলে → LabelEncoder। Feature (X) হলে → OneHotEncoder।</div>
+      </div>
+    </section>
+
+    <!-- Imputer -->
+    <section class="block">
+      <h2>Missing Value হ্যান্ডেল করা</h2>
+      <div class="class-card">
+        <span class="tag">class</span>
+        <div class="class-name">SimpleImputer</div>
+        <div class="class-import">from sklearn.impute import SimpleImputer</div>
+        <p>Data-তে ফাঁকা (missing/NaN) জায়গাগুলো একটা reasonable value দিয়ে পূরণ করে দেয়।</p>
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>strategy</td><td>"mean", "median", "most_frequent", বা "constant"</td></tr>
+        </table>
+        <pre class="code-block"><span class="kw">from</span> sklearn.impute <span class="kw">import</span> SimpleImputer
+
+imputer = <span class="fn">SimpleImputer</span>(strategy=<span class="str">"mean"</span>)
+X_filled = imputer.<span class="fn">fit_transform</span>(X_train)  <span class="c"># ফাঁকা জায়গা = কলামের গড় দিয়ে পূর্ণ</span></pre>
+      </div>
+    </section>
+
+    <div class="footer-nav">
+      <a href="index.html">← পরিচিতি</a>
+      <a href="linear-models.html">পরের অধ্যায়: Linear Models →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tree &amp; Ensemble — sklearn.bn</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="dot">●</span><span class="brand-title">sklearn.bn</span></div>
+    <div class="brand-sub">scikit-learn ডকুমেন্টেশন, বাংলায়</div>
+    <div class="nav-group"><div class="nav-group-label">শুরু করি</div>
+      <a class="nav-link" href="index.html">পরিচিতি</a></div>
+    <div class="nav-group"><div class="nav-group-label">০১ · ডেটা প্রস্তুতি</div>
+      <a class="nav-link" href="preprocessing.html">Preprocessing</a></div>
+    <div class="nav-group"><div class="nav-group-label">০২ · Supervised Learning</div>
+      <a class="nav-link" href="linear-models.html">Linear Models</a>
+      <a class="nav-link active" href="tree-ensemble.html">Tree &amp; Ensemble</a>
+      <a class="nav-link" href="svm-knn.html">SVM &amp; KNN</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৩ · Unsupervised Learning</div>
+      <a class="nav-link" href="clustering-pca.html">Clustering &amp; PCA</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৪ · মূল্যায়ন</div>
+      <a class="nav-link" href="model-selection.html">Model Selection &amp; Metrics</a></div>
+  </aside>
+
+  <main>
+    <div class="eyebrow">sklearn.tree / sklearn.ensemble</div>
+    <h1 class="page-title">Decision Tree &amp; Ensemble Models</h1>
+    <p class="page-lead">একটার পর একটা প্রশ্ন করে (if-else-এর মতো) সিদ্ধান্ত নেওয়া model — আর একাধিক Tree মিলিয়ে আরও শক্তিশালী model বানানো।</p>
+
+    <section class="block">
+      <h2>Decision Tree</h2>
+      <div class="class-card">
+        <span class="tag clf">classification</span><span class="tag reg">regression</span>
+        <div class="class-name">DecisionTreeClassifier / DecisionTreeRegressor</div>
+        <div class="class-import">from sklearn.tree import DecisionTreeClassifier</div>
+        <p>একটা flowchart-এর মতো — প্রতিটা node-এ একটা প্রশ্ন (যেমন "বয়স &gt; 30?"), আর প্রতিটা উত্তর অনুযায়ী পরের node-এ যাওয়া, শেষে একটা leaf-এ পৌঁছে সিদ্ধান্ত নেওয়া।</p>
+
+        <div class="intuition-box"><b>ইনটুইশন:</b> ঠিক তুমি নিজে যেভাবে সিদ্ধান্ত নাও — "আজকে কি ছাতা নেবো?" → "আকাশ মেঘলা?" → হ্যাঁ হলে → "বৃষ্টির পূর্বাভাস আছে?" → এভাবে ধাপে ধাপে প্রশ্ন করে শেষে একটা সিদ্ধান্তে পৌঁছানো।</div>
+
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>max_depth</td><td>Tree কত "গভীর" পর্যন্ত প্রশ্ন করবে (বেশি depth = বেশি complex, overfitting-এর ঝুঁকি)</td></tr>
+          <tr><td>min_samples_split</td><td>একটা node ভাঙতে (split করতে) ন্যূনতম কতগুলো sample দরকার</td></tr>
+          <tr><td>criterion</td><td>Split কীভাবে ঠিক করা হবে — "gini" বা "entropy" (classification-এ)</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.tree <span class="kw">import</span> DecisionTreeClassifier
+
+model = <span class="fn">DecisionTreeClassifier</span>(max_depth=<span class="num">4</span>, random_state=<span class="num">42</span>)
+model.<span class="fn">fit</span>(X_train, y_train)
+predictions = model.<span class="fn">predict</span>(X_test)</pre>
+
+        <div class="warn-box"><b>সাবধান:</b> <code>max_depth</code> না দিলে Tree training data একদম মুখস্থ করে ফেলতে পারে (perfect train accuracy কিন্তু খারাপ test accuracy) — এটাই <b>overfitting</b>।</div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Random Forest — অনেকগুলো Tree-এর "ভোট"</h2>
+      <div class="class-card">
+        <span class="tag clf">classification</span><span class="tag reg">regression</span>
+        <div class="class-name">RandomForestClassifier / RandomForestRegressor</div>
+        <div class="class-import">from sklearn.ensemble import RandomForestClassifier</div>
+        <p>একটামাত্র Tree না বানিয়ে, **অনেকগুলো (যেমন ১০০টা) ভিন্ন ভিন্ন Tree** বানানো হয় (প্রতিটা random subset of data/features দিয়ে), তারপর সবার prediction-এর "majority vote" নেওয়া হয়।</p>
+
+        <div class="intuition-box"><b>ইনটুইশন — "Wisdom of the Crowd":</b> একজন বিশেষজ্ঞের মতামতের চেয়ে, ১০০ জন ভিন্ন ভিন্ন প্রেক্ষাপটের মানুষের majority মতামত সাধারণত বেশি নির্ভরযোগ্য হয়। একটা Tree সহজে overfit করে, কিন্তু ১০০টা ভিন্ন Tree-এর ভুলগুলো একে অপরকে "cancel out" করে ফেলে।</div>
+
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>n_estimators</td><td>কতগুলো Tree বানানো হবে (default 100)</td></tr>
+          <tr><td>max_depth</td><td>প্রতিটা Tree-এর max depth</td></tr>
+          <tr><td>n_jobs</td><td>-1 দিলে সব CPU core ব্যবহার করে parallel-এ train হয়</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+model = <span class="fn">RandomForestClassifier</span>(n_estimators=<span class="num">100</span>, n_jobs=-<span class="num">1</span>)
+model.<span class="fn">fit</span>(X_train, y_train)
+predictions = model.<span class="fn">predict</span>(X_test)
+
+<span class="c"># কোন feature কতটা গুরুত্বপূর্ণ, সেটাও জানা যায়</span>
+<span class="kw">print</span>(model.feature_importances_)</pre>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Gradient Boosting — ধাপে ধাপে ভুল সংশোধন</h2>
+      <div class="class-card">
+        <span class="tag clf">classification</span><span class="tag reg">regression</span>
+        <div class="class-name">GradientBoostingClassifier</div>
+        <div class="class-import">from sklearn.ensemble import GradientBoostingClassifier</div>
+        <p>Random Forest-এর মতো সব Tree একসাথে/independently বানানো হয় না — এখানে প্রতিটা নতুন Tree, আগের Tree-গুলোর <b>ভুলগুলো সংশোধন</b> করার চেষ্টা করে বানানো হয়, ধাপে ধাপে (sequentially)।</p>
+        <pre class="code-block"><span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> GradientBoostingClassifier
+
+model = <span class="fn">GradientBoostingClassifier</span>(n_estimators=<span class="num">100</span>, learning_rate=<span class="num">0.1</span>)
+model.<span class="fn">fit</span>(X_train, y_train)</pre>
+      </div>
+    </section>
+
+    <div class="footer-nav">
+      <a href="linear-models.html">← Linear Models</a>
+      <a href="svm-knn.html">পরের অধ্যায়: SVM &amp; KNN →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

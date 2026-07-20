@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Linear Models — sklearn.bn</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="dot">●</span><span class="brand-title">sklearn.bn</span></div>
+    <div class="brand-sub">scikit-learn ডকুমেন্টেশন, বাংলায়</div>
+    <div class="nav-group"><div class="nav-group-label">শুরু করি</div>
+      <a class="nav-link" href="index.html">পরিচিতি</a></div>
+    <div class="nav-group"><div class="nav-group-label">০১ · ডেটা প্রস্তুতি</div>
+      <a class="nav-link" href="preprocessing.html">Preprocessing</a></div>
+    <div class="nav-group"><div class="nav-group-label">০২ · Supervised Learning</div>
+      <a class="nav-link active" href="linear-models.html">Linear Models</a>
+      <a class="nav-link" href="tree-ensemble.html">Tree &amp; Ensemble</a>
+      <a class="nav-link" href="svm-knn.html">SVM &amp; KNN</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৩ · Unsupervised Learning</div>
+      <a class="nav-link" href="clustering-pca.html">Clustering &amp; PCA</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৪ · মূল্যায়ন</div>
+      <a class="nav-link" href="model-selection.html">Model Selection &amp; Metrics</a></div>
+  </aside>
+
+  <main>
+    <div class="eyebrow">sklearn.linear_model</div>
+    <h1 class="page-title">Linear Models</h1>
+    <p class="page-lead">সবচেয়ে সহজ, সবচেয়ে ব্যাখ্যাযোগ্য (interpretable) model — একটা সরল রেখা (বা তার generalization) দিয়ে data-এর pattern বোঝার চেষ্টা করে।</p>
+
+    <section class="block">
+      <h2>Linear Regression — সংখ্যা predict করা (Regression)</h2>
+      <div class="class-card">
+        <span class="tag reg">regression</span>
+        <div class="class-name">LinearRegression</div>
+        <div class="class-import">from sklearn.linear_model import LinearRegression</div>
+        <p>Feature (X) আর একটা continuous output (y, যেমন দাম, তাপমাত্রা)-এর মধ্যে সবচেয়ে ভালো ফিট হওয়া <b>সরলরেখা</b> বের করে: $y = w_1x_1 + w_2x_2 + ... + b$</p>
+
+        <div class="intuition-box"><b>ইনটুইশন:</b> ধরো, বাড়ির আয়তন (sq ft) দিয়ে দাম predict করছো। Model এমন একটা রেখা খুঁজে বের করে, যেটা সব data point-এর যত কাছ দিয়ে সম্ভব যায় (error, technically MSE, সবচেয়ে কম করে)।</div>
+
+        <table class="params">
+          <tr><th>Attribute (fit করার পর)</th><th>মানে</th></tr>
+          <tr><td>.coef_</td><td>প্রতিটা feature-এর "ওজন" (weight/slope)</td></tr>
+          <tr><td>.intercept_</td><td>রেখার y-intercept (b)</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LinearRegression
+
+model = <span class="fn">LinearRegression</span>()
+model.<span class="fn">fit</span>(X_train, y_train)
+
+<span class="kw">print</span>(model.coef_)       <span class="c"># প্রতিটা feature-এর প্রভাব (weight)</span>
+<span class="kw">print</span>(model.intercept_)  <span class="c"># baseline value</span>
+
+predictions = model.<span class="fn">predict</span>(X_test)</pre>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Logistic Regression — Category predict করা (Classification)</h2>
+      <div class="class-card">
+        <span class="tag clf">classification</span>
+        <div class="class-name">LogisticRegression</div>
+        <div class="class-import">from sklearn.linear_model import LogisticRegression</div>
+        <p>নাম "Regression" হলেও, এটা আসলে <b>Classification</b>-এর জন্য (যেমন Spam/Not-Spam, Disease/No-Disease)। এটা একটা probability (0 থেকে 1) বের করে sigmoid function দিয়ে, তারপর একটা threshold (সাধারণত 0.5) দিয়ে category ঠিক করে।</p>
+
+        <div class="intuition-box"><b>মনে আছে Bayes/MLE?</b> Logistic Regression আসলে Maximum Likelihood Estimation দিয়েই সবচেয়ে ভালো weight (coefficient) বের করে — ঠিক তুমি আগে যেভাবে coin bias বের করেছিলে, এখানেও likelihood maximize করা হয়, শুধু parameter অনেক বেশি।</div>
+
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>C</td><td>Regularization-এর শক্তি (উল্টো — ছোট C মানে বেশি regularization)</td></tr>
+          <tr><td>max_iter</td><td>Optimization কতবার চেষ্টা করবে (default 100, বেশি data হলে বাড়াতে হতে পারে)</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LogisticRegression
+
+model = <span class="fn">LogisticRegression</span>()
+model.<span class="fn">fit</span>(X_train, y_train)
+
+predictions = model.<span class="fn">predict</span>(X_test)          <span class="c"># সরাসরি class (0/1)</span>
+probabilities = model.<span class="fn">predict_proba</span>(X_test) <span class="c"># প্রতিটা class-এর probability</span></pre>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Regularized Linear Models — Overfitting ঠেকানো</h2>
+      <div class="grid-2">
+        <div class="class-card">
+          <span class="tag reg">regression</span>
+          <div class="class-name">Ridge</div>
+          <div class="class-import">from sklearn.linear_model import Ridge</div>
+          <p>Linear Regression-এর মতোই, কিন্তু বড় coefficient-কে "penalize" করে (L2 penalty), যাতে model খুব বেশি complex না হয়ে যায়।</p>
+          <pre class="code-block">model = <span class="fn">Ridge</span>(alpha=<span class="num">1.0</span>)
+model.<span class="fn">fit</span>(X_train, y_train)</pre>
+        </div>
+        <div class="class-card">
+          <span class="tag reg">regression</span>
+          <div class="class-name">Lasso</div>
+          <div class="class-import">from sklearn.linear_model import Lasso</div>
+          <p>Ridge-এর মতোই (L1 penalty), কিন্তু এটা কম গুরুত্বপূর্ণ feature-এর coefficient একদম শূন্য করে দিতে পারে — মানে এটা automatic feature selection-ও করে।</p>
+          <pre class="code-block">model = <span class="fn">Lasso</span>(alpha=<span class="num">0.1</span>)
+model.<span class="fn">fit</span>(X_train, y_train)</pre>
+        </div>
+      </div>
+      <div class="intuition-box"><b>মনে রেখো:</b> <code>alpha</code> parameter যত বড়, penalty তত জোরালো — model তত "সরল/conservative" হবে (ঠিক MAP-এ যেমন strong prior model-কে extreme value থেকে টেনে রাখে, এখানেও alpha সেই কাজ করে)।</div>
+    </section>
+
+    <div class="footer-nav">
+      <a href="preprocessing.html">← Preprocessing</a>
+      <a href="tree-ensemble.html">পরের অধ্যায়: Tree &amp; Ensemble →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

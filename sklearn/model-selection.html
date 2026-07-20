@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Model Selection &amp; Metrics — sklearn.bn</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="dot">●</span><span class="brand-title">sklearn.bn</span></div>
+    <div class="brand-sub">scikit-learn ডকুমেন্টেশন, বাংলায়</div>
+    <div class="nav-group"><div class="nav-group-label">শুরু করি</div>
+      <a class="nav-link" href="index.html">পরিচিতি</a></div>
+    <div class="nav-group"><div class="nav-group-label">০১ · ডেটা প্রস্তুতি</div>
+      <a class="nav-link" href="preprocessing.html">Preprocessing</a></div>
+    <div class="nav-group"><div class="nav-group-label">০২ · Supervised Learning</div>
+      <a class="nav-link" href="linear-models.html">Linear Models</a>
+      <a class="nav-link" href="tree-ensemble.html">Tree &amp; Ensemble</a>
+      <a class="nav-link" href="svm-knn.html">SVM &amp; KNN</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৩ · Unsupervised Learning</div>
+      <a class="nav-link" href="clustering-pca.html">Clustering &amp; PCA</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৪ · মূল্যায়ন</div>
+      <a class="nav-link active" href="model-selection.html">Model Selection &amp; Metrics</a></div>
+  </aside>
+
+  <main>
+    <div class="eyebrow">sklearn.model_selection / sklearn.metrics / sklearn.pipeline</div>
+    <h1 class="page-title">Model Selection &amp; Metrics</h1>
+    <p class="page-lead">Model বানানোর পর, সেটা আসলে কতটা ভালো — সেটা যাচাই করা, আর সবচেয়ে ভালো configuration (hyperparameter) খুঁজে বের করা।</p>
+
+    <section class="block">
+      <h2>Cross-Validation — একবার split-এর ভরসায় না থেকে</h2>
+      <div class="class-card">
+        <span class="tag">function</span>
+        <div class="class-name">cross_val_score</div>
+        <div class="class-import">from sklearn.model_selection import cross_val_score</div>
+        <p>শুধু একবার train/test split করলে, "চান্স" করে ভালো/খারাপ split পড়ে যেতে পারে (ঠিক sample bias-এর মতো যেটা আমরা আগে discuss করেছিলাম)। Cross-validation data-কে K ভাগে ভাগ করে, প্রতিবার একটা ভাগকে test হিসেবে রেখে বাকি সব দিয়ে train করে — মোট K বার। শেষে K-টা score-এর average নেওয়া হয়, যেটা অনেক বেশি নির্ভরযোগ্য।</p>
+
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>cv</td><td>কয় ভাগে (fold) ভাগ হবে (সাধারণত 5 বা 10)</td></tr>
+          <tr><td>scoring</td><td>কোন metric দিয়ে score হবে (যেমন "accuracy", "f1")</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> cross_val_score
+
+scores = <span class="fn">cross_val_score</span>(model, X, y, cv=<span class="num">5</span>)
+<span class="kw">print</span>(scores)         <span class="c"># [0.81, 0.79, 0.83, 0.80, 0.82] - ৫টা ভিন্ন score</span>
+<span class="kw">print</span>(scores.mean())  <span class="c"># একটা reliable, average score</span></pre>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>GridSearchCV — সবচেয়ে ভালো Parameter খোঁজা</h2>
+      <div class="class-card">
+        <span class="tag">class</span>
+        <div class="class-name">GridSearchCV</div>
+        <div class="class-import">from sklearn.model_selection import GridSearchCV</div>
+        <p>Model-এর parameter (যেমন RandomForest-এর <code>n_estimators</code>, বা SVM-এর <code>C</code>) manually try করার বদলে, একগুচ্ছ সম্ভাব্য value দিয়ে দাও — এটা প্রতিটা combination automatically try করে (cross-validation সহ) সবচেয়ে ভালোটা বের করে দেয়।</p>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> GridSearchCV
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+
+param_grid = {
+    <span class="str">"n_estimators"</span>: [<span class="num">50</span>, <span class="num">100</span>, <span class="num">200</span>],
+    <span class="str">"max_depth"</span>: [<span class="num">3</span>, <span class="num">5</span>, <span class="kw">None</span>]
+}
+
+grid = <span class="fn">GridSearchCV</span>(RandomForestClassifier(), param_grid, cv=<span class="num">5</span>)
+grid.<span class="fn">fit</span>(X_train, y_train)
+
+<span class="kw">print</span>(grid.best_params_)  <span class="c"># সবচেয়ে ভালো combination কোনটা</span>
+best_model = grid.best_estimator_</pre>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Metrics — Model কতটা ভালো, সংখ্যা দিয়ে মাপা</h2>
+      <p>তুমি ইতিমধ্যেই এই metric-গুলোর concept জানো (Bayes/Confusion Matrix থেকে!) — এখানে শুধু sklearn-এ কীভাবে ব্যবহার করবে সেটা দেখছি।</p>
+
+      <div class="class-card">
+        <span class="tag">function</span>
+        <div class="class-name">accuracy_score, precision_score, recall_score, f1_score</div>
+        <div class="class-import">from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score</div>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.metrics <span class="kw">import</span> accuracy_score, precision_score, recall_score, f1_score
+
+y_pred = model.<span class="fn">predict</span>(X_test)
+
+<span class="kw">print</span>(<span class="str">"Accuracy:"</span>, <span class="fn">accuracy_score</span>(y_test, y_pred))
+<span class="kw">print</span>(<span class="str">"Precision:"</span>, <span class="fn">precision_score</span>(y_test, y_pred))  <span class="c"># মনে আছে? P(Disease|Positive)</span>
+<span class="kw">print</span>(<span class="str">"Recall:"</span>, <span class="fn">recall_score</span>(y_test, y_pred))        <span class="c"># মনে আছে? P(Positive|Disease)</span>
+<span class="kw">print</span>(<span class="str">"F1 Score:"</span>, <span class="fn">f1_score</span>(y_test, y_pred))</pre>
+      </div>
+
+      <div class="class-card">
+        <span class="tag">function</span>
+        <div class="class-name">confusion_matrix</div>
+        <div class="class-import">from sklearn.metrics import confusion_matrix</div>
+        <p>সেই TP, FP, FN, TN বসানো matrix-টাই, যেটা তুমি Bayes' Theorem-এর সাথে relate করে আগে বুঝেছিলে — এখানে এক লাইনে বেরিয়ে আসবে।</p>
+        <pre class="code-block"><span class="kw">from</span> sklearn.metrics <span class="kw">import</span> confusion_matrix
+
+cm = <span class="fn">confusion_matrix</span>(y_test, y_pred)
+<span class="kw">print</span>(cm)
+<span class="c"># [[TN  FP]
+#  [FN  TP]]</span></pre>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>Pipeline — সব ধাপ একটা "পাইপে" জোড়া লাগানো</h2>
+      <div class="class-card">
+        <span class="tag">class</span>
+        <div class="class-name">Pipeline</div>
+        <div class="class-import">from sklearn.pipeline import Pipeline</div>
+        <p>Preprocessing (Scaler) আর Model-কে একটা single object-এ জোড়া লাগিয়ে দেয়, যাতে <code>.fit()</code> আর <code>.predict()</code> কল করলেই সব ধাপ automatic ভাবে সঠিক ক্রমে ঘটে যায় — আর data leakage-এর ভুল হওয়ার সম্ভাবনাও কমে যায়।</p>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.pipeline <span class="kw">import</span> Pipeline
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+<span class="kw">from</span> sklearn.linear_model <span class="kw">import</span> LogisticRegression
+
+pipe = <span class="fn">Pipeline</span>([
+    (<span class="str">"scaler"</span>, StandardScaler()),
+    (<span class="str">"model"</span>, LogisticRegression())
+])
+
+pipe.<span class="fn">fit</span>(X_train, y_train)         <span class="c"># scaling + training, একসাথে</span>
+pipe.<span class="fn">predict</span>(X_test)              <span class="c"># scaling + predicting, একসাথে</span></pre>
+
+        <div class="intuition-box"><b>কেন গুরুত্বপূর্ণ:</b> Pipeline ছাড়া, তোমাকে manually মনে রাখতে হতো — "scaler দিয়ে fit_transform করেছি train-এ, শুধু transform করতে হবে test-এ" — ভুল হওয়ার সুযোগ থাকে। Pipeline এই পুরো ঝামেলাটা নিজে নিজেই ঠিকভাবে সামলায়।</div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>পূর্ণাঙ্গ Workflow — সব একসাথে</h2>
+      <pre class="code-block"><span class="kw">from</span> sklearn.model_selection <span class="kw">import</span> train_test_split
+<span class="kw">from</span> sklearn.preprocessing <span class="kw">import</span> StandardScaler
+<span class="kw">from</span> sklearn.ensemble <span class="kw">import</span> RandomForestClassifier
+<span class="kw">from</span> sklearn.metrics <span class="kw">import</span> accuracy_score
+
+<span class="c"># ধাপ ১: split</span>
+X_train, X_test, y_train, y_test = <span class="fn">train_test_split</span>(X, y, test_size=<span class="num">0.2</span>, random_state=<span class="num">42</span>)
+
+<span class="c"># ধাপ ২: scale</span>
+scaler = <span class="fn">StandardScaler</span>()
+X_train = scaler.<span class="fn">fit_transform</span>(X_train)
+X_test = scaler.<span class="fn">transform</span>(X_test)
+
+<span class="c"># ধাপ ৩: train</span>
+model = <span class="fn">RandomForestClassifier</span>()
+model.<span class="fn">fit</span>(X_train, y_train)
+
+<span class="c"># ধাপ ৪: evaluate</span>
+y_pred = model.<span class="fn">predict</span>(X_test)
+<span class="kw">print</span>(<span class="str">"Accuracy:"</span>, <span class="fn">accuracy_score</span>(y_test, y_pred))</pre>
+    </section>
+
+    <div class="footer-nav">
+      <a href="clustering-pca.html">← Clustering &amp; PCA</a>
+      <a href="index.html">শুরুতে ফিরে যাও →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SVM &amp; KNN — sklearn.bn</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="dot">●</span><span class="brand-title">sklearn.bn</span></div>
+    <div class="brand-sub">scikit-learn ডকুমেন্টেশন, বাংলায়</div>
+    <div class="nav-group"><div class="nav-group-label">শুরু করি</div>
+      <a class="nav-link" href="index.html">পরিচিতি</a></div>
+    <div class="nav-group"><div class="nav-group-label">০১ · ডেটা প্রস্তুতি</div>
+      <a class="nav-link" href="preprocessing.html">Preprocessing</a></div>
+    <div class="nav-group"><div class="nav-group-label">০২ · Supervised Learning</div>
+      <a class="nav-link" href="linear-models.html">Linear Models</a>
+      <a class="nav-link" href="tree-ensemble.html">Tree &amp; Ensemble</a>
+      <a class="nav-link active" href="svm-knn.html">SVM &amp; KNN</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৩ · Unsupervised Learning</div>
+      <a class="nav-link" href="clustering-pca.html">Clustering &amp; PCA</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৪ · মূল্যায়ন</div>
+      <a class="nav-link" href="model-selection.html">Model Selection &amp; Metrics</a></div>
+  </aside>
+
+  <main>
+    <div class="eyebrow">sklearn.svm / sklearn.neighbors</div>
+    <h1 class="page-title">SVM &amp; K-Nearest Neighbors</h1>
+    <p class="page-lead">দুইটা সম্পূর্ণ ভিন্ন দর্শনের model — একটা "সবচেয়ে ভালো সীমানা (boundary)" খুঁজে বের করে, আরেকটা "কাছের প্রতিবেশী" দেখে সিদ্ধান্ত নেয়।</p>
+
+    <section class="block">
+      <h2>Support Vector Machine (SVM)</h2>
+      <div class="class-card">
+        <span class="tag clf">classification</span>
+        <div class="class-name">SVC</div>
+        <div class="class-import">from sklearn.svm import SVC</div>
+        <p>দুইটা class-এর মধ্যে এমন একটা সীমানা (boundary/hyperplane) খোঁজে, যেটা দুই class-এর <b>সবচেয়ে কাছের point-গুলো থেকে সর্বোচ্চ দূরত্বে</b> থাকে (Maximum Margin)।</p>
+
+        <div class="intuition-box"><b>ইনটুইশন:</b> কল্পনা করো, দুই দলের মানুষ একটা মাঠে দাঁড়িয়ে আছে, আর তুমি মাঝখানে একটা দড়ি টানছো তাদের আলাদা করার জন্য। SVM এমনভাবে দড়ি টানে, যাতে দুই দলের **সবচেয়ে কাছের মানুষদের থেকেও** দড়িটা যতটা সম্ভব দূরে থাকে — এতে নতুন কেউ আসলেও ভুল হওয়ার সম্ভাবনা কম থাকে।</div>
+
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>kernel</td><td>"linear" (সরলরেখা), "rbf" (বাঁকানো, non-linear সীমানা), "poly"</td></tr>
+          <tr><td>C</td><td>ভুল করাকে কতটা penalize করবে (বড় C = কম ভুল সহ্য করে, কিন্তু overfit-এর ঝুঁকি)</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.svm <span class="kw">import</span> SVC
+
+model = <span class="fn">SVC</span>(kernel=<span class="str">"rbf"</span>, C=<span class="num">1.0</span>)
+model.<span class="fn">fit</span>(X_train, y_train)
+predictions = model.<span class="fn">predict</span>(X_test)</pre>
+
+        <div class="warn-box">SVM distance-based, তাই এর আগে অবশ্যই <code>StandardScaler</code> দিয়ে data scale করতে হবে!</div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>K-Nearest Neighbors (KNN)</h2>
+      <div class="class-card">
+        <span class="tag clf">classification</span><span class="tag reg">regression</span>
+        <div class="class-name">KNeighborsClassifier</div>
+        <div class="class-import">from sklearn.neighbors import KNeighborsClassifier</div>
+        <p>নতুন একটা data point এলে, তার <b>সবচেয়ে কাছের K-টা</b> data point দেখে, তাদের majority class-ই নতুন point-কে দেওয়া হয়। কোনো "training" আসলে হয় না — শুধু পুরো data মনে রাখা হয় (Lazy Learning)।</p>
+
+        <div class="intuition-box"><b>ইনটুইশন:</b> "তোমার সঙ্গ দেখে তোমাকে বিচার করবো" — একটা নতুন মানুষ কেমন, বুঝতে তার আশেপাশের ৫ জন বন্ধু কেমন সেটা দেখা।</div>
+
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>n_neighbors</td><td>K-এর মান, কয়টা প্রতিবেশী দেখা হবে (default 5)</td></tr>
+          <tr><td>metric</td><td>দূরত্ব কীভাবে মাপা হবে — "euclidean" (default), "manhattan"</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.neighbors <span class="kw">import</span> KNeighborsClassifier
+
+model = <span class="fn">KNeighborsClassifier</span>(n_neighbors=<span class="num">5</span>)
+model.<span class="fn">fit</span>(X_train, y_train)
+predictions = model.<span class="fn">predict</span>(X_test)</pre>
+
+        <div class="intuition-box"><b>K ছোট (যেমন 1) vs বড় (যেমন 50):</b> ছোট K → খুব sensitive, noise-এ প্রভাবিত হয় (overfitting)। বড় K → বেশি smooth, কিন্তু খুব বড় হলে সূক্ষ্ম pattern miss করতে পারে (underfitting)।</div>
+      </div>
+    </section>
+
+    <div class="footer-nav">
+      <a href="tree-ensemble.html">← Tree &amp; Ensemble</a>
+      <a href="clustering-pca.html">পরের অধ্যায়: Clustering &amp; PCA →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>scikit-learn শিখি বাংলায়</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+
+  <aside class="sidebar">
+    <div class="brand"><span class="dot">●</span><span class="brand-title">sklearn.bn</span></div>
+    <div class="brand-sub">scikit-learn ডকুমেন্টেশন, বাংলায়</div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">শুরু করি</div>
+      <a class="nav-link active" href="index.html">পরিচিতি</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">০১ · ডেটা প্রস্তুতি</div>
+      <a class="nav-link" href="preprocessing.html">Preprocessing</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">০২ · Supervised Learning</div>
+      <a class="nav-link" href="linear-models.html">Linear Models</a>
+      <a class="nav-link" href="tree-ensemble.html">Tree &amp; Ensemble</a>
+      <a class="nav-link" href="svm-knn.html">SVM &amp; KNN</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">০৩ · Unsupervised Learning</div>
+      <a class="nav-link" href="clustering-pca.html">Clustering &amp; PCA</a>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-group-label">০৪ · মূল্যায়ন</div>
+      <a class="nav-link" href="model-selection.html">Model Selection &amp; Metrics</a>
+    </div>
+  </aside>
+
+  <main>
+    <div class="eyebrow">scikit-learn // introduction</div>
+    <h1 class="page-title">scikit-learn শিখি, একদম শুরু থেকে</h1>
+    <p class="page-lead">Python-এর সবচেয়ে জনপ্রিয় Machine Learning লাইব্রেরি — বাংলায়, সহজ ভাষায়, প্রতিটা class আর function-এর ইনটুইশন আর কোড উদাহরণসহ।</p>
+
+    <div class="hero-prompt">
+      <div class="line"><span class="prompt-sym">&gt;&gt;&gt;</span> from sklearn.linear_model import LinearRegression</div>
+      <div class="line"><span class="prompt-sym">&gt;&gt;&gt;</span> model = LinearRegression()</div>
+      <div class="line"><span class="prompt-sym">&gt;&gt;&gt;</span> model.fit(X_train, y_train)</div>
+      <div class="line"><span class="prompt-sym">&gt;&gt;&gt;</span> model.predict(X_test)<span class="cursor-blink"></span></div>
+    </div>
+
+    <section class="block">
+      <h2>scikit-learn আসলে কী?</h2>
+      <p><b>scikit-learn</b> হলো Python-এর একটা library, যেটা দিয়ে তুমি Machine Learning-এর প্রায় সব ধরনের কাজ করতে পারো — data প্রস্তুত করা, model train করা, prediction করা, আর model-এর performance যাচাই করা।</p>
+
+      <div class="intuition-box">
+        <b>মূল ইনটুইশন:</b> scikit-learn-এর প্রতিটা model আসলে একটা "কালো বাক্স (black box)" — তুমি তাকে data দিয়ে "শেখাও" (<code>.fit()</code>), আর তারপর সে নতুন data নিয়ে "অনুমান" করে (<code>.predict()</code>)। প্রায় সব model-ই এই একই প্যাটার্নে কাজ করে — এটাই scikit-learn-কে শেখা সহজ করে তোলে।
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>সবচেয়ে গুরুত্বপূর্ণ concept — Estimator API</h2>
+      <p>scikit-learn-এর প্রায় সব class-ই তিনটা method মেনে চলে। এই প্যাটার্নটা একবার বুঝে ফেললে, নতুন যেকোনো model শেখা অনেক সহজ হয়ে যাবে:</p>
+
+      <table class="params">
+        <tr><th>Method</th><th>কাজ</th></tr>
+        <tr><td>.fit(X, y)</td><td>Model-কে training data দিয়ে "শেখানো"</td></tr>
+        <tr><td>.predict(X)</td><td>নতুন data-এর জন্য অনুমান (prediction) বের করা</td></tr>
+        <tr><td>.transform(X)</td><td>Data-কে রূপান্তর করা (যেমন scaling, encoding — preprocessing-এ ব্যবহার হয়)</td></tr>
+      </table>
+
+      <pre class="code-block"><span class="c"># এই প্যাটার্নটা মনে রাখো — এটা প্রায় সব জায়গায় ফিরে আসবে</span>
+model = <span class="fn">SomeSklearnModel</span>()
+model.<span class="fn">fit</span>(X_train, y_train)      <span class="c"># ধাপ ১: শেখাও</span>
+predictions = model.<span class="fn">predict</span>(X_test)  <span class="c"># ধাপ ২: অনুমান করো</span></pre>
+    </section>
+
+    <section class="block">
+      <h2>Installation</h2>
+      <pre class="code-block">pip install scikit-learn</pre>
+      <p style="color:var(--text-muted); font-size:0.9rem;">সাথে সাধারণত <code>numpy</code>, <code>pandas</code>, আর <code>matplotlib</code> ও লাগবে — data handle আর visualize করার জন্য।</p>
+    </section>
+
+    <section class="block">
+      <h2>এই ডকুমেন্টেশনে কী কী আছে</h2>
+      <p>বাম পাশের sidebar থেকে যেকোনো module-এ যাও। প্রতিটা module-এ থাকছে: concept-এর ইনটুইশন, class/function-এর parameter table, আর runnable code example।</p>
+
+      <div class="module-cards">
+        <a class="module-card" href="preprocessing.html">
+          <div class="num">০১</div>
+          <h4>Preprocessing</h4>
+          <p>Scaling, Encoding, Missing value handling, Train/Test split</p>
+        </a>
+        <a class="module-card" href="linear-models.html">
+          <div class="num">০২</div>
+          <h4>Linear Models</h4>
+          <p>Linear Regression, Logistic Regression, Ridge/Lasso</p>
+        </a>
+        <a class="module-card" href="tree-ensemble.html">
+          <div class="num">০৩</div>
+          <h4>Tree &amp; Ensemble</h4>
+          <p>Decision Tree, Random Forest, Gradient Boosting</p>
+        </a>
+        <a class="module-card" href="svm-knn.html">
+          <div class="num">০৪</div>
+          <h4>SVM &amp; KNN</h4>
+          <p>Support Vector Machine, K-Nearest Neighbors</p>
+        </a>
+        <a class="module-card" href="clustering-pca.html">
+          <div class="num">০৫</div>
+          <h4>Clustering &amp; PCA</h4>
+          <p>KMeans, Dimensionality Reduction</p>
+        </a>
+        <a class="module-card" href="model-selection.html">
+          <div class="num">০৬</div>
+          <h4>Model Selection &amp; Metrics</h4>
+          <p>Cross-validation, GridSearchCV, Accuracy/Precision/Recall, Pipeline</p>
+        </a>
+      </div>
+    </section>
+
+    <div class="footer-nav">
+      <span></span>
+      <a href="preprocessing.html">পরের অধ্যায়: Preprocessing →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clustering &amp; PCA — sklearn.bn</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="layout">
+  <aside class="sidebar">
+    <div class="brand"><span class="dot">●</span><span class="brand-title">sklearn.bn</span></div>
+    <div class="brand-sub">scikit-learn ডকুমেন্টেশন, বাংলায়</div>
+    <div class="nav-group"><div class="nav-group-label">শুরু করি</div>
+      <a class="nav-link" href="index.html">পরিচিতি</a></div>
+    <div class="nav-group"><div class="nav-group-label">০১ · ডেটা প্রস্তুতি</div>
+      <a class="nav-link" href="preprocessing.html">Preprocessing</a></div>
+    <div class="nav-group"><div class="nav-group-label">০২ · Supervised Learning</div>
+      <a class="nav-link" href="linear-models.html">Linear Models</a>
+      <a class="nav-link" href="tree-ensemble.html">Tree &amp; Ensemble</a>
+      <a class="nav-link" href="svm-knn.html">SVM &amp; KNN</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৩ · Unsupervised Learning</div>
+      <a class="nav-link active" href="clustering-pca.html">Clustering &amp; PCA</a></div>
+    <div class="nav-group"><div class="nav-group-label">০৪ · মূল্যায়ন</div>
+      <a class="nav-link" href="model-selection.html">Model Selection &amp; Metrics</a></div>
+  </aside>
+
+  <main>
+    <div class="eyebrow">sklearn.cluster / sklearn.decomposition</div>
+    <h1 class="page-title">Clustering &amp; PCA</h1>
+    <p class="page-lead">এই অধ্যায়ে আমরা <b>Unsupervised Learning</b>-এ ঢুকছি — এখানে কোনো "সঠিক উত্তর (y/label)" দেওয়া থাকে না। Model নিজে থেকেই data-র মধ্যে pattern/গঠন খুঁজে বের করে।</p>
+
+    <section class="block">
+      <h2>KMeans — Data-কে দলে ভাগ করা</h2>
+      <div class="class-card">
+        <span class="tag">clustering</span>
+        <div class="class-name">KMeans</div>
+        <div class="class-import">from sklearn.cluster import KMeans</div>
+        <p>Data point-গুলোকে K-টা group/cluster-এ ভাগ করে, এমনভাবে যাতে একই cluster-এর point-গুলো একে অপরের কাছাকাছি থাকে, আর ভিন্ন cluster-এর point-গুলো দূরে থাকে।</p>
+
+        <div class="intuition-box"><b>ইনটুইশন:</b> ধরো, তোমার কাছে হাজারটা customer-এর কেনাকাটার data আছে, কিন্তু কোনো "label" নাই (কে "high-value", কে "low-value" — এটা কেউ বলে দেয়নি)। KMeans নিজে থেকেই খুঁজে বের করবে কোন কোন customer একই রকম আচরণ করছে, আর তাদের একটা group-এ ফেলবে।</div>
+
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>n_clusters</td><td>কয়টা group/cluster বানানো হবে (এটা আগে থেকেই ঠিক করে দিতে হয়)</td></tr>
+          <tr><td>random_state</td><td>Reproducibility-এর জন্য fixed সংখ্যা</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.cluster <span class="kw">import</span> KMeans
+
+model = <span class="fn">KMeans</span>(n_clusters=<span class="num">3</span>, random_state=<span class="num">42</span>)
+model.<span class="fn">fit</span>(X)
+
+labels = model.labels_          <span class="c"># প্রতিটা point কোন cluster-এ পড়লো (0, 1, 2...)</span>
+centers = model.cluster_centers_ <span class="c"># প্রতিটা cluster-এর কেন্দ্রবিন্দু</span></pre>
+
+        <div class="intuition-box"><b>সঠিক K কীভাবে বাছাই করবো?</b> সাধারণত <b>Elbow Method</b> ব্যবহার হয় — বিভিন্ন K-এর জন্য error (inertia) plot করে, যেখানে improvement হঠাৎ কমে যায় (কনুই/elbow-এর মতো বাঁক), সেই K-টা বেছে নেওয়া হয়।</div>
+      </div>
+    </section>
+
+    <section class="block">
+      <h2>PCA — অনেক feature-কে কম feature-এ সংক্ষিপ্ত করা</h2>
+      <div class="class-card">
+        <span class="tag">dimensionality reduction</span>
+        <div class="class-name">PCA</div>
+        <div class="class-import">from sklearn.decomposition import PCA</div>
+        <p>যদি তোমার data-তে অনেক (যেমন ১০০টা) feature থাকে, PCA সেগুলোকে কম সংখ্যক (যেমন ২টা) নতুন feature-এ রূপান্তর করে, যেগুলো original data-র <b>সবচেয়ে বেশি variation/তথ্য</b> ধরে রাখে।</p>
+
+        <div class="intuition-box"><b>ইনটুইশন — ছায়া (shadow) দিয়ে বুঝি:</b> কল্পনা করো, একটা 3D বস্তুর (যেমন একটা কাপ) ছায়া (2D) ফেলছো দেয়ালে। সঠিক angle-এ আলো ফেললে, ছায়া থেকেই বস্তুর আকৃতি অনেকটা বোঝা যায় — যদিও তথ্য কমে গেছে (3D থেকে 2D), তাও সবচেয়ে গুরুত্বপূর্ণ shape-টা টিকে আছে। PCA ঠিক এই কাজটাই করে, high-dimension data-র জন্য।</div>
+
+        <table class="params">
+          <tr><th>Parameter</th><th>মানে</th></tr>
+          <tr><td>n_components</td><td>কয়টা নতুন feature-এ কমাতে চাও (যেমন 2, visualization-এর জন্য)</td></tr>
+        </table>
+
+        <pre class="code-block"><span class="kw">from</span> sklearn.decomposition <span class="kw">import</span> PCA
+
+pca = <span class="fn">PCA</span>(n_components=<span class="num">2</span>)
+X_reduced = pca.<span class="fn">fit_transform</span>(X)  <span class="c"># ১০০টা feature থেকে মাত্র ২টায়</span>
+
+<span class="kw">print</span>(pca.explained_variance_ratio_)
+<span class="c"># উদাহরণ output: [0.72, 0.15]
+# মানে: প্রথম নতুন feature original data-র 72% তথ্য ধরে রেখেছে</span></pre>
+
+        <div class="warn-box">PCA করার আগেও <code>StandardScaler</code> ব্যবহার করা জরুরি — নাহলে বড় scale-এর feature অন্যায্যভাবে dominate করবে।</div>
+      </div>
+    </section>
+
+    <div class="footer-nav">
+      <a href="svm-knn.html">← SVM &amp; KNN</a>
+      <a href="model-selection.html">পরের অধ্যায়: Model Selection &amp; Metrics →</a>
+    </div>
+  </main>
+</div>
+</body>
+</html>
