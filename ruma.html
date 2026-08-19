@@ -1,1 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no" />
+<title>A Question for Ruma</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,500&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream:#FFF3EC;
+    --cream-2:#FFE8DA;
+    --rose:#B23A56;
+    --rose-dark:#8A2A42;
+    --blush:#F7C6D9;
+    --plum:#4A1942;
+    --gold:#E8A87C;
+    --shadow: 0 12px 30px rgba(74,25,66,0.14);
+  }
+  *{box-sizing:border-box;}
+  html,body{
+    margin:0; padding:0; height:100%;
+    background: radial-gradient(circle at 20% 0%, var(--cream-2), var(--cream) 55%);
+    font-family:'Quicksand', sans-serif;
+    color:var(--plum);
+    overflow-x:hidden;
+  }
+  h1,h2,h3, .display{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    letter-spacing:-0.01em;
+  }
+  #app{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-start;
+    padding: 18px 18px 40px;
+    position:relative;
+  }
 
+  /* heartbeat progress trail */
+  #trail-wrap{
+    width:100%;
+    max-width:480px;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    margin: 6px 0 28px;
+    padding:0 4px;
+  }
+  #trail-track{
+    position:relative;
+    flex:1;
+    height:6px;
+    background: rgba(178,58,86,0.15);
+    border-radius:10px;
+    overflow:visible;
+  }
+  #trail-fill{
+    position:absolute;
+    top:0; left:0; bottom:0;
+    width:0%;
+    background: linear-gradient(90deg, var(--gold), var(--rose));
+    border-radius:10px;
+    transition: width .6s cubic-bezier(.4,1.4,.4,1);
+  }
+  #trail-heart{
+    position:absolute;
+    top:50%;
+    left:0%;
+    transform: translate(-50%,-50%);
+    font-size:16px;
+    transition: left .6s cubic-bezier(.4,1.4,.4,1);
+    filter: drop-shadow(0 2px 3px rgba(74,25,66,0.25));
+  }
+
+  .screen{
+    width:100%;
+    max-width:480px;
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    animation: rise .55s ease both;
+  }
+  .screen.active{display:flex;}
+  @keyframes rise{
+    from{opacity:0; transform:translateY(18px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+
+  .eyebrow{
+    font-size:13px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--rose);
+    font-weight:700;
+    margin-bottom:10px;
+  }
+  .question{
+    font-size:28px;
+    line-height:1.25;
+    margin: 6px 0 6px;
+  }
+  .subtext{
+    font-size:15px;
+    color:#7a4a5c;
+    margin-bottom:30px;
+    max-width:360px;
+  }
+
+  /* welcome screen */
+  .heart-mark{
+    font-size:44px;
+    margin-bottom:6px;
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{
+    0%,100%{transform:scale(1);}
+    50%{transform:scale(1.12);}
+  }
+  .welcome-title{
+    font-size:38px;
+    margin: 4px 0 10px;
+  }
+  .welcome-sub{
+    font-size:16px;
+    color:#7a4a5c;
+    max-width:340px;
+    margin-bottom:36px;
+    line-height:1.5;
+  }
+
+  .btn{
+    border:none;
+    border-radius:999px;
+    font-family:'Quicksand', sans-serif;
+    font-weight:700;
+    cursor:pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:active{transform:scale(.96);}
+  .btn-primary{
+    background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+    color:#fff;
+    padding: 16px 44px;
+    font-size:17px;
+    box-shadow: var(--shadow);
+  }
+  .btn-primary:hover{ box-shadow: 0 16px 34px rgba(178,58,86,0.32); }
+
+  /* yes/no row */
+  .btn-row{
+    position:relative;
+    width:100%;
+    height:190px;
+    margin-top:6px;
+  }
+  .safe-btn{
+    position:absolute;
+    left:50%;
+    top:16px;
+    transform: translateX(-50%) scale(var(--safe-scale, 1));
+    background: linear-gradient(135deg, var(--rose), var(--rose-dark));
+    color:#fff;
+    padding: 15px 40px;
+    font-size:17px;
+    box-shadow: var(--shadow);
+    z-index:3;
+    transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  .slip-btn{
+    position:absolute;
+    left:calc(50% - 44px);
+    top:100px;
+    background: #fff;
+    color: var(--rose);
+    border: 2px solid var(--blush);
+    padding: 12px 34px;
+    font-size:15px;
+    z-index:2;
+    user-select:none;
+    touch-action:none;
+    transition:
+      left .5s cubic-bezier(.13,.85,.15,1),
+      top .5s cubic-bezier(.13,.85,.15,1),
+      transform .5s cubic-bezier(.13,.85,.15,1);
+    will-change: left, top, transform;
+  }
+  .no-hint{
+    font-size:12px;
+    color:#c497a5;
+    margin-top:8px;
+    min-height:16px;
+  }
+
+  /* date picker */
+  .cal{
+    background:#fff;
+    border-radius:22px;
+    box-shadow: var(--shadow);
+    padding:20px;
+    width:100%;
+    max-width:320px;
+  }
+  .cal-month{
+    font-size:18px;
+    font-weight:700;
+    font-family:'Fraunces',serif;
+    margin-bottom:14px;
+  }
+  .cal-grid{
+    display:grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap:6px;
+  }
+  .cal-dow{
+    font-size:11px;
+    color:#b98a99;
+    font-weight:700;
+  }
+  .cal-day{
+    aspect-ratio:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:10px;
+    font-size:13px;
+    color:#d9b8c3;
+    background:transparent;
+  }
+  .cal-day.enabled{
+    background: linear-gradient(135deg, var(--gold), var(--rose));
+    color:#fff;
+    font-weight:700;
+    cursor:pointer;
+    animation: glow 1.6s ease-in-out infinite;
+  }
+  @keyframes glow{
+    0%,100%{box-shadow: 0 0 0 0 rgba(178,58,86,.35);}
+    50%{box-shadow: 0 0 0 8px rgba(178,58,86,0);}
+  }
+  .date-picked-msg{
+    margin-top:22px;
+    font-size:14px;
+    color:#7a4a5c;
+    display:none;
+  }
+  .date-picked-msg.show{display:block;}
+
+  /* food grid */
+  .food-grid{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:12px;
+    width:100%;
+  }
+  .food-card{
+    background:#fff;
+    border-radius:16px;
+    padding:16px 8px;
+    box-shadow: 0 6px 16px rgba(74,25,66,0.08);
+    border:2px solid transparent;
+    cursor:pointer;
+    transition: transform .15s ease, border-color .15s ease;
+  }
+  .food-card:active{transform:scale(.96);}
+  .food-card.picked{
+    border-color: var(--rose);
+    background: var(--blush);
+  }
+  .food-emoji{font-size:30px; display:block; margin-bottom:6px;}
+  .food-name{font-size:13px; font-weight:700;}
+
+  .continue-wrap{
+    margin-top:26px;
+    display:none;
+  }
+  .continue-wrap.show{display:block;}
+
+  /* payment */
+  .payment-card{
+    background:#fff;
+    border-radius:20px;
+    box-shadow: var(--shadow);
+    padding:26px 22px;
+    width:100%;
+    max-width:320px;
+  }
+  .payment-amount{
+    font-family:'Fraunces',serif;
+    font-size:40px;
+    font-weight:700;
+    color:var(--rose);
+    margin:4px 0 2px;
+  }
+  .payment-label{font-size:13px; color:#a97c8a; margin-bottom:18px;}
+
+  /* congrats */
+  .congrats-emoji{font-size:56px; margin-bottom:8px;}
+  .confetti{
+    position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:0;
+  }
+  .confetti span{
+    position:absolute; top:-10%;
+    font-size: 18px;
+    animation: fall linear forwards;
+  }
+  @keyframes fall{
+    to{ transform: translateY(115vh) rotate(360deg); opacity:.9;}
+  }
+  .footer-note{
+    margin-top:34px;
+    font-size:12px;
+    color:#c497a5;
+  }
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="trail-wrap">
+    <div id="trail-track">
+      <div id="trail-fill"></div>
+      <div id="trail-heart">💗</div>
+    </div>
+  </div>
+
+  <!-- 0: WELCOME -->
+  <div class="screen active" data-step="0">
+    <div class="heart-mark">💌</div>
+    <div class="eyebrow">a little something for</div>
+    <h1 class="welcome-title">Welcome, Ruma</h1>
+    <p class="welcome-sub">Saikat made you this. It's short, it's silly, and it only has one correct answer to every question. Ready?</p>
+    <button class="btn btn-primary" onclick="next()">Open it →</button>
+  </div>
+
+  <!-- 1..N: QUESTIONS (injected by JS) -->
+  <div id="questions-container"></div>
+
+  <!-- DATE PICKER -->
+  <div class="screen" data-step="q-date">
+    <div class="eyebrow">one more thing</div>
+    <h2 class="question" style="font-size:24px;">Pick a date to go out with Saikat</h2>
+    <p class="subtext">Funny how only one day on the calendar works.</p>
+    <div class="cal">
+      <div class="cal-month">August 2026</div>
+      <div class="cal-grid" id="cal-grid"></div>
+    </div>
+    <div class="date-picked-msg" id="date-msg">August 23, 2026 it is. Marked, sealed, non-negotiable. 💕</div>
+    <div class="continue-wrap" id="date-continue">
+      <button class="btn btn-primary" onclick="next()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- FOOD -->
+  <div class="screen" data-step="q-food">
+    <div class="eyebrow">for the date</div>
+    <h2 class="question" style="font-size:24px;">What should we eat?</h2>
+    <p class="subtext">Pick one. Saikat is paying (allegedly).</p>
+    <div class="food-grid" id="food-grid"></div>
+    <div class="continue-wrap" id="food-continue">
+      <button class="btn btn-primary" onclick="next()">Continue →</button>
+    </div>
+  </div>
+
+  <!-- GIFT -->
+  <div class="screen" data-step="q-gift">
+    <div class="eyebrow">bonus round</div>
+    <h2 class="question">Can Saikat give you a gift?</h2>
+    <p class="subtext">This one's easy, honestly.</p>
+    <div class="btn-row" id="gift-row"></div>
+    <p class="no-hint" id="gift-hint"></p>
+  </div>
+
+  <!-- PAYMENT -->
+  <div class="screen" data-step="q-payment">
+    <div class="eyebrow">confirm booking</div>
+    <h2 class="question" style="font-size:22px;">Reserve your date night</h2>
+    <div class="payment-card">
+      <div class="payment-label">Booking fee</div>
+      <div class="payment-amount">৳2000</div>
+      <div class="payment-label">for one unforgettable evening</div>
+      <div class="btn-row" style="height:170px;" id="payment-row"></div>
+    </div>
+    <p class="no-hint" id="payment-hint"></p>
+  </div>
+
+  <!-- CONGRATS -->
+  <div class="screen" data-step="end">
+    <div class="congrats-emoji">🎉💍💗</div>
+    <h1 class="welcome-title">It's official.</h1>
+    <p class="welcome-sub">August 23, 2026. You and Saikat. Dressed up, showing up, and stealing each other's fries — forever, probably.</p>
+    <div class="eyebrow" style="margin-top:6px;">from Saikat, with everything he's got</div>
+  </div>
+
+  <div class="footer-note">made with 💗 for Ruma</div>
+</div>
+
+<script>
+/* ---------- CONTENT ---------- */
+const QUESTIONS = [
+  {q:"Do you like Saikat?", sub:"Just a warm-up question.", correct:"yes"},
+  {q:"Do you love Saikat?", sub:"Getting warmer.", correct:"yes"},
+  {q:"Will you ever seriously get tired of him?", sub:"Trick question. There's only one right answer.", correct:"no"},
+  {q:"Do you miss Saikat when he's not around?", sub:"Be honest. He already knows.", correct:"yes"},
+  {q:"Will you let him pick the movie sometimes, even if it's boring?", sub:"He promises to try and stay awake.", correct:"yes"},
+  {q:"Do you smile at your phone when he texts you?", sub:"Caught red-handed.", correct:"yes"},
+  {q:"Could you ever get bored of talking to him?", sub:"Take your time. (You won't.)", correct:"no"},
+  {q:"Will you laugh at his terrible jokes, forever?", sub:"Even the really bad ones.", correct:"yes"},
+  {q:"Will you share the last bite of biryani with him?", sub:"This is the real test.", correct:"yes"},
+  {q:"Will you ever let him go?", sub:"Careful now.", correct:"no"},
+  {q:"Will you go on a date with Saikat?", sub:"There's a calendar involved. Next page.", correct:"yes"},
+  {q:"Will you say yes to forever with Saikat?", sub:"Last one. No pressure. (Lots of pressure.)", correct:"yes"},
+];
+
+const FOODS = [
+  {name:"Burger", emoji:"🍔"},
+  {name:"Pizza", emoji:"🍕"},
+  {name:"Biryani", emoji:"🍛"},
+  {name:"Roast", emoji:"🍗"},
+  {name:"Kacchi", emoji:"🍲"},
+  {name:"Fuchka", emoji:"🥟"},
+  {name:"Chinese", emoji:"🥡"},
+  {name:"Pasta", emoji:"🍝"},
+];
+
+const NO_MESSAGES = [
+  "nice try 😏",
+  "nope, that button's shy",
+  "it slipped away again",
+  "that option doesn't work here",
+  "keep trying, it won't happen",
+  "the button has commitment issues",
+  "still not clickable, sorry not sorry",
+];
+
+/* ---------- BUILD SCREENS ---------- */
+const qContainer = document.getElementById('questions-container');
+QUESTIONS.forEach((item, i) => {
+  const div = document.createElement('div');
+  div.className = 'screen';
+  div.dataset.step = 'q' + i;
+  div.innerHTML = `
+    <h2 class="question">${item.q}</h2>
+    <p class="subtext">${item.sub}</p>
+    <div class="btn-row" id="row-${i}"></div>
+    <p class="no-hint" id="hint-${i}"></p>
+  `;
+  qContainer.appendChild(div);
+});
+
+/* ---------- STEP SEQUENCE ---------- */
+const STEP_IDS = ['0', ...QUESTIONS.map((_,i)=>'q'+i), 'q-date', 'q-food', 'q-gift', 'q-payment', 'end'];
+let current = 0;
+
+function totalProgressSteps(){ return STEP_IDS.length - 1; }
+
+function showScreen(idx){
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const id = STEP_IDS[idx];
+  const el = document.querySelector(`.screen[data-step="${id}"]`);
+  if(el) el.classList.add('active');
+  current = idx;
+  updateTrail();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function next(){
+  if(current < STEP_IDS.length - 1){
+    showScreen(current + 1);
+  }
+}
+
+function updateTrail(){
+  const pct = Math.round((current / totalProgressSteps()) * 100);
+  document.getElementById('trail-fill').style.width = pct + '%';
+  document.getElementById('trail-heart').style.left = pct + '%';
+}
+
+/* ---------- RUNAWAY SLIP-BUTTON LOGIC ---------- */
+function dodge(slipBtn, safeBtn, rowEl, hintEl){
+  const rowW = rowEl.clientWidth;
+  const rowH = rowEl.clientHeight;
+  const bw = slipBtn.offsetWidth || 100;
+  const bh = slipBtn.offsetHeight || 44;
+  const maxX = Math.max(rowW - bw, 0);
+  const maxY = Math.max(rowH - bh, 0);
+
+  const buffer = 18;
+  const safe = {
+    left: safeBtn.offsetLeft - buffer,
+    top: safeBtn.offsetTop - buffer,
+    right: safeBtn.offsetLeft + safeBtn.offsetWidth + buffer,
+    bottom: safeBtn.offsetTop + safeBtn.offsetHeight + buffer,
+  };
+
+  let x, y, tries = 0;
+  do {
+    x = Math.random() * maxX;
+    y = Math.random() * maxY;
+    tries++;
+  } while (
+    tries < 40 &&
+    x < safe.right && x + bw > safe.left &&
+    y < safe.bottom && y + bh > safe.top
+  );
+
+  const rot = (Math.random() * 14 - 7).toFixed(1);
+  slipBtn.style.left = x + 'px';
+  slipBtn.style.top = y + 'px';
+  slipBtn.style.transform = `rotate(${rot}deg)`;
+
+  if(hintEl){
+    hintEl.textContent = NO_MESSAGES[Math.floor(Math.random()*NO_MESSAGES.length)];
+  }
+}
+
+function wireYesNo(rowEl, hintEl, onSafeClick, opts){
+  const o = Object.assign({safeLabel:'Yes', slipLabel:'No'}, opts || {});
+  rowEl.innerHTML = `
+    <button class="btn safe-btn">${o.safeLabel}</button>
+    <button class="btn slip-btn">${o.slipLabel}</button>
+  `;
+  const safeBtn = rowEl.querySelector('.safe-btn');
+  const slipBtn = rowEl.querySelector('.slip-btn');
+  let dodgeCount = 0;
+
+  // give the slip button an initial resting spot before it ever gets touched
+  requestAnimationFrame(() => {
+    slipBtn.style.left = (rowEl.clientWidth/2 - slipBtn.offsetWidth/2) + 'px';
+    slipBtn.style.top = '112px';
+  });
+
+  const tryDodge = (e) => {
+    e.preventDefault();
+    dodgeCount++;
+    dodge(slipBtn, safeBtn, rowEl, hintEl);
+    const scale = Math.min(1 + dodgeCount * 0.06, 1.35);
+    safeBtn.style.setProperty('--safe-scale', scale);
+  };
+
+  slipBtn.addEventListener('pointerenter', tryDodge);
+  slipBtn.addEventListener('pointerdown', tryDodge);
+  slipBtn.addEventListener('touchstart', tryDodge, {passive:false});
+  slipBtn.addEventListener('click', tryDodge);
+
+  safeBtn.addEventListener('click', () => {
+    safeBtn.style.setProperty('--safe-scale', 1);
+    onSafeClick();
+  });
+}
+
+/* wire each question */
+QUESTIONS.forEach((item, i) => {
+  const row = document.getElementById('row-' + i);
+  const hint = document.getElementById('hint-' + i);
+  const flipped = item.correct === 'no';
+  wireYesNo(row, hint, () => next(), {
+    safeLabel: flipped ? 'No' : 'Yes',
+    slipLabel: flipped ? 'Yes' : 'No',
+  });
+});
+
+/* gift question */
+wireYesNo(document.getElementById('gift-row'), document.getElementById('gift-hint'), () => next());
+
+/* payment: Book / Cancel */
+wireYesNo(document.getElementById('payment-row'), document.getElementById('payment-hint'), () => next(), {
+  safeLabel: 'Book',
+  slipLabel: 'Cancel',
+});
+
+/* ---------- CALENDAR (August 2026, only 23 enabled) ---------- */
+(function buildCalendar(){
+  const grid = document.getElementById('cal-grid');
+  const dows = ['S','M','T','W','T','F','S'];
+  dows.forEach(d => {
+    const el = document.createElement('div');
+    el.className = 'cal-dow';
+    el.textContent = d;
+    grid.appendChild(el);
+  });
+
+  const year = 2026, month = 7; // August = index 7
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  for(let i = 0; i < firstDay; i++){
+    const empty = document.createElement('div');
+    empty.className = 'cal-day';
+    grid.appendChild(empty);
+  }
+
+  for(let d = 1; d <= daysInMonth; d++){
+    const el = document.createElement('div');
+    el.className = 'cal-day' + (d === 23 ? ' enabled' : '');
+    el.textContent = d;
+    if(d === 23){
+      el.addEventListener('click', () => {
+        document.getElementById('date-msg').classList.add('show');
+        document.getElementById('date-continue').classList.add('show');
+      });
+    }
+    grid.appendChild(el);
+  }
+})();
+
+/* ---------- FOOD GRID ---------- */
+(function buildFood(){
+  const grid = document.getElementById('food-grid');
+  FOODS.forEach(f => {
+    const card = document.createElement('div');
+    card.className = 'food-card';
+    card.innerHTML = `<span class="food-emoji">${f.emoji}</span><span class="food-name">${f.name}</span>`;
+    card.addEventListener('click', () => {
+      grid.querySelectorAll('.food-card').forEach(c => c.classList.remove('picked'));
+      card.classList.add('picked');
+      document.getElementById('food-continue').classList.add('show');
+    });
+    grid.appendChild(card);
+  });
+})();
+
+/* ---------- CONFETTI on final screen ---------- */
+function launchConfetti(){
+  const wrap = document.createElement('div');
+  wrap.className = 'confetti';
+  const emojis = ['💗','💕','🎉','✨','💍','🌸'];
+  for(let i = 0; i < 40; i++){
+    const s = document.createElement('span');
+    s.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+    s.style.left = Math.random()*100 + 'vw';
+    s.style.animationDuration = (3 + Math.random()*3) + 's';
+    s.style.animationDelay = (Math.random()*2) + 's';
+    s.style.fontSize = (14 + Math.random()*16) + 'px';
+    wrap.appendChild(s);
+  }
+  document.body.appendChild(wrap);
+}
+
+/* watch for reaching the end screen */
+const observer = new MutationObserver(() => {
+  const endScreen = document.querySelector('.screen[data-step="end"]');
+  if(endScreen.classList.contains('active') && !endScreen.dataset.fired){
+    endScreen.dataset.fired = '1';
+    launchConfetti();
+  }
+});
+observer.observe(document.body, {attributes:true, subtree:true, attributeFilter:['class']});
+
+showScreen(0);
+</script>
+</body>
+</html>
